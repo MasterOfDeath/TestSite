@@ -1,0 +1,116 @@
+﻿@using TestSite.PL.WebPages.Models
+@{
+    Layout = "~/_Layout.cshtml";
+    PageData["Title"] = "Администрирование";
+
+    const string adminRole = "admin";
+
+    string errorMessage = null;
+    ICollection<TestSite.Entites.Test> tests = null;
+
+    var log = TestSite.Logger.Logger.Log;
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+
+    if (!User.IsInRole(adminRole))
+    {
+        Response.StatusCode = 403;
+        return;
+    }
+
+    if (!IsPost)
+    {
+        try
+        {
+            tests = LogicProvider2.TestLogic.ListAllTests();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            log.Error("ListAllTests", ex);
+        }
+    }
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="content content-admin container-fluid" data-user-id="@User.Identity.Name">
+    <div class="row">
+        <div class="alert alert-success col-md-8 hide" role="alert">
+            <button type="button" class="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <p></p>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
+        <li class="editTest hide"><a data-toggle="tab" href="#editTestTab">Редактирование</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="testsTab" class="tab-pane fade in active tests-tab">
+            <div class="row">
+                <div class="col-md-6 col-sm-8">
+                    <button class="btn btn-primary addTestBtn">Создать тест</button>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover tests-table">
+                            <tbody>
+                                @if (tests != null)
+	                            {
+		                            foreach (var test in tests)
+                                    {
+                                        <tr data-id="@test.Id"><td>@test.Name</td></tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1">
+            <h2>Обрыв 100км</h2>
+            <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
+            <table class="table table-hover questions-table">
+                <tbody>
+                    <!-- for replace -->
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- Modal for edit and create test -->
+        @RenderPage("~/Pages/_NamePromptPartial.cshtml")
+        <!--  -->
+
+        <!-- Modal for edit and create question -->
+        @RenderPage("~/Pages/_QuestionPromptPartial.cshtml")
+        <!--  -->
+
+    </div> <!-- tab-content / end -->
+    <!-- ErrorModal -->
+    @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
+    <!--  -->
+</div> <!-- container / end -->
+
+
+@section header {
+    <link rel="icon" type="image/png" href="~/images/employee_icon.png" />
+    <link href="~/Content/ProjectStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/admin.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/ProjectScripts/admin.js"></script>
+}

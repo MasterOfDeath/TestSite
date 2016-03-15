@@ -1,0 +1,20 @@
+﻿@using Photos.PL.WebPages.Models
+@{
+    var imageQueries = GetImagePage.Queries;
+
+    if (!IsPost)
+    {
+        var queryName = Request["type"];
+        Tuple<byte[], string> result = null;
+
+        if (queryName != null && imageQueries.ContainsKey(queryName))
+        {
+            result = imageQueries[queryName].Invoke(Request);
+
+            if (result != null && result.Item1 != null)
+            {
+                Response.WriteBinary(result.Item1, result.Item2);
+            }
+        }
+    }
+}

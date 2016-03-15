@@ -1,0 +1,124 @@
+﻿.content-index .top10-header {
+  font-size: 120%;
+  margin-bottom: 5px;
+}
+
+.content-index .carousel-inner {
+  border-radius: 5px;
+}
+
+.content-index .carousel-caption {
+  background-color: rgba(0,0,0,.5);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  color: #fff;
+  text-align: left;
+}
+
+.content-index .carousel-indicators {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  z-index: 15;
+  margin: 0;
+  text-align: right;
+}
+
+.content-index .carousel-control.left,
+.content-index .carousel-control.right {
+  background-image: none;
+}
+
+@media (min-width:481px) {
+    .content-index .carousel-inner {
+        height: 450px;
+    }
+
+    .content-index .carousel-inner > .item {
+        height: 450px;
+    }
+
+    .content-index .carousel-inner > .item > .front,
+    .content-index .carousel-inner > .item > a > .front  {
+        height: 450px;
+        max-height: 450px;
+    }
+
+    .content-index .carousel-indicators {
+        padding: 0 25px 15px 0;
+    }
+
+    .content-index .carousel-caption {
+        padding: 10px 10px;
+    }
+
+    .content-index .carousel-caption > span {
+        font-size: 140%;
+    }
+}
+
+@media (max-width:480px) { 
+    .content-index .carousel-inner {
+        height: 250px;
+    }
+
+    .content-index .carousel-inner > .item {
+        height: 250px;
+    }
+
+    .content-index .carousel-inner > .item > .front {
+        height: 250px;
+        max-height: 250px;
+    }
+
+    .content-index .carousel-indicators {
+        padding: 0 5px 8px 0;
+    }
+
+    .content-index .carousel-caption {
+        padding: 10px 5px;
+    }
+
+    .content-index .carousel-caption > span {
+        font-size: 90%;
+    }
+}
+
+.content-index .carousel-inner > .item {
+    
+}
+
+.content-index .carousel-caption > span:last-child {
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+.content-index .carousel-inner > .item > .front {
+  display: block;
+  width: auto;
+  margin: 0 auto;
+}
+
+.content-index .carousel-inner > .item > .background {
+    position:absolute;
+    z-index: -1;
+    -webkit-filter: blur(25px);
+    -moz-filter: blur(25px);
+    -ms-filter: progid:DXImageTransform.Microsoft.Blur(pixelRadius=25, enabled='true');
+    filter: blur(25px);
+}
+
+.content-index .well {
+    margin: 20px 0;
+}
+
+.content-index .well p.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

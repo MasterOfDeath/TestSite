@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    @RenderSection("header", required: false)
+    <title>@PageData["Title"]</title>
+</head>
+<body>
+
+    <!-- Navbar -->
+    @RenderPage("~/Pages/_NavbarPartial.cshtml")
+    <!--  -->
+
+    <div class="content-main">
+        @RenderBody()
+    </div>
+
+    <!-- Footer -->
+    @RenderPage("~/Pages/_FooterPartial.cshtml")
+    <!--  -->
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

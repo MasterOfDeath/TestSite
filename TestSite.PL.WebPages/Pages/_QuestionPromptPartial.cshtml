@@ -1,0 +1,35 @@
+﻿<div class="modal fade question-prompt" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Вопрос</h4>
+            </div>
+            <div class="modal-body">
+                <textarea rows="5" placeholder="Вопрос" class="question-textarea"></textarea>
+
+                <div class="answers-container">
+                    <!-- for replace -->
+                </div>
+
+                <button type="button" class="btn btn-default add-answer-btn">Добавить ответ</button>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary save-name-btn" data-loading-text="Сохранение...">Сохранить</button>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+
+    <!-- row for answer -->
+    <div class="radio inline-radio row-for-answer hide">
+        <label>
+            <input type="radio" id="radio-value" name="value1" value="value1" />
+        </label>
+        <input id="result-value" class="form-control" type="text" placeholder="Ответ" />
+        <button type="button" class="btn btn-default remove-answer-btn">X</button>
+    </div>
+    <!-- /строка под ответ -->
+    
+</div><!-- /.modal -->

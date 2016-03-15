@@ -1,0 +1,24 @@
+﻿.content-login .have-you-account {
+    border-top: 1px solid#888;
+    padding-top: 15px;
+    font-size: 85%
+}
+
+.content-login .mainbox {
+    margin-top: 50px;
+}
+
+.content-login .container-show-signin {
+    float: right;
+    font-size: 85%;
+    position: relative;
+    top: -20px;
+}
+
+.content-login .input-group {
+    margin-bottom: 15px;
+}
+
+.content-login .container-login-btn {
+    margin-top: 10px;
+}

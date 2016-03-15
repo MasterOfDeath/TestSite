@@ -1,0 +1,34 @@
+﻿@using TestSite.PL.WebPages.Models
+@{
+    Layout = "~/_Layout.cshtml";
+    PageData["Title"] = "Теистирование";
+
+    string errorMessage = null;
+    var isIE = Request.Browser.Browser == "InternetExplorer";
+
+    if (!IsPost)
+    {
+        if (User.Identity.IsAuthenticated)
+        {
+            
+        }
+    }
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="content content-index container-fluid">
+
+</div>
+
+@section header {
+    <link rel="icon" type="image/png" href="~/images/employee_icon.png" />
+    <link href="~/Content/ProjectStyles/index.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/ProjectScripts/index.js"></script>
+}

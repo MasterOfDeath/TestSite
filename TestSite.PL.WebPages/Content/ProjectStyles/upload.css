@@ -1,0 +1,44 @@
+﻿.content-upload .row {
+    display: flex;
+    align-items: flex-end;
+}
+
+.content-upload .well {
+    padding: 10px 0;
+}
+
+.content-upload .image-container {
+    height: 200px;
+    width: 200px;
+    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-upload .image-container > img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.content-upload .progress {
+    border: 1px solid #ddd; 
+    padding: 1px; 
+    border-radius: 3px;
+}
+
+.content-upload .bar { 
+    background-color: #B4F5B4; 
+    width: 0%; 
+    height: 20px; 
+    border-radius: 3px; 
+}
+
+.content-upload .percent { 
+    position: absolute; 
+    display: inline-block; 
+    top: 0px; 
+    left: 48%; 
+}

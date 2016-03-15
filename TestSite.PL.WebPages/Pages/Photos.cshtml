@@ -1,0 +1,168 @@
+﻿@using TestSite.PL.WebPages.Models
+@{
+    Layout = "~/_Layout.cshtml";
+    PageData["Title"] = "Photos";
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+
+    string errorMessage = null;
+    int userId = 0;
+    ICollection<Photos.Entites.Photo> photos = null;
+    Tuple<ICollection<Photos.Entites.Photo>, string> photosQuery = null;
+
+    var log = Photos.Logger.Logger.Log;
+
+    try
+    {
+        userId = Convert.ToInt32(Request.Cookies["useridcookie"].Value);
+    }
+    catch (Exception ex)
+    {
+        errorMessage = ex.Message;
+        log.Error("Convert useridcookie to int", ex);
+    }
+
+    if (!IsPost)
+    {
+        string albumId = null;
+
+        try
+        {
+            albumId = Request["albumid"];
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            goto End;
+        }
+
+        photosQuery = LogicProvider.GetPhotos(Convert.ToInt32(albumId));
+
+        Photos.Entites.Album album = null;
+
+        try
+        {
+            album = LogicProvider.AlbumLogic.GetAlbumById(Convert.ToInt32(albumId));
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            log.Error("GetAlbumById", ex);
+            goto End;
+        }
+    }
+
+    if (IsPost)
+    {
+        string searchStr = null;
+
+        try
+        {
+            searchStr = Request["searchInput"];
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            goto End;
+        }
+
+
+        photosQuery = LogicProvider.SearchSearchPhotoByName(searchStr);
+    }
+
+    if (photosQuery == null || photosQuery.Item2 != null)
+    {
+        errorMessage = photosQuery?.Item2;
+        log.Error(errorMessage);
+        goto End;
+    }
+
+    photos = photosQuery?.Item1;
+
+End:
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="content content-photos container-fluid">
+    <div class="row">
+        <div class='list-group gallery'>
+
+            @if (photos == null)
+            {
+                <div class="alert alert-info">
+                    <p>No photos</p>
+                </div>
+            }
+            else
+            {
+                foreach (var photo in photos)
+                {
+                    <div class='col-xs-6 col-sm-4 col-md-3 col-lg-3'>
+                        <div class="thumbnail" data-photo-id="@photo.Id">
+                            <div class="image-container">
+                                <a class="fancybox" rel="ligthbox" href="~/Pages/GetImage?type=photo&photoid=@photo.Id" title="@photo.Name">
+                                    <img class="img-responsive" alt="@photo.Name" src="~/Pages/GetImage?type=photothumb&photoid=@photo.Id" />
+                                </a>
+                            </div>
+                            <div class='text-right photo-name-container'>
+                                <p class='text-muted photo-name'>@photo.Name</p>
+                            </div>
+                            @if (photo.UserId == userId)
+                            {
+                                <span class="badge glyphicon glyphicon-heart photo-like-owner"> @PhotosPage.GetLikesCount(photo.Id)</span>
+                                <div class="btn btn-default remove-btn">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </div>
+                                <div class="btn btn-default edit-btn">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="badge glyphicon glyphicon-heart photo-like-notowner"> @PhotosPage.GetLikesCount(photo.Id)</span>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+
+        </div> <!-- list-group / end -->
+    </div> <!-- row / end -->
+
+    <!-- ErrorModal -->
+    @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
+    <!--  -->
+
+    <!-- EditPrompt -->
+    @RenderPage("~/Pages/_EditPromptPartial.cshtml")
+    <!--  -->
+    <!-- RemovePrompt -->
+    @RenderPage("~/Pages/_RemovePromptPartial.cshtml")
+    <!--  -->
+
+</div> <!-- container / end -->
+
+@section header {
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="~/images/employee_icon.png" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery.fancybox.css" rel="stylesheet" media="screen" />
+    <link href="~/Content/jquery.fancybox-thumbs.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/photos.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.fancybox.js"></script>
+    <script src="~/Scripts/ProjectScripts/photos.js"></script>
+}

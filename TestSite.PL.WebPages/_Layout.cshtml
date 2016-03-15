@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/style.css" rel="stylesheet" />
+    @RenderSection("header", required: false)
+    <title>@PageData["Title"]</title>
+</head>
+<body>
+
+    <!-- Navbar -->
+    @RenderPage("~/Pages/_NavbarPartial.cshtml")
+    <!--  -->
+
+    <div class="content-main">
+        @RenderBody()
+    </div>
+
+    <!-- Footer -->
+    @RenderPage("~/Pages/_FooterPartial.cshtml")
+    <!--  -->
+
+    <script src="~/Scripts/jquery-2.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

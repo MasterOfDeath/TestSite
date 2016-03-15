@@ -1,0 +1,83 @@
+﻿.content-photos .thumbnail {
+    height: 180px;
+    width: 170px;
+    position: relative;
+    cursor: pointer;
+}
+
+.content-photos .image-container > a > img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.content-photos .image-container {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-photos .thumbnail .btn {
+    display: none;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.35);
+    top: 8px;
+    padding: 5px 8px;
+}
+
+.content-photos .thumbnail .remove-btn {
+    right: 20px;
+}
+
+.content-photos .thumbnail .edit-btn {
+    left: 20px;
+}
+
+/*.content-photos .photo-name-container {
+    right: 10px;
+    bottom:10px;
+}*/
+
+.content-photos .photo-name-container .photo-name {
+    font-size: 84%;
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.content-photos .thumbnail:hover .btn,
+.content-photos .thumbnail:hover .badge {
+    display: block;
+}
+
+.content-photos .thumbnail .photo-like-notowner:hover {
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    animation: likemove .5s normal forwards ease-in-out;
+}
+
+.content-photos .badge {
+    position: absolute;
+    padding: 5px;
+    display: none;
+    left: 40%;
+    top:10px;
+}
+
+@keyframes likemove {
+    from {
+    	transform: scale(1, 1);
+    }
+    25% {
+    	transform: scale(1.1, 1.1);
+    }
+	50% {
+		transform: scale(1, 1);
+	}
+	75% {
+    	transform: scale(1.05, 1.05);
+    }
+    to {
+    	transform: scale(1, 1);
+    }
+}

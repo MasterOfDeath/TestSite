@@ -1,0 +1,18 @@
+﻿@using TestSite.PL.WebPages.Models
+@{
+    var ajaxQueries = RegularAjaxPage.Queries;
+    var queryName = Request["queryName"];
+
+    if (IsAjax && IsPost && queryName != null)
+    {
+        AjaxResponse result = new AjaxResponse(null, null);
+
+
+        if (ajaxQueries.ContainsKey(queryName))
+        {
+            result = ajaxQueries[queryName].Invoke(Request);
+        }
+
+        Response.Write(Json.Encode(result));
+    }
+}

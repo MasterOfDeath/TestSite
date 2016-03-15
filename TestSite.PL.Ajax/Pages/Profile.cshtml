@@ -1,0 +1,190 @@
+﻿@using Photos.PL.WebPages.Models
+@{
+    Layout = "~/_Layout.cshtml";
+    PageData["Title"] = "Profile";
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+
+    string errorMessage = null;
+    string firstname = Request["firstname"];
+    string lastname = Request["lastname"];
+    string adminRole = "admins";
+    int userId = -1;
+    Photos.Entites.User thisUser = null;
+    ICollection<Photos.Entites.User> usersList = null;
+    ICollection<string> allRoles = null;
+
+    var log = Photos.Logger.Logger.Log;
+
+    if (!IsPost)
+    {
+        Tuple<Photos.Entites.User, string> userQuery = null;
+
+        userQuery = LogicProvider.GetUser(User.Identity.Name);
+
+        if (userQuery.Item2 != null)
+        {
+            errorMessage = userQuery.Item2;
+            log.Error(errorMessage);
+            Response.Redirect("~/Pages/ErrorPages/FatalError.cshtml?errormessage=" + errorMessage);
+            return;
+        }
+
+        thisUser = userQuery.Item1;
+        userId = thisUser.Id;
+
+        if (User.IsInRole(adminRole))
+        {
+            try
+            {
+                usersList = LogicProvider.UserLogic.ListAllUsers();
+                allRoles = LogicProvider.RoleLogic.ListAllRoles();
+            }
+            catch (Exception ex)
+            {
+                log.Error("ListAllUsers or ListAllRoles", ex);
+                Response.Redirect("~/Pages/ErrorPages/FatalError?errormessage=" + ex.Message);
+            }
+
+        }
+    }
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="content content-profile container-fluid" data-user-id="@userId">
+    <div class="row">
+        <div class="alert alert-success col-md-8 hide" role="alert">
+            <button type="button" class="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <p></p>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#userinfoTab">User Information</a></li>
+        <li><a data-toggle="tab" href="#passwordTab">Password</a></li>
+        @if (User.IsInRole(adminRole))
+        {
+            <li><a data-toggle="tab" href="#securityTab">Security</a></li>
+        }
+    </ul>
+
+    <div class="tab-content">
+        <div id="userinfoTab" class="tab-pane fade in active userinfoTab">
+            <div class="col-md-6 col-sm-8">
+                <div class="form-group has-feedback">
+                    <label for="firstname" class="control-label">First Name</label>
+                    <input id="firstname" type="text" class="form-control firstname-input" name="firstname" placeholder="First Name" value="@thisUser.FirstName">
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback hide badIcon"></span>
+                    <span class="glyphicon glyphicon-ok form-control-feedback hide goodIcon"></span>
+                    @Html.ValidationMessage("firstname")
+                </div>
+                <div class="form-group has-feedback">
+                    <label for="lastname" class="control-label">Last Name</label>
+                    <input id="lastname" type="text" class="form-control lastname-input" name="lastname" placeholder="Last Name" value="@thisUser.LastName">
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback hide badIcon"></span>
+                    <span class="glyphicon glyphicon-ok form-control-feedback hide goodIcon"></span>
+                    @Html.ValidationMessage("lastname")
+                </div>
+                <button class="btn btn-primary saveProfileBtn" data-loading-text="Loading...">Save</button>
+            </div>
+        </div>
+            <div id="passwordTab" class="tab-pane fade passwordTab">
+                <div class="col-md-6 col-sm-8">
+                    <div class="form-group has-feedback">
+                        <label for="oldPassword" class="control-label">Old password</label>
+                        <input id="oldPassword" type="password" class="form-control old-password-input" placeholder="Old password">
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback hide badIcon"></span>
+                        <span class="glyphicon glyphicon-ok form-control-feedback hide goodIcon"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <label for="newPassword" class="control-label">New password</label>
+                        <input id="newPassword" type="password" class="form-control new-password-input" placeholder="New password">
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback hide badIcon"></span>
+                        <span class="glyphicon glyphicon-ok form-control-feedback hide goodIcon"></span>
+                    </div>
+                    <button class="btn btn-primary changePasswordBtn" data-loading-text="Loading...">Change password</button>
+                </div>
+            </div>
+        @if (User.IsInRole(adminRole) && usersList != null)
+        {
+            <div id="securityTab" class="tab-pane fade">
+                <div class="row sec-body-template hide">
+                    <div class="user-sec-prompt-cols roles-control col-sm-5 col-md-5">
+                        <h3>Roles</h3>
+                        @foreach (var role in allRoles)
+                        {
+                            <div class="checkbox">
+                                <label><input type="checkbox" value="@role">@role</label>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="user-sec-prompt-cols state-control col-sm-5 col-md-5">
+                        <h3>User state</h3>
+                        <div class="checkbox">
+                            <label><input type="checkbox" value="Users">Enabled</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <caption>Users</caption>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Roles</th>
+                                <th>Enabled</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in usersList)
+                            {
+                                var roles = string.Join(
+                                    ", ", 
+                                    LogicProvider.RoleLogic.ListRolesForUser(user.UserName));
+                                <tr data-user-id="@user.Id">
+                                    <td class="username">@user.UserName</td>
+                                    <td class="roles">@roles</td>
+                                    <td class="enabled">@user.Enabled</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- UserSecurityModal -->
+            @RenderPage("~/Pages/_UserSecurityPartial.cshtml")
+            <!--  -->
+        }
+    </div>
+
+    <!-- ErrorModal -->
+    @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
+    <!--  -->
+</div> <!-- container / end -->
+
+@section header {
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="~/images/employee_icon.png" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/profile.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/ProjectScripts/profile.js"></script>
+}

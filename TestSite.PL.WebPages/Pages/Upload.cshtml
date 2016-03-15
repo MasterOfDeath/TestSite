@@ -1,0 +1,142 @@
+﻿@using TestSite.PL.WebPages.Models
+@{
+    Layout = "~/_Layout.cshtml";
+    PageData["Title"] = "Upload";
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+
+    string errorMessage = null;
+    int userId = -1;
+    ICollection<TestSite.Entites.Album> albums = null;
+
+    Tuple<int, string> userIdQuery = null;
+    Tuple<ICollection<TestSite.Entites.Album>, string> albumsQuery = null;
+
+    var log = TestSite.Logger.Logger.Log;
+
+    userIdQuery = LogicProvider.GetUserId(User.Identity.Name);
+    if (userIdQuery.Item2 != null)
+    {
+        errorMessage = userIdQuery.Item2;
+        log.Error(errorMessage);
+        goto End;
+    }
+
+    userId = userIdQuery.Item1;
+    albumsQuery = LogicProvider.GetAlbums(userId);
+
+    if (albumsQuery.Item2 != null)
+    {
+        errorMessage = albumsQuery.Item2;
+        log.Error(errorMessage);
+        goto End;
+    }
+
+    // If User doesn't have any albums
+    if (albumsQuery.Item1 == null)
+    {
+        Response.Redirect("~/Pages/Albums");
+        return;
+    }
+
+    albums = albumsQuery.Item1;
+
+End:
+}
+
+<div class="content content-upload container-fluid">
+    @if (errorMessage != null)
+    {
+        <div class="alert alert-danger col-md-8">@errorMessage</div>
+    }
+
+    <div class="row">
+        <div class="alert alert-success col-md-8 hide" role="alert">
+            <button type="button" class="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <i></i>
+        </div>
+    </div>
+
+    <div class="row">
+        <h3>Photos upload</h3>
+    </div>
+    <div class="row">
+        <div class="well col-xs-12 col-sm-9 col-md-8">
+            <div class="image-container">
+                <img src="~/images/DefaultPhoto.png" />
+            </div>
+            <div class="form-group col-xs-12">
+                <form class="image-upload-form" action="~/Pages/UsersAjax" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" class="image-input" accept="image/*" />
+                    <input type="hidden" name="queryName" value="uploadPhoto" />
+                    <input type="hidden" name="albumid" class="albumid" value="" />
+                    <input type="hidden" name="name" class="name" value="" />
+                    <input type="hidden" name="size" class="size" value="" />
+                </form>
+            </div>
+
+            <div class="form-group hide">
+                <div class="col-xs-12">
+                    <div class="progress">
+                        <div class="bar"></div>
+                        <div class="percent">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group has-feedback">
+                <div class="col-xs-12 col-md-4">
+                    <label for="name" class="control-label">Enter Name here:</label>
+                </div>
+                <div class="col-xs-12 col-md-8">
+                    <input id="name" type="text" class="form-control name-input" name="name" placeholder="Photo name" />
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback hide badIcon"></span>
+                    <span class="glyphicon glyphicon-ok form-control-feedback hide goodIcon"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-xs-9 col-sm-6 col-md-4">
+            <label for="sel1">Select album:</label>
+            <select class="form-control album-select" id="sel1">
+                @if (albums != null)
+                {
+                    foreach (var album in albums)
+                    {
+                        <option value="@album.Id">@album.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="form-group col-xs-3 col-sm-2 col-md-2">
+            <button class="btn btn-default upload-btn" data-loading-text="Loading...">Submit</button>
+        </div>
+    </div>
+
+    <!-- ErrorModal -->
+    @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
+    <!--  -->
+</div>
+
+
+@section header {
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="~/images/employee_icon.png" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/upload.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/jquery-2.1.4.min.js"></script>
+    <script src="~/Scripts/jquery.form.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/ProjectScripts/upload.js"></script>
+}

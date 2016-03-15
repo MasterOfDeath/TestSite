@@ -1,0 +1,42 @@
+﻿@using Photos.PL.WebPages.Models
+@{
+    Layout = "~/_Layout.cshtml";
+    PageData["Title"] = "404 Error";
+}
+
+<div class="content content-error container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>
+                    Oops!
+                </h1>
+                <h2>
+                    404 Not Found
+                </h2>
+                <div class="error-details">
+                    Sorry, an error has occured, Requested page not found!
+                </div>
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <span class="glyphicon glyphicon-home"></span>
+                        Take Me Home
+                    </a>
+                    <a href="mailto:admin@domen.com" class="btn btn-default btn-lg">
+                        <span class="glyphicon glyphicon-envelope"></span>
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section header {
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="~/images/employee_icon.png" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/style.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/error.css" rel="stylesheet" />
+}

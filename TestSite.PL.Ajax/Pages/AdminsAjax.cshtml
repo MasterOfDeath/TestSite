@@ -1,0 +1,32 @@
+﻿@using Photos.PL.WebPages.Models
+@{
+    const string adminRole = "admins";
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+
+    if (!User.IsInRole(adminRole))
+    {
+        Response.StatusCode = 403;
+        return;
+    }
+
+    var ajaxQueries = AdminsAjaxPage.Queries;
+    var queryName = Request["queryName"];
+
+    if (IsAjax && IsPost && queryName != null)
+    {
+        AjaxResponse result = new AjaxResponse(null, null);
+
+
+        if (ajaxQueries.ContainsKey(queryName))
+        {
+            result = ajaxQueries[queryName].Invoke(Request);
+        }
+
+        Response.Write(Json.Encode(result));
+    }
+}

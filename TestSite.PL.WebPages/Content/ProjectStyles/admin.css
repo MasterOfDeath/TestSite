@@ -1,0 +1,16 @@
+﻿.tab-content .tests-table > tbody > tr {
+    cursor:pointer;
+}
+
+.tab-content .question-prompt .question-textarea {
+    width: 100%;
+}
+
+.answers-container .inline-radio label {
+    vertical-align: middle
+}
+
+.answers-container .inline-radio input[type=text] {
+    width: 88%;
+    display:inline-block;
+}
