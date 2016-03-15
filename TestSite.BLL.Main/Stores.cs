@@ -23,5 +23,7 @@
         public static ITestStore TestStore { get; } = new TestSqliteStore();
 
         public static IQuestionStore QuestionStore { get; } = new QuestionSqliteStore();
+
+        public static IAnswerStore AnswerStore { get; } = new AnswerSqliteStore();
     }
 }

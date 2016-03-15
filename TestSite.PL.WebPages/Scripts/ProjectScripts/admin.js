@@ -10,10 +10,12 @@
         $questionPrompt = $(".question-prompt", $tabContent),
         $testNameInput = $(".name-input", $namePrompt),
         $rowForAnswer = $(".row-for-answer", $questionPrompt),
+        $saveQuestionBtn = $(".save-question-btn", $questionPrompt),
         testNameExp = /^\S.+\S$/;
 
     $addTestBtn.click(clickAddTestBtn);
     $addQuestionBtn.click(clickAddQuestionBtn);
+    $saveQuestionBtn.click(clickSaveQuestionBtn);
     $testsTable.on("click", "tr", clickTestsTable);
     $(".add-answer-btn", $questionPrompt).click(clickAddAnswerBtn);
         
@@ -87,6 +89,18 @@
         $(event.target).closest(".radio").remove();
     }
 
+    function clickSaveQuestionBtn(event) {
+        var text = $(".question-textarea", $questionPrompt).val(),
+            testId = $(".editTest-tab", $tabContent).data("test-id");
+
+        if (!isValidName(text)) {
+            showError("Недопустимое значние");
+            return;
+        }
+
+        saveQuestion(text, testId);
+    }
+
     function testsListUpdate() {
         $.ajax({
             url: "AdminsAjax",
@@ -117,7 +131,7 @@
             url: "AdminsAjax",
             method: "post",
             data: {
-                queryName: "ListQuestionsByTestId",
+                queryName: "listQuestionsByTestId",
                 testid: testId
             }
         }).success(function (data) {
@@ -136,6 +150,53 @@
         }).always(function () {
 
         });
+    }
+
+    function saveQuestion(text, testId) {
+        $.ajax({
+            url: "AdminsAjax",
+            method: "post",
+            data: {
+                queryName: "saveQuestion",
+                testid: testId,
+                text: text
+            }
+        }).success(function (data) {
+            var result = JSON.parse(data);
+
+            if (result.Error === null && result.Data > 0) {
+                saveAnswers(result.Data);
+            }
+            else {
+                showError(result.Error);
+            }
+        });
+    }
+
+    function saveAnswers(question_id) {
+
+        $(".answers-container input[type=text]", $questionPrompt).each(function (index, el) {
+
+        });
+        
+        $.ajax({
+            url: "AdminsAjax",
+            method: "post",
+            data: {
+                queryName: "saveAnswer",
+                testid: testId,
+                text: text
+            }
+        }).success(function (data) {
+            var result = JSON.parse(data);
+
+            if (result.Error !== null) {
+                showError(result.Error);
+            }
+        });
+
+        questionsListUpdate(testId);
+        $questionPrompt.modal("hide");
     }
 
     function showError(str) {

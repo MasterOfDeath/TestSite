@@ -17,7 +17,8 @@
         {
             _Queries.Add("clickSaveTestBtn", ClickSaveTestBtn);
             _Queries.Add("listAllTests", ListAllTests);
-            _Queries.Add("listAllTests", ListQuestionsByTestId);
+            _Queries.Add("listQuestionsByTestId", ListQuestionsByTestId);
+            _Queries.Add("saveQuestion", SaveQuestion);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -93,6 +94,36 @@
             }
 
             return new AjaxResponse(null, questions);
+        }
+
+        private static AjaxResponse SaveQuestion(HttpRequestBase request)
+        {
+            var methodName = nameof(SaveQuestion);
+            int testId = -1;
+            string text = null;
+
+            try
+            {
+                testId = Convert.ToInt32(request["testid"]);
+                text = request["text"];
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            int result = -1;
+
+            try
+            {
+                result = LogicProvider2.QuestionLogic.InsertQuestion(new Question(text, testId));
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
         }
 
         private static AjaxResponse SendError(Exception ex, string sender = null)

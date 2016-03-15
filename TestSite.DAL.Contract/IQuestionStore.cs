@@ -5,7 +5,7 @@
 
     public interface IQuestionStore
     {
-        bool InsertQuestion(Question question);
+        int InsertQuestion(Question question);
 
         bool RemoveQuestion(int questionId);
 

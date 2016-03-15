@@ -7,9 +7,9 @@
 
     public class QuestionMainLogic : IQuestionLogic
     {
-        public bool InsertQuestion(Question question)
+        public int InsertQuestion(Question question)
         {
-            var result = false;
+            int result = -1;
 
             try
             {

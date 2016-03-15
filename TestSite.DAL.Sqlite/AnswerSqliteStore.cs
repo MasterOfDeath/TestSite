@@ -15,25 +15,31 @@
         {
             using (var connection = new SQLiteConnection(connectionString))
             {
-                SQLiteCommand command;
+                connection.Open();
+                int result = -1;
 
                 if (answer.Id > 0)
                 {
-                    command = new SQLiteCommand("UPDATE answer SET name=:name, correct=:correct WHERE id=:id", connection);
-                    command.Parameters.AddWithValue(":id", answer.Id);
-                    command.Parameters.AddWithValue(":name", answer.Name);
-                    command.Parameters.AddWithValue(":correct", answer.Correct);
+                    using (var command = new SQLiteCommand("UPDATE answer SET name=:name, correct=:correct, question_id=:questionId WHERE id=:id", connection))
+                    {
+                        command.Parameters.AddWithValue(":id", answer.Id);
+                        command.Parameters.AddWithValue(":name", answer.Name);
+                        command.Parameters.AddWithValue(":correct", answer.Correct);
+                        command.Parameters.AddWithValue(":questionId", answer.QuestionId);
+                        result = command.ExecuteNonQuery();
+                    } 
                 }
                 else
                 {
-                    command = new SQLiteCommand("INSERT INTO answer (name, correct) VALUES (:name, :correct)", connection);
-                    command.Parameters.AddWithValue(":name", answer.Name);
-                    command.Parameters.AddWithValue(":correct", answer.Correct);
+                    using (var command = new SQLiteCommand("INSERT INTO answer (name, correct, question_id) VALUES (:name, :correct, :questionId)", connection))
+                    {
+                        command.Parameters.AddWithValue(":name", answer.Name);
+                        command.Parameters.AddWithValue(":correct", answer.Correct);
+                        command.Parameters.AddWithValue(":questionId", answer.QuestionId);
+                        result = command.ExecuteNonQuery();
+                    }    
                 }
-
-                connection.Open();
-                var result = command.ExecuteNonQuery();
-
+                
                 return result > 0;
             }
         }
@@ -42,24 +48,56 @@
         {
             using (var connection = new SQLiteConnection(this.connectionString))
             {
-                var command = new SQLiteCommand("SELECT id, name, correct FROM answer", connection);
-
-                List<Answer> result = null;
-
                 connection.Open();
-                var reader = command.ExecuteReader();
 
-                if (reader.HasRows)
+                using (var command = new SQLiteCommand("SELECT * FROM answer", connection))
                 {
-                    result = new List<Answer>(reader.StepCount);
-                }
+                    List<Answer> result = null;
 
-                while (reader.Read())
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            result = new List<Answer>(reader.StepCount);
+                        }
+
+                        while (reader.Read())
+                        {
+                            result.Add(this.RowToAnswer(reader));
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
+        public ICollection<Answer> ListAnswersByQuestionId(int questionId)
+        {
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                connection.Open();
+
+                using (var command = new SQLiteCommand("SELECT * FROM answer WHERE question_id=:questionId", connection))
                 {
-                    result.Add(this.RowToAnswer(reader));
-                }
+                    command.Parameters.AddWithValue(":questionId", questionId);
+                    List<Answer> result = null;
 
-                return result;
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            result = new List<Answer>(reader.StepCount);
+                        }
+
+                        while (reader.Read())
+                        {
+                            result.Add(this.RowToAnswer(reader));
+                        }
+
+                        return result;
+                    }
+                }
             }
         }
 
@@ -67,15 +105,15 @@
         {
             using (var connection = new SQLiteConnection(connectionString))
             {
-                SQLiteCommand command;
-
-                command = new SQLiteCommand("DELETE FROM answer WHERE id=:id", connection);
-                command.Parameters.AddWithValue(":id", answerId);
-
                 connection.Open();
-                var result = command.ExecuteNonQuery();
 
-                return result > 0;
+                using (var command = new SQLiteCommand("DELETE FROM answer WHERE id=:id", connection))
+                {
+                    command.Parameters.AddWithValue(":id", answerId);
+                    var result = command.ExecuteNonQuery();
+
+                    return result > 0;
+                }
             }
         }
 
@@ -84,8 +122,9 @@
             var id = reader.GetInt32(0);
             var name = reader.GetString(1);
             var correct = reader.GetInt32(2) > 0;
+            var questionId = reader.GetInt32(3);
 
-            return new Answer(id, name, correct);
+            return new Answer(id, name, correct, questionId);
         }
     }
 }

@@ -1,15 +1,13 @@
-﻿namespace TestSite.DAL.Contract
+﻿namespace TestSite.BLL.Contract
 {
     using System.Collections.Generic;
-    using TestSite.Entites;
+    using Entites;
 
-    public interface IAnswerStore
+    public interface IAnswerLogic
     {
         bool InsertAnswer(Answer answer);
 
         bool RemoveAnswer(int answerId);
-
-        ICollection<Answer> ListAllAnswers();
 
         ICollection<Answer> ListAnswersByQuestionId(int questionId);
     }

@@ -11,36 +11,50 @@
         private readonly string connectionString =
             ConfigurationManager.ConnectionStrings["Sqlite"].ConnectionString;
 
-        public bool InsertQuestion(Question question)
+        public int InsertQuestion(Question question)
         {
             int result = -1;
 
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
+                var insert = "INSERT INTO question (name, test_id) VALUES (:name, :testId); " + 
+                             "SELECT last_insert_rowid() AS id;";
+                var update = "UPDATE question SET name=:name, test_id=:testId WHERE id=:id";
 
                 if (question.Id > 0)
                 {
-                    using (var command = new SQLiteCommand("UPDATE question SET name=:name, test_id=:testId WHERE id=:id", connection))
+                    using (var command = new SQLiteCommand(update, connection))
                     {
                         command.Parameters.AddWithValue(":id", question.Id);
                         command.Parameters.AddWithValue(":name", question.Name);
                         command.Parameters.AddWithValue(":testId", question.TestId);
-                        result = command.ExecuteNonQuery();
+                        result = (command.ExecuteNonQuery() > 0) ? question.Id : -1;
                     }
                 }
                 else
                 {
-                    using (var command = new SQLiteCommand("INSERT INTO question (name, test_id) VALUES (:name, :testId)", connection))
+                    using (var command = new SQLiteCommand(insert, connection))
                     {
                         command.Parameters.AddWithValue(":name", question.Name);
                         command.Parameters.AddWithValue(":testId", question.TestId);
-                        result = command.ExecuteNonQuery();
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                result = reader.GetInt32(0); ;
+                            }
+                            else
+                            {
+                                result = -1;
+                            }
+                        }
                     }
                 }
             }
 
-            return result > 0;
+            return result;
         }
 
         public ICollection<Question> ListAllQuestions()

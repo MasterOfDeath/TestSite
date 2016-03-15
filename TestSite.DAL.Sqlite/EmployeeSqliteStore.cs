@@ -45,7 +45,7 @@
             using (var connection = new SQLiteConnection(connectionString))
             {
                 SQLiteCommand command;
-                int result;
+                int result = -1;
 
                 connection.Open();
 
