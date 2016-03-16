@@ -1,9 +1,13 @@
-﻿.tab-content .tests-table > tbody > tr {
+﻿.tab-content .table > tbody > tr {
     cursor:pointer;
 }
 
 .tab-content .question-prompt .question-textarea {
     width: 100%;
+}
+
+.tab-content .question-prompt .remove-question-btn {
+    float: left;
 }
 
 .answers-container .inline-radio label {

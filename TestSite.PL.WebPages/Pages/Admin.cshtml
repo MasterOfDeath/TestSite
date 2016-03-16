@@ -52,36 +52,35 @@
     </div>
 
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
+        <li class="listTests active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
         <li class="editTest hide"><a data-toggle="tab" href="#editTestTab">Редактирование</a></li>
     </ul>
 
     <div class="tab-content">
         <div id="testsTab" class="tab-pane fade in active tests-tab">
-            <div class="row">
-                <div class="col-md-6 col-sm-8">
-                    <button class="btn btn-primary addTestBtn">Создать тест</button>
+            <button class="btn btn-primary addTestBtn">Создать тест</button>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover tests-table">
-                            <tbody>
-                                @if (tests != null)
-	                            {
-		                            foreach (var test in tests)
-                                    {
-                                        <tr data-id="@test.Id"><td>@test.Name</td></tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-hover tests-table">
+                    <tbody>
+                        @if (tests != null)
+	                    {
+		                    foreach (var test in tests)
+                            {
+                                <tr data-id="@test.Id"><td>@test.Name</td></tr>
+                            }
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1">
             <h2>Обрыв 100км</h2>
+
             <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
+            <button class="btn btn-default editTestBtn">Изменить название теста</button>
+            <button class="btn btn-default removeTestBtn">Удалить тест</button>
             <table class="table table-hover questions-table">
                 <tbody>
                     <!-- for replace -->
@@ -98,6 +97,10 @@
         @RenderPage("~/Pages/_QuestionPromptPartial.cshtml")
         <!--  -->
 
+        <!-- Modal for delete -->
+        @RenderPage("~/Pages/_RemovePromptPartial.cshtml")
+        <!--  -->
+
     </div> <!-- tab-content / end -->
     <!-- ErrorModal -->
     @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
@@ -107,7 +110,6 @@
 
 @section header {
     <link rel="icon" type="image/png" href="~/images/employee_icon.png" />
-    <link href="~/Content/ProjectStyles/style.css" rel="stylesheet" />
     <link href="~/Content/ProjectStyles/admin.css" rel="stylesheet" />
 }
 

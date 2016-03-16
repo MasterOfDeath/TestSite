@@ -1,5 +1,6 @@
 ﻿namespace TestSite.DAL.Sqlite
 {
+    using System;
     using System.Collections.Generic;
     using System.Configuration;
     using System.Data.SQLite;
@@ -10,6 +11,35 @@
     {
         private readonly string connectionString =
             ConfigurationManager.ConnectionStrings["Sqlite"].ConnectionString;
+
+        public Question GetQuestionById(int questionId)
+        {
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                using (var command = new SQLiteCommand("SELECT * FROM question WHERE id=:id", connection))
+                {
+                    command.Parameters.AddWithValue(":id", questionId);
+                    Question result = null;
+
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            result = this.RowToQuestion(reader);
+                        }
+                        else
+                        {
+                            result = null;
+                        }
+
+
+                        return result;
+                    }
+                }
+            }
+        }
 
         public int InsertQuestion(Question question)
         {
@@ -120,7 +150,9 @@
             {
                 connection.Open();
 
-                using (var command = new SQLiteCommand("DELETE FROM question WHERE id=:id", connection))
+                var delete = "PRAGMA foreign_keys = ON; DELETE FROM question WHERE id=:id;";
+
+                using (var command = new SQLiteCommand(delete, connection))
                 {
                     command.Parameters.AddWithValue(":id", questionId);
                     var result = command.ExecuteNonQuery();

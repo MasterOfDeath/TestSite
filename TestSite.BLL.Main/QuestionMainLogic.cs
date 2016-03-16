@@ -7,6 +7,27 @@
 
     public class QuestionMainLogic : IQuestionLogic
     {
+        public Question GetQuestionById(int questionId)
+        {
+            Question result = null;
+
+            if (questionId < -1)
+            {
+                throw new ArgumentException($"{nameof(questionId)} не может быть отрицательным");
+            }
+
+            try
+            {
+                result = Stores.QuestionStore.GetQuestionById(questionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public int InsertQuestion(Question question)
         {
             int result = -1;

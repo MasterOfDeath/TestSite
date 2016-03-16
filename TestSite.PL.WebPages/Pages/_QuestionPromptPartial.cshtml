@@ -1,4 +1,4 @@
-﻿<div class="modal fade question-prompt" tabindex="-1" role="dialog">
+﻿<div class="modal fade question-prompt" data-question-id="-1" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -15,6 +15,7 @@
                 <button type="button" class="btn btn-default add-answer-btn">Добавить ответ</button>
 
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-default remove-question-btn">Удалить вопрос</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
                     <button type="button" class="btn btn-primary save-question-btn" data-loading-text="Сохранение...">Сохранить</button>
                 </div>
@@ -23,7 +24,7 @@
     </div><!-- /.modal-dialog -->
 
     <!-- row for answer -->
-    <div class="radio inline-radio row-for-answer hide">
+    <div class="radio inline-radio row-for-answer hide" data-answer-id="-1">
         <label>
             <input type="radio" id="radio-value" name="value1" value="value1" />
         </label>

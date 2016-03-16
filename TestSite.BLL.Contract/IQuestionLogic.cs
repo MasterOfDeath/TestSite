@@ -10,5 +10,7 @@
         bool RemoveQuestion(int questionId);
 
         ICollection<Question> ListQuestionsByTestId(int testId);
+
+        Question GetQuestionById(int questionId);
     }
 }

@@ -12,5 +12,7 @@
         ICollection<Question> ListAllQuestions();
 
         ICollection<Question> ListQuestionsByTestId(int testId);
+
+        Question GetQuestionById(int questionId);
     }
 }

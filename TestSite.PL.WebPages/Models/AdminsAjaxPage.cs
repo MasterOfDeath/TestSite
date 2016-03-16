@@ -18,7 +18,10 @@
             _Queries.Add("clickSaveTestBtn", ClickSaveTestBtn);
             _Queries.Add("listAllTests", ListAllTests);
             _Queries.Add("listQuestionsByTestId", ListQuestionsByTestId);
-            _Queries.Add("saveQuestion", SaveQuestion);
+            _Queries.Add("saveQuestionAndAnswers", SaveQuestionAndAnswers);
+            _Queries.Add("getQuestionAndAnswers", GetQuestionAndAnswers);
+            _Queries.Add("removeTest", RemoveTest);
+            _Queries.Add("removeQuestion", RemoveQuestion);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -29,20 +32,24 @@
         private static AjaxResponse ClickSaveTestBtn(HttpRequestBase request)
         {
             string testName = null;
+            int testId = -1;
             var methodName = nameof(ClickSaveTestBtn);
 
             try
             {
                 testName = request["testname"];
+                testId = Convert.ToInt32(request["testid"]);
             }
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
             }
 
+            Test test = (testId > 0) ? new Test(testId, testName) : new Test(testName);
+
             try
             {
-                LogicProvider2.TestLogic.InsertTest(new Test(testName));
+                LogicProvider2.TestLogic.InsertTest(test);
             }
             catch (Exception ex)
             {
@@ -96,34 +103,154 @@
             return new AjaxResponse(null, questions);
         }
 
-        private static AjaxResponse SaveQuestion(HttpRequestBase request)
+        private static AjaxResponse SaveQuestionAndAnswers(HttpRequestBase request)
         {
-            var methodName = nameof(SaveQuestion);
+            var methodName = nameof(SaveQuestionAndAnswers);
             int testId = -1;
+            int questionId = -1;
             string text = null;
+            dynamic answers = null;
 
             try
             {
                 testId = Convert.ToInt32(request["testid"]);
+                questionId = Convert.ToInt32(request["questionid"]);
                 text = request["text"];
+                answers = Json.Decode(request["answers"]);
             }
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
             }
-
-            int result = -1;
 
             try
             {
-                result = LogicProvider2.QuestionLogic.InsertQuestion(new Question(text, testId));
+                questionId = LogicProvider2.QuestionLogic.InsertQuestion(new Question(questionId,text, testId));
             }
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
             }
 
-            return new AjaxResponse(null, result);
+            if (questionId < 0)
+            {
+                return SendError(new InvalidOperationException("Не известная ошибка"), methodName);
+            }
+
+            foreach (var answer in answers)
+            {
+                try
+                {
+                    if (answer.action == "insert" || answer.action == "update")
+                    {
+                        LogicProvider2.AnswerLogic.InsertAnswer(
+                            new Answer(answer.answerId, answer.text, answer.correct, questionId));
+                    }
+
+                    if (answer.action == "delete")
+                    {
+                        LogicProvider2.AnswerLogic.RemoveAnswer(answer.answerId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return SendError(ex, methodName);
+                }
+            }
+
+            return new AjaxResponse(null, questionId);
+        }
+
+        private static AjaxResponse GetQuestionAndAnswers(HttpRequestBase request)
+        {
+            var methodName = nameof(GetQuestionAndAnswers);
+            int questionId = -1;
+            string text = null;
+
+            try
+            {
+                questionId = Convert.ToInt32(request["questionid"]);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            try
+            {
+                text = LogicProvider2.QuestionLogic.GetQuestionById(questionId).Name;
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            ICollection<Answer> answers = null;
+
+            try
+            {
+                answers = LogicProvider2.AnswerLogic.ListAnswersByQuestionId(questionId);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            dynamic questionAndAnswers = new { text = text, answers = answers };
+       
+            return new AjaxResponse(null, questionAndAnswers);
+        }
+
+        private static AjaxResponse RemoveTest(HttpRequestBase request)
+        {
+            int testId = -1;
+            var methodName = nameof(RemoveTest);
+
+            try
+            {
+                testId = Convert.ToInt32(request["testid"]);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            try
+            {
+                LogicProvider2.TestLogic.RemoveTest(testId);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, true);
+        }
+
+        private static AjaxResponse RemoveQuestion(HttpRequestBase request)
+        {
+            int questionId = -1;
+            var methodName = nameof(RemoveQuestion);
+
+            try
+            {
+                questionId = Convert.ToInt32(request["questionid"]);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            try
+            {
+                LogicProvider2.QuestionLogic.RemoveQuestion(questionId);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, true);
         }
 
         private static AjaxResponse SendError(Exception ex, string sender = null)

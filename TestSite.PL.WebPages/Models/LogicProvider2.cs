@@ -14,5 +14,6 @@
         public static IDepLogic DepLogic { get; } = new BLL.Main.DepMainLogic();
         public static ITestLogic TestLogic { get; } = new BLL.Main.TestMainLogic();
         public static IQuestionLogic QuestionLogic { get; } = new BLL.Main.QuestionMainLogic();
+        public static IAnswerLogic AnswerLogic { get; } = new BLL.Main.AnswerMainLogic();
     }
 }
