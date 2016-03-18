@@ -45,12 +45,8 @@
     <Compile Include="TestMainLogic.cs" />
     <Compile Include="DepMainLogic.cs" />
     <Compile Include="EmployeeMainLogic.cs" />
-    <Compile Include="AlbumMainLogic.cs" />
-    <Compile Include="LikeMainLogic.cs" />
-    <Compile Include="PhotoMainLogic.cs" />
     <Compile Include="RoleMainLogic.cs" />
     <Compile Include="Stores.cs" />
-    <Compile Include="UserMainLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -65,10 +61,6 @@
     <ProjectReference Include="..\TestSite.DAL.Sqlite\TestSite.DAL.Sqlite.csproj">
       <Project>{5bceff76-d972-41de-94ff-00cfdfd7ab69}</Project>
       <Name>TestSite.DAL.Sqlite</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TestSite.DAL.Sql\TestSite.DAL.Sql.csproj">
-      <Project>{d35ab8a6-9bfc-4aca-9efe-7a49ab893eda}</Project>
-      <Name>TestSite.DAL.Sql</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestSite.Entites\TestSite.Entites.csproj">
       <Project>{bc236b12-1cb4-4d29-b56c-f13d095d3f05}</Project>

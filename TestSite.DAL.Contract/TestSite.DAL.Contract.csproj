@@ -41,16 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IAlbumStore.cs" />
     <Compile Include="IQuestionStore.cs" />
     <Compile Include="IAnswerStore.cs" />
     <Compile Include="ITestStore.cs" />
     <Compile Include="IDepStore.cs" />
-    <Compile Include="ILikeStore.cs" />
-    <Compile Include="IPhotoStore.cs" />
     <Compile Include="IRoleStore.cs" />
     <Compile Include="IEmployeeStore.cs" />
-    <Compile Include="IUserStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

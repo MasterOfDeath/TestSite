@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.DAL.Sql", "TestSite.DAL.Sql\TestSite.DAL.Sql.csproj", "{D35AB8A6-9BFC-4ACA-9EFE-7A49AB893EDA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.DAL.Contract", "TestSite.DAL.Contract\TestSite.DAL.Contract.csproj", "{BA30E12E-4766-48A2-9203-3AC1BA47DD90}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{6FBCA800-5F2A-4C93-8A5E-4139D5326DFA}"
@@ -40,10 +38,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D35AB8A6-9BFC-4ACA-9EFE-7A49AB893EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D35AB8A6-9BFC-4ACA-9EFE-7A49AB893EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D35AB8A6-9BFC-4ACA-9EFE-7A49AB893EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D35AB8A6-9BFC-4ACA-9EFE-7A49AB893EDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BA30E12E-4766-48A2-9203-3AC1BA47DD90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BA30E12E-4766-48A2-9203-3AC1BA47DD90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA30E12E-4766-48A2-9203-3AC1BA47DD90}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,7 +75,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D35AB8A6-9BFC-4ACA-9EFE-7A49AB893EDA} = {6FBCA800-5F2A-4C93-8A5E-4139D5326DFA}
 		{BA30E12E-4766-48A2-9203-3AC1BA47DD90} = {6FBCA800-5F2A-4C93-8A5E-4139D5326DFA}
 		{BC236B12-1CB4-4D29-B56C-F13D095D3F05} = {598EEE49-A05B-4A09-BA06-ABACBCFC0EE4}
 		{FFFF2482-959E-4693-90D5-BB3AA4FFDA43} = {99CC3137-9AB7-457E-B961-E49373A9A522}

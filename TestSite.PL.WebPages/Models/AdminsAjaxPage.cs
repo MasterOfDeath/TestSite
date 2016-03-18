@@ -49,7 +49,7 @@
 
             try
             {
-                LogicProvider2.TestLogic.InsertTest(test);
+                LogicProvider.TestLogic.InsertTest(test);
             }
             catch (Exception ex)
             {
@@ -66,7 +66,7 @@
 
             try
             {
-                tests = LogicProvider2.TestLogic.ListAllTests();
+                tests = LogicProvider.TestLogic.ListAllTests();
             }
             catch (Exception ex)
             {
@@ -93,7 +93,7 @@
 
             try
             {
-                questions = LogicProvider2.QuestionLogic.ListQuestionsByTestId(testId);
+                questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(testId);
             }
             catch (Exception ex)
             {
@@ -125,7 +125,7 @@
 
             try
             {
-                questionId = LogicProvider2.QuestionLogic.InsertQuestion(new Question(questionId,text, testId));
+                questionId = LogicProvider.QuestionLogic.InsertQuestion(new Question(questionId,text, testId));
             }
             catch (Exception ex)
             {
@@ -143,13 +143,13 @@
                 {
                     if (answer.action == "insert" || answer.action == "update")
                     {
-                        LogicProvider2.AnswerLogic.InsertAnswer(
+                        LogicProvider.AnswerLogic.InsertAnswer(
                             new Answer(answer.answerId, answer.text, answer.correct, questionId));
                     }
 
                     if (answer.action == "delete")
                     {
-                        LogicProvider2.AnswerLogic.RemoveAnswer(answer.answerId);
+                        LogicProvider.AnswerLogic.RemoveAnswer(answer.answerId);
                     }
                 }
                 catch (Exception ex)
@@ -178,7 +178,7 @@
 
             try
             {
-                text = LogicProvider2.QuestionLogic.GetQuestionById(questionId).Name;
+                text = LogicProvider.QuestionLogic.GetQuestionById(questionId).Name;
             }
             catch (Exception ex)
             {
@@ -189,7 +189,7 @@
 
             try
             {
-                answers = LogicProvider2.AnswerLogic.ListAnswersByQuestionId(questionId);
+                answers = LogicProvider.AnswerLogic.ListAnswersByQuestionId(questionId);
             }
             catch (Exception ex)
             {
@@ -217,7 +217,7 @@
 
             try
             {
-                LogicProvider2.TestLogic.RemoveTest(testId);
+                LogicProvider.TestLogic.RemoveTest(testId);
             }
             catch (Exception ex)
             {
@@ -243,7 +243,7 @@
 
             try
             {
-                LogicProvider2.QuestionLogic.RemoveQuestion(questionId);
+                LogicProvider.QuestionLogic.RemoveQuestion(questionId);
             }
             catch (Exception ex)
             {

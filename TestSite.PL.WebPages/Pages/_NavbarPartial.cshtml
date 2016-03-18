@@ -11,15 +11,21 @@
             <a class="navbar-brand" href="/">Тесты</a>
         </div>
 
-        
+
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a href="~/Pages/Test" class="btn btn-success navbar-btn start-test-btn">Начать тестирование</a>
+            }
+
             <ul class="nav navbar-nav navbar-right">
                 @if (User.Identity.IsAuthenticated)
                 {
                     <li role="presentation" class="dropdown">
-                        <a class="dropdown-toggle glyphicon glyphicon-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><b> @Server.UrlDecode(Request.Cookies["usernamecookie"].Value)</b><b class="caret"></b>
+                        <a class="dropdown-toggle glyphicon glyphicon-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            <b> @Server.UrlDecode(Request.Cookies["usernamecookie"].Value)</b><b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
                             @if (User.IsInRole("admin"))

@@ -103,15 +103,12 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\ProjectStyles\albums.css" />
     <Content Include="Content\ProjectStyles\error.css" />
+    <Content Include="Content\ProjectStyles\test.css" />
     <Content Include="Content\ProjectStyles\index.css" />
     <Content Include="Content\ProjectStyles\admin.css" />
     <Content Include="Content\ProjectStyles\login.css" />
-    <Content Include="Content\ProjectStyles\photos.css" />
-    <Content Include="Content\ProjectStyles\profile.css" />
     <Content Include="Content\ProjectStyles\style.css" />
-    <Content Include="Content\ProjectStyles\upload.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="images\DefaultAlbumCover.png" />
     <Content Include="images\DefaultPhoto.png" />
@@ -130,32 +127,22 @@
     <Content Include="Scripts\jquery-2.2.1.js" />
     <Content Include="Scripts\jquery-2.2.1.min.js" />
     <Content Include="Scripts\ProjectScripts\admin.js" />
+    <Content Include="Scripts\ProjectScripts\test.js" />
     <Content Include="Scripts\ProjectScripts\index.js" />
-    <Content Include="Scripts\ProjectScripts\albums.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Pages\SignIn.cshtml" />
-    <Content Include="Pages\SignUp.cshtml" />
     <Content Include="Pages\SignOut.cshtml" />
-    <Content Include="Pages\Albums.cshtml" />
     <Content Include="Pages\_ErrorModalPartial.cshtml" />
-    <Content Include="Pages\UsersAjax.cshtml" />
-    <Content Include="Pages\GetImage.cshtml" />
-    <Content Include="Pages\Photos.cshtml" />
     <Content Include="Pages\_RemovePromptPartial.cshtml" />
     <Content Include="Pages\_EditPromptPartial.cshtml" />
     <Content Include="Pages\_FooterPartial.cshtml" />
-    <Content Include="Pages\Profile.cshtml" />
-    <Content Include="Pages\Upload.cshtml" />
     <Content Include="Pages\ErrorPages\FatalError.cshtml" />
     <Content Include="Pages\ErrorPages\404.cshtml" />
-    <Content Include="Pages\_UserSecurityPartial.cshtml" />
     <Content Include="Pages\AdminsAjax.cshtml" />
     <Content Include="Pages\RegularAjax.cshtml" />
     <Content Include="Pages\Admin.cshtml" />
     <Content Include="Pages\_NamePromptPartial.cshtml" />
-    <Content Include="Scripts\ProjectScripts\profile.js" />
-    <Content Include="Scripts\ProjectScripts\upload.js" />
     <Content Include="Web.hosting.config" />
     <Content Include="Web.hosting.Debug.config">
       <DependentUpon>Web.hosting.config</DependentUpon>
@@ -165,13 +152,14 @@
     </Content>
     <Content Include="Scripts\jquery-2.2.1.min.map" />
     <Content Include="Pages\_QuestionPromptPartial.cshtml" />
+    <Content Include="Pages\Test.cshtml" />
+    <Content Include="Pages\UsersAjax.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <Content Include="Scripts\ProjectScripts\photos.js" />
     <Content Include="Scripts\ProjectScripts\signin.js" />
     <Content Include="_Layout.cshtml" />
   </ItemGroup>
@@ -181,16 +169,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\AjaxResponse.cs" />
-    <Compile Include="Models\LogicProvider2.cs" />
-    <Compile Include="Models\RegularAjaxPage.cs" />
-    <Compile Include="Models\SignUpPage.cs" />
-    <Compile Include="Models\GetImagePage.cs" />
-    <Compile Include="Models\LogicProvider.cs" />
-    <Compile Include="Models\TestSiteRoleProvider.cs" />
-    <Compile Include="Models\PhotosPage.cs" />
-    <Compile Include="Models\AdminsAjaxPage.cs" />
     <Compile Include="Models\UsersAjaxPage.cs" />
+    <Compile Include="Models\AjaxResponse.cs" />
+    <Compile Include="Models\LogicProvider.cs" />
+    <Compile Include="Models\RegularAjaxPage.cs" />
+    <Compile Include="Models\TestSiteRoleProvider.cs" />
+    <Compile Include="Models\AdminsAjaxPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

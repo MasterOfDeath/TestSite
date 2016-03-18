@@ -50,7 +50,7 @@
             ICollection<Employee> employees = null;
             try
             {
-                employees = LogicProvider2.EmployeeLogic.ListEmployeesByDepId(depId);
+                employees = LogicProvider.EmployeeLogic.ListEmployeesByDepId(depId);
             }
             catch (Exception ex)
             {

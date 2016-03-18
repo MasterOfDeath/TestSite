@@ -6,14 +6,6 @@
 
     internal static class Stores
     {
-        public static IUserStore UserStore { get; } = new UserSqlStore();
-
-        public static IPhotoStore PhotoStore { get; } = new PhotoSqlStore();
-
-        public static IAlbumStore AlbumStore { get; } = new AlbumSqlStore();
-
-        public static ILikeStore LikeStore { get; } = new LikeSqlStore();
-
         public static IDepStore DepStore { get; } = new DepSqliteStore();
 
         public static IEmployeeStore EmployeeStore { get; } = new EmployeeSqliteStore();

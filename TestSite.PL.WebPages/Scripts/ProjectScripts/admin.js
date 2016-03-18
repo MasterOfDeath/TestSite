@@ -36,7 +36,7 @@
 
     function clickAddQuestionBtn() {
         currentAnswers = [];
-        $questionPrompt.data("question-id", -1);
+        clearQuestionPrompt();
         $(".modal-title", $questionPrompt).text("Вопрос");
         $questionPrompt.modal("show");
     }
@@ -94,7 +94,6 @@
     function clickQuestionsTable(event) {
         var questionId = $(event.target).closest("tr").data("id");
 
-        $questionPrompt.data("question-id", questionId);
         getQuestionAndAnswers(questionId);
     }
 
@@ -346,6 +345,7 @@
 
             if (result.Error === null) {
                 clearQuestionPrompt();
+                $questionPrompt.data("question-id", questionId);
                 $questionPrompt.modal("show");
                 $(".modal-title", $questionPrompt).text("Вопрос");
                 $(".question-textarea", $questionPrompt).val(result.Data.text);
@@ -377,6 +377,7 @@
     }
 
     function clearQuestionPrompt() {
+        $questionPrompt.data("question-id", -1);
         $(".answers-container", $questionPrompt).empty();
         $(".question-textarea", $questionPrompt).val("");
     }

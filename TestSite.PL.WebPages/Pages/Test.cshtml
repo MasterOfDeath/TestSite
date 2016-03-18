@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+
+@using TestSite.PL.WebPages.Models
+@{
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/ProjectStyles/style.css" />
+    <link rel="stylesheet" href="~/Content/ProjectStyles/test.css" />
+    <title>Тестирование</title>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a href="~/" class="btn btn-default navbar-btn back-btn">Отмена</a>
+                <button type="button" class="btn btn-primary navbar-btn check-test-btn" data-loading-text="Проверка...">Проверить</button>
+            } 
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+    <div class="container content-test" data-test-id="-1">
+
+        <h2 class="test-title"></h2>
+
+        <div class="wrong-msg-container">
+            <div class="alert alert-danger hide">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                Ответ не правильный!
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs">
+            @*<li class="active"><a data-toggle="tab" href="#testsTab">Вопрос 1</a></li>*@
+        </ul>
+
+        <div class="tab-content">
+            <!-- for replace -->
+        </div> <!-- tab-content / end -->
+        
+        <!-- шаблон для вкладки -->
+        <div id="-1" class="tab-pane fade in tab-template hide" data-question-id="-1">
+            <div class="question-title">
+            </div>
+            <div class="radio-container">
+            </div>
+        </div>
+        <!--  -->
+        
+        <!-- шаблон для радиокнопки -->
+        <div class="radio radio-template hide">
+            <label><input type="radio" name="optradio" data-answer-id="-1"></label>
+        </div>
+        <!--  -->
+
+        <!-- ErrorModal -->
+        @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
+        <!--  -->
+    </div><!-- /.container -->
+
+    <script src="~/Scripts/jquery-2.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/ProjectScripts/test.js"></script>
+</body>
+</html>

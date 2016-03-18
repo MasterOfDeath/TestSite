@@ -16,7 +16,7 @@
 
     try
     {
-        deps = LogicProvider2.DepLogic.ListAllDeps();
+        deps = LogicProvider.DepLogic.ListAllDeps();
     }
     catch (Exception ex)
     {
@@ -42,7 +42,7 @@
             try
             {
                 int userId = Convert.ToInt32(userIdStr);
-                employee = LogicProvider2.EmployeeLogic.CanLogin(userId, password);
+                employee = LogicProvider.EmployeeLogic.CanLogin(userId, password);
             }
             catch (Exception ex)
             {
