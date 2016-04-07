@@ -78,9 +78,13 @@
         <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1">
             <h2>Обрыв 100км</h2>
 
-            <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
-            <button class="btn btn-default editTestBtn">Изменить название теста</button>
-            <button class="btn btn-default removeTestBtn">Удалить тест</button>
+            <div class="btn-group">
+                <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
+                <button class="btn btn-default testPreviewBtn">Просмотр теста</button>
+                <button class="btn btn-default editTestBtn">Изменить название теста</button>
+                <button class="btn btn-default removeTestBtn">Удалить тест</button>
+            </div>
+
             <table class="table table-hover questions-table">
                 <tbody>
                     <!-- for replace -->
@@ -91,6 +95,10 @@
 
         <!-- Modal for edit and create test -->
         @RenderPage("~/Pages/_NamePromptPartial.cshtml")
+        <!--  -->
+
+        <!-- Modal for preview test -->
+        @RenderPage("~/Pages/_TestPreviewPartial.cshtml")
         <!--  -->
 
         <!-- Modal for edit and create question -->
@@ -115,4 +123,5 @@
 
 @section scripts {
     <script src="~/Scripts/ProjectScripts/admin.js"></script>
+    <script src="~/Scripts/ProjectScripts/admin-test-preview.js"></script>
 }

@@ -14,9 +14,12 @@
         private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
             = new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>();
 
+        private static Random rand = new Random();
+
         static UsersAjaxPage()
         {
             _Queries.Add("getRandomTest", GetRandomTest);
+            
             _Queries.Add("checkMyAnswers", CheckMyAnswers);
         }
 
@@ -28,54 +31,30 @@
         private static AjaxResponse GetRandomTest(HttpRequestBase request)
         {
             var methodName = nameof(GetRandomTest);
-            Test test = null;
-
-            Random rand = new Random();
+            int randomTestId = -1;
+            object result;
 
             try
             {
                 // TODO Затем по отделам
                 var tests = LogicProvider.TestLogic.ListAllTests();
-                var randomIndex = rand.Next(tests.Count);
-                test = tests.ElementAt(randomIndex);
+                randomTestId = tests.ElementAt(rand.Next(tests.Count)).Id;
             }
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
             }
-
-            ICollection<Question> questions = null;
 
             try
             {
-                questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(test.Id);
+                result = GetTestWithQuestions(randomTestId, mixed:true);
             }
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
             }
 
-            IList result = new ArrayList();
-
-            if (questions != null)
-            {
-                foreach (var question in questions)
-                {
-                    try
-                    {
-                        var answers = LogicProvider.AnswerLogic.ListAnswersByQuestionId(question.Id);
-                        // Скрываем правильные ответы
-                        answers.Select(a => { a.Correct = false; return a; }).ToList();
-                        result.Add(new { id = question.Id, text = question.Name, answers = answers });
-                    }
-                    catch (Exception ex)
-                    {
-                        return SendError(ex, methodName);
-                    }
-                }
-            }
-       
-            return new AjaxResponse(null, new { test = test, questions = result });
+            return new AjaxResponse(null, result);
         }
 
         private static AjaxResponse CheckMyAnswers(HttpRequestBase request)
@@ -170,6 +149,54 @@
             }
 
             return new AjaxResponse(message);
+        }
+
+        private static ICollection<T> Shuffle<T>(IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rand.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+
+            return list;
+        }
+
+        // Вызывать только в try catch
+        internal static object GetTestWithQuestions(int testId, bool mixed)
+        {
+            Test test = LogicProvider.TestLogic.GetTestById(testId);
+
+            ICollection<Question> questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(test.Id);
+
+            if (mixed)
+            {
+                questions = Shuffle(questions.ToList());
+            }
+            
+            IList result = new ArrayList();
+
+            if (questions != null)
+            {
+                foreach (var question in questions)
+                {
+                    var answers = LogicProvider.AnswerLogic.ListAnswersByQuestionId(question.Id);
+                    if (mixed)
+                    {
+                        // Скрываем правильные ответы и перемешиваем
+                        answers = Shuffle(answers.Select(a => { a.Correct = false; return a; }).ToList());
+                    }
+
+                    //result.Add(new { id = question.Id, text = question.Name, answers = answers });
+                    result.Add(new { question, answers = answers });
+                }
+            }
+
+            return new { test = test, questions = result };
         }
     }
 }

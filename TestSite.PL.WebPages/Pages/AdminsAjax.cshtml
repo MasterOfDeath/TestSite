@@ -17,7 +17,7 @@
     var ajaxQueries = AdminsAjaxPage.Queries;
     var queryName = Request["queryName"];
 
-    if (IsAjax && IsPost && queryName != null)
+    if (IsAjax && queryName != null)
     {
         AjaxResponse result = new AjaxResponse(null, null);
 

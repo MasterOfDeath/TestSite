@@ -10,11 +10,41 @@
     float: left;
 }
 
-.answers-container .inline-radio label {
-    vertical-align: middle
+.tab-content .question-prompt .modal-title {
+    display: inline-block;
 }
 
-.answers-container .inline-radio input[type=text] {
+.tab-content .question-prompt .type-select {
+    display: inline-block;
+    margin-left: 10%;
+    width: inherit;
+}
+
+.question-prompt .answers-container .radio label,
+.question-prompt .answers-container .checkbox label {
+    vertical-align: middle;
+}
+
+.question-prompt .answers-container .radio input[type=text],
+.question-prompt .answers-container .checkbox input[type=text] {
     width: 88%;
     display:inline-block;
+}
+
+.tab-content .test-preview .modal-dialog {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    margin: 0;
+    width: auto;
+}
+
+.tab-content .test-preview .modal-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 }

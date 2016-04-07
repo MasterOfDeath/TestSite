@@ -1,12 +1,25 @@
-﻿<div class="modal fade question-prompt" data-question-id="-1" tabindex="-1" role="dialog">
+﻿<div class="modal fade question-prompt" data-question-id="-1" data-question-type="-1" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
                 <h4 class="modal-title">Вопрос</h4>
+
+                <select class="form-control type-select">
+                    <option value="1">один ответ</option>
+                    <option value="2">один ответ + схема</option>
+                    <option value="3">несколько ответов</option>
+                    <option value="4">несколько ответов + схема</option>
+                </select>
             </div>
             <div class="modal-body">
                 <textarea rows="5" placeholder="Вопрос" class="question-textarea"></textarea>
+
+                <div class="well well-sm hide file-upload-panel">
+                    <label>Укажите файл:</label>
+                    <input type="file" accept="image/svg+xml" />
+                </div>
 
                 <div class="answers-container">
                     <!-- for replace -->
@@ -23,14 +36,24 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 
-    <!-- row for answer -->
-    <div class="radio inline-radio row-for-answer hide" data-answer-id="-1">
+    <!-- radio row for answer -->
+    <div class="radio radio-for-answer hide" data-answer-id="-1">
         <label>
-            <input type="radio" id="radio-value" name="value1" value="value1" />
+            <input type="radio" class="check-input" id="radio-value" name="value1" value="value1" />
         </label>
         <input id="result-value" class="form-control" type="text" placeholder="Ответ" />
         <button type="button" class="btn btn-default remove-answer-btn">X</button>
     </div>
-    <!-- /строка под ответ -->
-    
+    <!-- /radio row for answer -->
+
+    <!-- checkbox row for answer -->
+    <div class="checkbox checkbox-for-answer hide" data-answer-id="-1">
+        <label>
+            <input type="checkbox" class="check-input" value="" />
+        </label>
+        <input id="result-value" class="form-control" type="text" placeholder="Ответ" />
+        <button type="button" class="btn btn-default remove-answer-btn">X</button>
+    </div>
+    <!-- /checkbox row for answer -->
+
 </div><!-- /.modal -->

@@ -92,7 +92,8 @@
     function drawTestsTabs(test) {
         var $templateTab = $(".tab-template", $content),
             $templateRadio = $(".radio-template", $content),
-            $newTab;
+            $newTab,
+            $newRadio;
 
         $(".test-title", $content).text(test.test.Name);
         $content.data("test-id", test.test.Id);
@@ -100,16 +101,16 @@
         $(test.questions).each(function (indexQ, elQ) {
             $newTab = $templateTab.clone();
             $newTab.removeClass("hide").removeClass("tab-template");
-            $newTab.data("question-id", elQ.id);
-            $newTab.prop("id", "tab-" + elQ.id);
+            $newTab.data("question-id", elQ.question.Id);
+            $newTab.prop("id", "tab-" + elQ.question.Id);
 
-            $(".question-title", $newTab).append("<h4>" + elQ.text + "</h4>");
-            $navTabs.append("<li><a data-toggle='tab' href='#tab-" + elQ.id + "'>Вопрос " + (indexQ + 1) + "</a></li>");
+            $(".question-title", $newTab).text(elQ.question.Name);
+            $navTabs.append("<li><a data-toggle='tab' href='#tab-" + elQ.question.Id + "'>Вопрос " + (indexQ + 1) + "</a></li>");
 
             $(elQ.answers).each(function (indexA, elA) {
                 $newRadio = $templateRadio.clone();
                 $newRadio.removeClass("hide").removeClass("radio-template");
-                $(":radio", $newRadio).prop("name", "value-" + elQ.id);
+                $(":radio", $newRadio).prop("name", "value-" + elQ.question.Id);
                 $(":radio", $newRadio).data("answer-id", elA.Id);
                 $("label", $newRadio).append(elA.Name);
 

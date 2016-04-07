@@ -12,6 +12,35 @@
         private readonly string connectionString =
             ConfigurationManager.ConnectionStrings["Sqlite"].ConnectionString;
 
+        public byte[] GetImage(int questionId)
+        {
+            byte[] result;
+
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                using (var command = new SQLiteCommand("SELECT * FROM question_image", connection))
+                {
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        reader.Read();
+
+                        try
+                        {
+                            result = (byte[])reader.GetValue(1);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         public Question GetQuestionById(int questionId)
         {
             using (var connection = new SQLiteConnection(this.connectionString))
@@ -48,9 +77,9 @@
             using (var connection = new SQLiteConnection(connectionString))
             {
                 connection.Open();
-                var insert = "INSERT INTO question (name, test_id) VALUES (:name, :testId); " + 
+                var insert = "INSERT INTO question (name, test_id, type) VALUES (:name, :testId, :type); " + 
                              "SELECT last_insert_rowid() AS id;";
-                var update = "UPDATE question SET name=:name, test_id=:testId WHERE id=:id";
+                var update = "UPDATE question SET name=:name, test_id=:testId, type=:type WHERE id=:id";
 
                 if (question.Id > 0)
                 {
@@ -59,6 +88,7 @@
                         command.Parameters.AddWithValue(":id", question.Id);
                         command.Parameters.AddWithValue(":name", question.Name);
                         command.Parameters.AddWithValue(":testId", question.TestId);
+                        command.Parameters.AddWithValue(":type", question.Type);
                         result = (command.ExecuteNonQuery() > 0) ? question.Id : -1;
                     }
                 }
@@ -68,6 +98,7 @@
                     {
                         command.Parameters.AddWithValue(":name", question.Name);
                         command.Parameters.AddWithValue(":testId", question.TestId);
+                        command.Parameters.AddWithValue(":type", question.Type);
 
                         using (var reader = command.ExecuteReader())
                         {
@@ -162,13 +193,56 @@
             }
         }
 
+        public bool SetImage(int questionId, byte[] image)
+        {
+            int result;
+
+            using (var connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+                var update = "UPDATE question_image SET data=:image WHERE question_id=:questionId";
+                var insert = "INSERT INTO question_image (data, question_id) VALUES (:image, :questionId)";
+
+                using (var command = new SQLiteCommand(update, connection))
+                {
+                    command.Parameters.AddWithValue(":questionId", questionId);
+                    command.Parameters.AddWithValue(":image", image);
+                    result = command.ExecuteNonQuery();
+                }
+
+                if (result > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    using (var command = new SQLiteCommand(insert, connection))
+                    {
+                        command.Parameters.AddWithValue(":questionId", questionId);
+                        command.Parameters.AddWithValue(":image", image);
+                        result = command.ExecuteNonQuery();
+                    }
+
+                    if (result > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
         private Question RowToQuestion(SQLiteDataReader reader)
         {
             var id = reader.GetInt32(0);
             var name = reader.GetString(1);
             var testId = reader.GetInt32(2);
+            var type = reader.GetInt32(3);
 
-            return new Question(id, name, testId);
+            return new Question(id, name, testId, type);
         }
     }
 }

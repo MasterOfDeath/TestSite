@@ -7,6 +7,27 @@
 
     public class QuestionMainLogic : IQuestionLogic
     {
+        public byte[] GetImage(int questionId)
+        {
+            byte[] result = null;
+
+            if (questionId < -1)
+            {
+                throw new ArgumentException($"{nameof(questionId)} не может быть отрицательным");
+            }
+
+            try
+            {
+                result = Stores.QuestionStore.GetImage(questionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public Question GetQuestionById(int questionId)
         {
             Question result = null;
@@ -79,6 +100,32 @@
             }
 
             return true;
+        }
+
+        public bool SetImage(int questionId, byte[] image)
+        {
+            bool result = false;
+
+            if (questionId < -1)
+            {
+                throw new ArgumentException($"{nameof(questionId)} не может быть отрицательным");
+            }
+
+            if (image == null)
+            {
+                throw new ArgumentException($"{nameof(image)} не может быть пустым");
+            }
+
+            try
+            {
+                result = Stores.QuestionStore.SetImage(questionId, image);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
         }
 
         private bool IsValidQuestion(Question question)

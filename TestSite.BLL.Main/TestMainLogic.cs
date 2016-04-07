@@ -7,6 +7,22 @@
 
     public class TestMainLogic : ITestLogic
     {
+        public Test GetTestById(int testId)
+        {
+            Test result = null;
+
+            try
+            {
+                result = Stores.TestStore.GetTestById(testId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public bool InsertTest(Test test)
         {
             var result = false;

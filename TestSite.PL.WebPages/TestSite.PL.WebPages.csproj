@@ -126,6 +126,7 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Scripts\jquery-2.2.1.js" />
     <Content Include="Scripts\jquery-2.2.1.min.js" />
+    <Content Include="Scripts\ProjectScripts\admin-test-preview.js" />
     <Content Include="Scripts\ProjectScripts\admin.js" />
     <Content Include="Scripts\ProjectScripts\test.js" />
     <Content Include="Scripts\ProjectScripts\index.js" />
@@ -154,6 +155,7 @@
     <Content Include="Pages\_QuestionPromptPartial.cshtml" />
     <Content Include="Pages\Test.cshtml" />
     <Content Include="Pages\UsersAjax.cshtml" />
+    <Content Include="Pages\_TestPreviewPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

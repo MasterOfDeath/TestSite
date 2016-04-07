@@ -10,11 +10,12 @@
         $questionsTable = $(".questions-table", $tabContent),
         $namePrompt = $(".name-prompt", $tabContent),
         $questionPrompt = $(".question-prompt", $tabContent),
+        $testPreview = $(".test-preview", $tabContent),
         $removePrompt = $(".remove-prompt", $tabContent),
         $testNameInput = $(".name-input", $namePrompt),
-        $rowForAnswer = $(".row-for-answer", $questionPrompt),
+        $rowForAnswer = $(".radio-for-answer", $questionPrompt),
         $saveQuestionBtn = $(".save-question-btn", $questionPrompt),
-        currentAnswers = [];
+        currentAnswers = [],
         testNameExp = /^\S.+\S$/;
 
     $addTestBtn.click(clickAddTestBtn);
@@ -26,6 +27,7 @@
     $questionsTable.on("click", "tr", clickQuestionsTable);
     $(".remove-question-btn", $questionPrompt).click(clickRemoveQuestionBtn);
     $(".add-answer-btn", $questionPrompt).click(clickAddAnswerBtn);
+    $(".type-select", $questionPrompt).change(changeTypeSelect);
         
     function clickAddTestBtn(event) {
         $namePrompt.modal();
@@ -38,6 +40,7 @@
         currentAnswers = [];
         clearQuestionPrompt();
         $(".modal-title", $questionPrompt).text("Вопрос");
+        setQuestionType("1");
         $questionPrompt.modal("show");
     }
 
@@ -102,28 +105,30 @@
     }
 
     function clickRemoveAnswerBtn(event) {
-        $(event.target).closest(".radio").remove();
+        $(event.target).closest("." + getAnswerTypeInText()).remove();
     }
 
     function clickSaveQuestionBtn(event) {
-        var questionId = $questionPrompt.data("question-id"),
+        var questionId = $questionPrompt.data("question-id") + "",
+            questionType = $questionPrompt.data("question-type") + "",
             text = $(".question-textarea", $questionPrompt).val(),
             testId = $(".editTest-tab", $tabContent).data("test-id"),
             answers = [],
             copyCurrentAnswers = currentAnswers.slice(0),
-            hasCorrectAnswer = false;
+            hasCorrectAnswer = false,
+            image;
 
         if (!isValidName(text)) {
             showError("Недопустимое значние");
             return;
         }
 
-        $(".answers-container > .inline-radio", $questionPrompt).each(function (index, el) {
+        $(".answers-container > ." + getAnswerTypeInText(), $questionPrompt).each(function (index, el) {
             if (isValidName($(":text", $(el)).val())) {
                 answers.push({
                     answerId: $(el).data("answer-id"),
                     text: $(":text", $(el)).val(),
-                    correct: $(":radio", $(el)).prop("checked")
+                    correct: $(".check-input", $(el)).prop("checked")
                 });
             }
         });
@@ -170,7 +175,24 @@
             return;
         }
 
-        saveQuestionAndAnswers(questionId, testId, text, copyCurrentAnswers);
+        if ((questionType === "2" || questionType === "4")) {
+            if ($(":file", $questionPrompt).val() !== "") {
+                image = $(":file", $questionPrompt).get(0).files[0];
+            }
+            else {
+                if (questionId === "-1") {
+                    showError("Схема не выбрана");
+                    return;
+                }
+
+                image = null;
+            }
+        }
+        else {
+            image = null;
+        }
+
+        saveQuestionAndAnswers(questionId, testId, text, copyCurrentAnswers, questionType, image);
     }
 
     function clickEditTestBtn(event) {
@@ -220,7 +242,12 @@
 
     function clickRemoveQuestionBtn(event) {
         var textQuestion = $(".question-textarea", $questionPrompt).val(),
-            questionId = $questionPrompt.data("question-id");
+            questionId = $questionPrompt.data("question-id") + "";
+
+        if (questionId === "-1") {
+            showError("Вопрос не найден");
+            return;
+        }
 
         $removePrompt.modal("show");
         $(".modal-title", $removePrompt).text("Удаление вопроса");
@@ -254,10 +281,14 @@
         });
     }
 
+    function changeTypeSelect(event) {
+        setQuestionType($(event.target).val());
+    }
+
     function testsListUpdate() {
         $.ajax({
             url: "AdminsAjax",
-            method: "post",
+            method: "get",
             data: {
                 queryName: "listAllTests"
             }
@@ -280,7 +311,7 @@
     function questionsListUpdate(testId) {
         $.ajax({
             url: "AdminsAjax",
-            method: "post",
+            method: "get",
             data: {
                 queryName: "listQuestionsByTestId",
                 testid: testId
@@ -301,21 +332,32 @@
         });
     }
 
-    function saveQuestionAndAnswers(questionId, testId, text, answers) {
-        var $saveQuestionBtn = $(".save-question-btn", $questionPrompt);
+    function saveQuestionAndAnswers(questionId, testId, text, answers, questionType, image) {
+        var $saveQuestionBtn = $(".save-question-btn", $questionPrompt),
+            formData = new FormData();
+
+        if (image === null) {
+            formData.append("image", null);
+        }
+        else {
+            formData.append("image", image);
+        }
+
+        formData.append("queryName", "saveQuestionAndAnswers");
+        formData.append("questionid", questionId);
+        formData.append("testid", testId);
+        formData.append("text", text);
+        formData.append("questiontype", questionType);
+        formData.append("answers", JSON.stringify(answers));
 
         $saveQuestionBtn.button("loading");
 
         $.ajax({
             url: "AdminsAjax",
             method: "post",
-            data: {
-                queryName: "saveQuestionAndAnswers",
-                questionid: questionId,
-                testid: testId,
-                text: text,
-                answers: JSON.stringify(answers)
-            }
+            data: formData,
+            processData: false,
+            contentType: false
         }).success(function (data) {
             var result = JSON.parse(data);
 
@@ -346,6 +388,8 @@
             if (result.Error === null) {
                 clearQuestionPrompt();
                 $questionPrompt.data("question-id", questionId);
+                setQuestionType(result.Data.questionType);
+                $(".type-select", $questionPrompt).val(result.Data.questionType).prop("disabled", "disabled");
                 $questionPrompt.modal("show");
                 $(".modal-title", $questionPrompt).text("Вопрос");
                 $(".question-textarea", $questionPrompt).val(result.Data.text);
@@ -366,20 +410,60 @@
             $answersContainer = $(".answers-container", $questionPrompt);
 
         $answersContainer.append($newRowForAnswer);
-        $newRowForAnswer.removeClass("row-for-answer").removeClass("hide");
+        $newRowForAnswer.removeClass(getAnswerTypeInText() + "-for-answer").removeClass("hide");
         $(".remove-answer-btn", $newRowForAnswer).click(clickRemoveAnswerBtn);
 
         $newRowForAnswer.data("answer-id", answerId);
         $(":text", $newRowForAnswer).val(text);
         if (correct === true) {
-            $(":radio", $newRowForAnswer).prop("checked", true);
+            $(".check-input", $newRowForAnswer).prop("checked", true);
+        }
+    }
+
+    function setQuestionType(questionType) {
+        questionType = questionType + "";
+        $questionPrompt.data("question-type", questionType);
+
+        if (questionType === "2" || questionType === "4") {
+            $(".file-upload-panel", $questionPrompt).removeClass("hide");
+        }
+        else {
+            $(".file-upload-panel", $questionPrompt).addClass("hide");
+            $(".file-upload-panel :file", $questionPrompt).val("");
+        }
+
+        if (questionType === "1" || questionType === "2") {
+            // "radio";
+            $(".answers-container .checkbox").addClass("radio").removeClass("checkbox");
+            $(".answers-container .check-input", $questionPrompt).replaceWith("<input type='radio' class='check-input' name='value1' value='value1' />");
+        }
+        else {
+            // "checkbox";
+            $(".answers-container .radio").addClass("checkbox").removeClass("radio");
+            $(".answers-container .check-input", $questionPrompt).replaceWith("<input type='checkbox' class='check-input' value='' />");
+        }
+
+        $rowForAnswer = $("." + getAnswerTypeInText() + "-for-answer", $questionPrompt);
+    }
+
+    function getAnswerTypeInText() {
+        var questionType = $questionPrompt.data("question-type") + "";
+
+        if (questionType === "1" || questionType === "2") {
+            return "radio";
+        }
+        else {
+            return "checkbox";
         }
     }
 
     function clearQuestionPrompt() {
-        $questionPrompt.data("question-id", -1);
+        $questionPrompt.data("question-id", -1).data("question-type", -1);
         $(".answers-container", $questionPrompt).empty();
         $(".question-textarea", $questionPrompt).val("");
+        $(".file-upload-panel", $questionPrompt).addClass("hide");
+        $(".file-upload-panel :file", $questionPrompt).val(null);
+        $(".type-select", $questionPrompt).val("1").removeAttr("disabled");
     }
 
     function showError(str) {

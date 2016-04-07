@@ -7,7 +7,7 @@
     using System.Web.Helpers;
     using Entites;
     using Logger;
-    
+    using System.IO;
     public static class AdminsAjaxPage
     {
         private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
@@ -22,6 +22,7 @@
             _Queries.Add("getQuestionAndAnswers", GetQuestionAndAnswers);
             _Queries.Add("removeTest", RemoveTest);
             _Queries.Add("removeQuestion", RemoveQuestion);
+            _Queries.Add("getTestForPreview", GetTestForPreview);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -108,15 +109,27 @@
             var methodName = nameof(SaveQuestionAndAnswers);
             int testId = -1;
             int questionId = -1;
+            int questionType = -1;
             string text = null;
             dynamic answers = null;
+            byte[] image = null;
 
             try
             {
                 testId = Convert.ToInt32(request["testid"]);
                 questionId = Convert.ToInt32(request["questionid"]);
+                questionType = Convert.ToInt32(request["questiontype"]);
                 text = request["text"];
                 answers = Json.Decode(request["answers"]);
+                var file = request.Files["image"];
+
+                if (file != null)
+                {
+                    using (var binaryReader = new BinaryReader(file.InputStream))
+                    {
+                        image = binaryReader.ReadBytes(file.ContentLength);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -125,7 +138,7 @@
 
             try
             {
-                questionId = LogicProvider.QuestionLogic.InsertQuestion(new Question(questionId,text, testId));
+                questionId = LogicProvider.QuestionLogic.InsertQuestion(new Question(questionId, text, testId, questionType));
             }
             catch (Exception ex)
             {
@@ -158,6 +171,18 @@
                 }
             }
 
+            if (image != null)
+            {
+                try
+                {
+                    LogicProvider.QuestionLogic.SetImage(questionId, image);
+                }
+                catch (Exception ex)
+                {
+                    return SendError(ex, methodName);
+                }
+            }
+
             return new AjaxResponse(null, questionId);
         }
 
@@ -165,7 +190,8 @@
         {
             var methodName = nameof(GetQuestionAndAnswers);
             int questionId = -1;
-            string text = null;
+            //string text = null;
+            Question question = null;
 
             try
             {
@@ -178,7 +204,7 @@
 
             try
             {
-                text = LogicProvider.QuestionLogic.GetQuestionById(questionId).Name;
+                question = LogicProvider.QuestionLogic.GetQuestionById(questionId);
             }
             catch (Exception ex)
             {
@@ -196,7 +222,7 @@
                 return SendError(ex, methodName);
             }
 
-            dynamic questionAndAnswers = new { text = text, answers = answers };
+            dynamic questionAndAnswers = new { text = question.Name, questionType = question.Type, answers = answers };
        
             return new AjaxResponse(null, questionAndAnswers);
         }
@@ -251,6 +277,33 @@
             }
 
             return new AjaxResponse(null, true);
+        }
+
+        private static AjaxResponse GetTestForPreview(HttpRequestBase request)
+        {
+            var methodName = nameof(GetTestForPreview);
+            int testId = -1;
+            object result;
+
+            try
+            {
+                testId = Convert.ToInt32(request["testid"]);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            try
+            {
+                result = UsersAjaxPage.GetTestWithQuestions(testId, mixed: false);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
         }
 
         private static AjaxResponse SendError(Exception ex, string sender = null)

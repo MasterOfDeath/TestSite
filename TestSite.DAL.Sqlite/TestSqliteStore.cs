@@ -12,6 +12,32 @@
         private readonly string connectionString =
             ConfigurationManager.ConnectionStrings["Sqlite"].ConnectionString;
 
+        public Test GetTestById(int testId)
+        {
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                connection.Open();
+
+                using (var command = new SQLiteCommand("SELECT * FROM test WHERE id=:testId", connection))
+                {
+                    command.Parameters.AddWithValue(":testId", testId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        Test result = null;
+                        reader.Read();
+
+                        if (reader.HasRows)
+                        {
+                            result = this.RowToTest(reader);
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         public bool InsertTest(Test test)
         {
             using (var connection = new SQLiteConnection(connectionString))
