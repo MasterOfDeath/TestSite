@@ -5,6 +5,8 @@
 
     public interface IDepLogic
     {
+        Dep GetDepById(int depId);
+
         bool InsertDep(Dep dep);
 
         bool RemoveDep(int adminId);

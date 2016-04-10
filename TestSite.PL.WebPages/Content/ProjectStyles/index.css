@@ -1,1 +1,10 @@
-﻿
+﻿@import url("generals/tables.css");
+
+.content-index .table > tbody > tr a {
+    display: block;
+    color: #333333;
+}
+
+.content-index .table > tbody > tr a:hover {
+    text-decoration: none;
+}

@@ -11,6 +11,32 @@
         private readonly string connectionString =
             ConfigurationManager.ConnectionStrings["Sqlite"].ConnectionString;
 
+        public Dep GetDepById(int depId)
+        {
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                connection.Open();
+
+                using (var command = new SQLiteCommand("SELECT * FROM dep WHERE id=:depId", connection))
+                {
+                    command.Parameters.AddWithValue(":depId", depId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        Dep result = null;
+                        reader.Read();
+
+                        if (reader.HasRows)
+                        {
+                            result = this.RowToDep(reader);
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         public bool InsertDep(Dep dep)
         {
             using (var connection = new SQLiteConnection(connectionString))

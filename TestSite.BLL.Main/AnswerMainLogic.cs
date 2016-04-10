@@ -46,6 +46,27 @@
             return result;
         }
 
+        public ICollection<Answer> ListCorrectAnswers(int questionId)
+        {
+            ICollection<Answer> result = null;
+
+            if (questionId < -1)
+            {
+                throw new ArgumentException($"{nameof(questionId)} не может быть отрицательным");
+            }
+
+            try
+            {
+                result = Stores.AnswerStore.ListCorrectAnswers(questionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public bool RemoveAnswer(int answerId)
         {
             try

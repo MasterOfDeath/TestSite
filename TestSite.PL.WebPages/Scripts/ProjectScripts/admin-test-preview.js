@@ -40,7 +40,10 @@
             $templateInput,
             $newTab,
             $newTabHeader,
-            $newInput;
+            $newInput,
+            $schemaContainer,
+            $picture,
+            $zoomIn, $zoomOut, $reset;
 
         $(".test-title", $testPreview).text(data.test.Name);
         $testPreview.data("test-id", data.test.Id);
@@ -79,7 +82,25 @@
             });
 
             $testPreviewTabContent.append($newTab);
+
+            if (elQ.question.Type === 2 || elQ.question.Type === 4) {
+                $schemaContainer = $(".schema-container-template", $testPreview).clone();
+                $schemaContainer.removeClass("hide").removeClass("schema-container-template");
+                $newTab.append($schemaContainer);
+
+                $(".schema", $schemaContainer).attr("src", "/Pages/GetImage.cshtml?queryName=getSchema&questionid=" + elQ.question.Id + "&time=" + new Date().getTime());
+
+                $(".panzoom", $schemaContainer).panzoom({
+                    $zoomIn: $(".zoom-in-btn", $schemaContainer),
+                    $zoomOut: $(".zoom-out-btn", $schemaContainer),
+                    $reset: $(".reset-btn", $schemaContainer)
+                });
+            }
+
+                      
         });
+
+        $(".nav-tabs li a", $testPreview).first().tab("show");
     }
 
     function clearTestPreview() {

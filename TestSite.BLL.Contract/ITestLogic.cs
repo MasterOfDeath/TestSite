@@ -14,6 +14,8 @@
 
         ICollection<Test> ListAllTests();
 
-        ICollection<Tuple<int, int>> ListCorrectAnswers(int testId);
+        ICollection<Test> ListTestsByDepId(int depId);
+
+        //ICollection<Tuple<int, int>> ListCorrectAnswers(int testId);
     }
 }

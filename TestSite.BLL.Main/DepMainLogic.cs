@@ -7,6 +7,22 @@
 
     public class DepMainLogic : IDepLogic
     {
+        public Dep GetDepById(int depId)
+        {
+            Dep result = null;
+
+            try
+            {
+                result = Stores.DepStore.GetDepById(depId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public bool InsertDep(Dep dep)
         {
             var result = false;

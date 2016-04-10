@@ -1,0 +1,16 @@
+﻿.general-table {
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+}
+
+.general-table table {
+    margin: 0;
+}
+
+.general-table table tr:first-child td {
+    border: none;
+}
+
+.general-table table tr {
+    background-color: #fafafa;
+}

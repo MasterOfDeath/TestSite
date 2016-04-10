@@ -15,11 +15,6 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            @if (User.Identity.IsAuthenticated)
-            {
-                <a href="~/Pages/Test" class="btn btn-success navbar-btn start-test-btn">Начать тестирование</a>
-            }
-
             <ul class="nav navbar-nav navbar-right">
                 @if (User.Identity.IsAuthenticated)
                 {

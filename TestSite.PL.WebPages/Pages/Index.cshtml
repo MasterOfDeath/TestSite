@@ -1,16 +1,33 @@
 ﻿@using TestSite.PL.WebPages.Models
 @{
     Layout = "~/_Layout.cshtml";
-    PageData["Title"] = "Теистирование";
+    PageData["Title"] = "Тестирование";
 
     string errorMessage = null;
     var isIE = Request.Browser.Browser == "InternetExplorer";
+    ICollection<TestSite.Entites.Test> tests = null;
+    string depName = "";
+
+    var log = TestSite.Logger.Logger.Log;
 
     if (!IsPost)
     {
         if (User.Identity.IsAuthenticated)
         {
-            
+            TestSite.Entites.Employee employee;
+            var employeeId = Convert.ToInt32(User.Identity.Name);
+
+            try
+            {
+                employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+                tests = LogicProvider.TestLogic.ListTestsByDepId(employee.Dep_Id);
+                depName = LogicProvider.DepLogic.GetDepById(employee.Dep_Id).Name;
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                log.Error("GetEmployeeById and ListAllTests", ex);
+            }
         }
     }
 }
@@ -21,7 +38,20 @@
 }
 
 <div class="content content-index container-fluid">
-
+    @if (tests != null)
+    {
+        <label>Тесты доступные для отдела @depName: </label>
+        <div class="table-responsive general-table">
+            <table class="table table-hover tests-table">
+                <tbody>
+                    @foreach (var test in tests)
+                    {
+                        <tr><td><a href="~/Pages/Test?testid=@test.Id">@test.Name</a></td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
 
 @section header {

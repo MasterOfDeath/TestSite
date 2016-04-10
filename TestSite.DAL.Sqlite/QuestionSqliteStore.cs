@@ -18,9 +18,10 @@
 
             using (var connection = new SQLiteConnection(this.connectionString))
             {
-                using (var command = new SQLiteCommand("SELECT * FROM question_image", connection))
+                using (var command = new SQLiteCommand("SELECT * FROM question_image WHERE question_id=:questionId", connection))
                 {
                     connection.Open();
+                    command.Parameters.AddWithValue(":questionId", questionId);
 
                     using (var reader = command.ExecuteReader())
                     {

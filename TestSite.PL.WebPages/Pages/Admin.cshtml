@@ -24,9 +24,13 @@
 
     if (!IsPost)
     {
+        TestSite.Entites.Employee employee;
+        var employeeId = Convert.ToInt32(User.Identity.Name);
+
         try
         {
-            tests = LogicProvider.TestLogic.ListAllTests();
+            employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+            tests = LogicProvider.TestLogic.ListTestsByDepId(employee.Dep_Id);
         }
         catch (Exception ex)
         {
@@ -60,12 +64,12 @@
         <div id="testsTab" class="tab-pane fade in active tests-tab">
             <button class="btn btn-primary addTestBtn">Создать тест</button>
 
-            <div class="table-responsive">
+            <div class="table-responsive general-table">
                 <table class="table table-hover tests-table">
                     <tbody>
                         @if (tests != null)
-	                    {
-		                    foreach (var test in tests)
+                        {
+                            foreach (var test in tests)
                             {
                                 <tr data-id="@test.Id"><td>@test.Name</td></tr>
                             }
@@ -76,7 +80,6 @@
         </div>
 
         <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1">
-            <h2>Обрыв 100км</h2>
 
             <div class="btn-group">
                 <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
@@ -85,26 +88,25 @@
                 <button class="btn btn-default removeTestBtn">Удалить тест</button>
             </div>
 
-            <table class="table table-hover questions-table">
-                <tbody>
-                    <!-- for replace -->
-                </tbody>
-            </table>
+            <div class="general-table">
+                <table class="table table-hover questions-table">
+                    <tbody>
+                        <!-- for replace -->
+                    </tbody>
+                </table>
+            </div>
 
         </div>
 
         <!-- Modal for edit and create test -->
         @RenderPage("~/Pages/_NamePromptPartial.cshtml")
         <!--  -->
-
         <!-- Modal for preview test -->
         @RenderPage("~/Pages/_TestPreviewPartial.cshtml")
         <!--  -->
-
         <!-- Modal for edit and create question -->
         @RenderPage("~/Pages/_QuestionPromptPartial.cshtml")
         <!--  -->
-
         <!-- Modal for delete -->
         @RenderPage("~/Pages/_RemovePromptPartial.cshtml")
         <!--  -->
@@ -122,6 +124,7 @@
 }
 
 @section scripts {
+    <script src="~/Scripts/jquery.panzoom.min.js"></script>
     <script src="~/Scripts/ProjectScripts/admin.js"></script>
     <script src="~/Scripts/ProjectScripts/admin-test-preview.js"></script>
 }

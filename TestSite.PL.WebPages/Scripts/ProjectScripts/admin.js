@@ -46,7 +46,8 @@
 
     function clickSaveTest(event) {
         var $thisBtn = $(event.target),
-            testName = $testNameInput.val();
+            testName = $testNameInput.val(),
+            employeeId = $content.data("user-id") + "";
 
         if (!isValidName(testName)) {
             showError("Недопустимое имя");
@@ -61,7 +62,8 @@
             data: {
                 queryName: "clickSaveTestBtn",
                 testid: event.data.testId,
-                testname: testName
+                testname: testName,
+                employeeid: employeeId 
             }
         }).success(function (data) {
             var result = JSON.parse(data);
@@ -85,9 +87,8 @@
             testName = $(event.target).html();
 
         $(".editTest", $navTabs).removeClass("hide");
-        $(".editTest > a", $navTabs).tab("show");
+        $(".editTest > a", $navTabs).tab("show").text(testName);
 
-        $(".editTest-tab h2", $tabContent).text(testName);
         $(".editTest-tab", $tabContent).data("test-id", testId);
 
         clearQuestionPrompt();
@@ -286,11 +287,14 @@
     }
 
     function testsListUpdate() {
+        var employeeId = $content.data("user-id") + "";
+
         $.ajax({
-            url: "AdminsAjax",
+            url: "UsersAjax",
             method: "get",
             data: {
-                queryName: "listAllTests"
+                queryName: "listTestsForEmployee",
+                employeeid: employeeId
             }
         }).success(function (data) {
             var result = JSON.parse(data),

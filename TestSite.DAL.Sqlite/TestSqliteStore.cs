@@ -48,18 +48,20 @@
 
                 if (test.Id > 0)
                 {
-                    using (command = new SQLiteCommand("UPDATE test SET name=:name WHERE id=:id", connection))
+                    using (command = new SQLiteCommand("UPDATE test SET name=:name, dep_id=:depId WHERE id=:id", connection))
                     {
                         command.Parameters.AddWithValue(":id", test.Id);
                         command.Parameters.AddWithValue(":name", test.Name);
+                        command.Parameters.AddWithValue(":depId", test.DepId);
                         result = command.ExecuteNonQuery();
                     }
                 }
                 else
                 {
-                    using (command = new SQLiteCommand("INSERT INTO test (name) VALUES (:name)", connection))
+                    using (command = new SQLiteCommand("INSERT INTO test (name, dep_id) VALUES (:name, :depId)", connection))
                     {
                         command.Parameters.AddWithValue(":name", test.Name);
+                        command.Parameters.AddWithValue(":depId", test.DepId);
                         result = command.ExecuteNonQuery();
                     }
                 }
@@ -96,32 +98,27 @@
             }
         }
 
-        public ICollection<Tuple<int, int>> ListCorrectAnswers(int testId)
+        public ICollection<Test> ListTestsByDepId(int depId)
         {
             using (var connection = new SQLiteConnection(this.connectionString))
             {
-                var select = "SELECT question.id AS q_id, answer.id AS a_id " +
-                             "FROM question JOIN answer " +
-                             "ON question.id = answer.question_id " +
-                             "WHERE test_id = :testId AND correct = 1";
+                connection.Open();
 
-                using (var command = new SQLiteCommand(select, connection))
+                using (var command = new SQLiteCommand("SELECT * FROM test WHERE dep_id=:depId", connection))
                 {
-                    command.Parameters.AddWithValue(":testId", testId);
-                    List<Tuple<int, int>> result = null;
-
-                    connection.Open();
+                    command.Parameters.AddWithValue(":depId", depId);
+                    List<Test> result = null;
 
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
                         {
-                            result = new List<Tuple<int, int>>(reader.StepCount);
+                            result = new List<Test>(reader.StepCount);
                         }
 
                         while (reader.Read())
                         {
-                            result.Add(new Tuple<int, int>(reader.GetInt32(0), reader.GetInt32(1)));
+                            result.Add(this.RowToTest(reader));
                         }
 
                         return result;
@@ -129,6 +126,40 @@
                 }
             }
         }
+
+        //public ICollection<Tuple<int, int>> ListCorrectAnswers(int testId)
+        //{
+        //    using (var connection = new SQLiteConnection(this.connectionString))
+        //    {
+        //        var select = "SELECT question.id AS q_id, answer.id AS a_id " +
+        //                     "FROM question JOIN answer " +
+        //                     "ON question.id = answer.question_id " +
+        //                     "WHERE test_id = :testId AND correct = 1";
+
+        //        using (var command = new SQLiteCommand(select, connection))
+        //        {
+        //            command.Parameters.AddWithValue(":testId", testId);
+        //            List<Tuple<int, int>> result = null;
+
+        //            connection.Open();
+
+        //            using (var reader = command.ExecuteReader())
+        //            {
+        //                if (reader.HasRows)
+        //                {
+        //                    result = new List<Tuple<int, int>>(reader.StepCount);
+        //                }
+
+        //                while (reader.Read())
+        //                {
+        //                    result.Add(new Tuple<int, int>(reader.GetInt32(0), reader.GetInt32(1)));
+        //                }
+
+        //                return result;
+        //            }
+        //        }
+        //    }
+        //}
 
         public bool RemoveTest(int testId)
         {
@@ -152,8 +183,9 @@
         {
             var id = reader.GetInt32(0);
             var name = reader.GetString(1);
+            var depId = reader.GetInt32(2);
 
-            return new Test(id, name);
+            return new Test(id, name, depId);
         }
     }
 }

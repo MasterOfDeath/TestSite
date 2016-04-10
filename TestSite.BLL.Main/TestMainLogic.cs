@@ -57,18 +57,39 @@
             return result;
         }
 
-        public ICollection<Tuple<int, int>> ListCorrectAnswers(int testId)
-        {
-            ICollection<Tuple<int, int>> result = null;
+        //public ICollection<Tuple<int, int>> ListCorrectAnswers(int testId)
+        //{
+        //    ICollection<Tuple<int, int>> result = null;
 
-            if (testId < -1)
+        //    if (testId < -1)
+        //    {
+        //        throw new ArgumentException($"{nameof(testId)} не может быть отрицательным");
+        //    }
+
+        //    try
+        //    {
+        //        result = Stores.TestStore.ListCorrectAnswers(testId);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+
+        //    return result;
+        //}
+
+        public ICollection<Test> ListTestsByDepId(int depId)
+        {
+            ICollection<Test> result = null;
+
+            if (depId < -1)
             {
-                throw new ArgumentException($"{nameof(testId)} не может быть отрицательным");
+                throw new ArgumentException($"{nameof(depId)} не может быть отрицательным");
             }
 
             try
             {
-                result = Stores.TestStore.ListCorrectAnswers(testId);
+                result = Stores.TestStore.ListTestsByDepId(depId);
             }
             catch (Exception ex)
             {
@@ -80,6 +101,11 @@
 
         public bool RemoveTest(int testId)
         {
+            if (testId < -1)
+            {
+                throw new ArgumentException($"{nameof(testId)} не может быть отрицательным");
+            }
+
             try
             {
                 Stores.TestStore.RemoveTest(testId);

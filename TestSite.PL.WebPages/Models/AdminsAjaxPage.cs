@@ -16,7 +16,6 @@
         static AdminsAjaxPage()
         {
             _Queries.Add("clickSaveTestBtn", ClickSaveTestBtn);
-            _Queries.Add("listAllTests", ListAllTests);
             _Queries.Add("listQuestionsByTestId", ListQuestionsByTestId);
             _Queries.Add("saveQuestionAndAnswers", SaveQuestionAndAnswers);
             _Queries.Add("getQuestionAndAnswers", GetQuestionAndAnswers);
@@ -34,19 +33,31 @@
         {
             string testName = null;
             int testId = -1;
+            int employeeId = -1;
+            int depId = -1;
             var methodName = nameof(ClickSaveTestBtn);
 
             try
             {
                 testName = request["testname"];
                 testId = Convert.ToInt32(request["testid"]);
+                employeeId = Convert.ToInt32(request["employeeid"]);
             }
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
             }
 
-            Test test = (testId > 0) ? new Test(testId, testName) : new Test(testName);
+            try
+            {
+                depId = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId).Dep_Id;
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            Test test = (testId > 0) ? new Test(testId, testName, depId) : new Test(testName, depId);
 
             try
             {
@@ -58,23 +69,6 @@
             }
             
             return new AjaxResponse(null, true);
-        }
-
-        private static AjaxResponse ListAllTests(HttpRequestBase request)
-        {
-            var methodName = nameof(ListAllTests);
-            ICollection<Test> tests;
-
-            try
-            {
-                tests = LogicProvider.TestLogic.ListAllTests();
-            }
-            catch (Exception ex)
-            {
-                return SendError(ex, methodName);
-            }
-
-            return new AjaxResponse(null, tests);
         }
 
         private static AjaxResponse ListQuestionsByTestId(HttpRequestBase request)

@@ -101,6 +101,35 @@
             }
         }
 
+        public ICollection<Answer> ListCorrectAnswers(int questionId)
+        {
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                connection.Open();
+
+                using (var command = new SQLiteCommand("SELECT * FROM answer WHERE question_id=:questionId AND correct = 1", connection))
+                {
+                    command.Parameters.AddWithValue(":questionId", questionId);
+                    List<Answer> result = null;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            result = new List<Answer>(reader.StepCount);
+                        }
+
+                        while (reader.Read())
+                        {
+                            result.Add(this.RowToAnswer(reader));
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         public bool RemoveAnswer(int answerId)
         {
             using (var connection = new SQLiteConnection(connectionString))

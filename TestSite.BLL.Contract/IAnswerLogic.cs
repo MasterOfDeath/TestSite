@@ -10,5 +10,7 @@
         bool RemoveAnswer(int answerId);
 
         ICollection<Answer> ListAnswersByQuestionId(int questionId);
+
+        ICollection<Answer> ListCorrectAnswers(int questionId);
     }
 }

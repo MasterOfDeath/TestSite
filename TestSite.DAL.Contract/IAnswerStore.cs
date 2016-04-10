@@ -12,5 +12,7 @@
         ICollection<Answer> ListAllAnswers();
 
         ICollection<Answer> ListAnswersByQuestionId(int questionId);
+
+        ICollection<Answer> ListCorrectAnswers(int questionId);
     }
 }

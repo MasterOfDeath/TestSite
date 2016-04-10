@@ -5,6 +5,8 @@
 
     public interface IDepStore
     {
+        Dep GetDepById(int depId);
+
         bool InsertDep(Dep dep);
 
         bool RemoveDep(int depId);

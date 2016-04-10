@@ -7,6 +7,23 @@
         Response.StatusCode = 401;
         return;
     }
+
+    string errorMessage = null;
+    var log = TestSite.Logger.Logger.Log;
+    var testId = -1;
+
+    if (!IsPost)
+    {
+        try
+        {
+            testId = Convert.ToInt32(Request["testid"]);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            log.Error("GetEmployeeById and ListAllTests", ex);
+        }
+    }
 }
 
 <html>
@@ -40,45 +57,81 @@
         </div><!-- /.container-fluid -->
     </nav>
 
-    <div class="container content-test" data-test-id="-1">
+    @if (errorMessage != null)
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <div class="container content-test" data-test-id="@testId">
 
         <h2 class="test-title"></h2>
 
         <div class="wrong-msg-container">
-            <div class="alert alert-danger hide">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                Ответ не правильный!
-            </div>
+            <!-- for replace -->
         </div>
 
         <ul class="nav nav-tabs">
-            @*<li class="active"><a data-toggle="tab" href="#testsTab">Вопрос 1</a></li>*@
+            <!-- for replace -->
         </ul>
 
         <div class="tab-content">
             <!-- for replace -->
-        </div> <!-- tab-content / end -->
+        </div>
         
+        <!-- шаблон для заголовка вкладки -->
+        <ul class="hide tab-header-template">
+            <li><a data-toggle="tab" href="#"></a></li>
+        </ul>
+        <!--  -->
+
         <!-- шаблон для вкладки -->
         <div id="-1" class="tab-pane fade in tab-template hide" data-question-id="-1">
             <h4 class="question-title"></h4>
-            <div class="radio-container">
+            <div class="answers-container"></div>
+        </div>
+        <!--  -->
+
+        <!-- шаблон для радиокнопки -->
+        <div class="radio-template hide">
+            <div class="radio">
+                <label><input type="radio" class="check-input" name="optradio" data-answer-id="-1"></label>
+            </div>
+        </div>
+        <!--  -->
+
+        <!-- шаблон для чекбокса -->
+        <div class="checkbox-template hide">
+            <div class="checkbox">
+                <label><input type="checkbox" class="check-input" data-answer-id="-1"></label>
             </div>
         </div>
         <!--  -->
         
-        <!-- шаблон для радиокнопки -->
-        <div class="radio radio-template hide">
-            <label><input type="radio" name="optradio" data-answer-id="-1"></label>
+        <!-- шаблон для схемы -->
+        <div class="hide schema-container schema-container-template">
+            <button class="btn btn-default zoom-in-btn">Zoom in</button>
+            <button class="btn btn-default reset-btn">Reset</button>
+            <button class="btn btn-default zoom-out-btn">Zoom out</button>
+            <div class="panzoom">
+                <img class="schema" src="" />
+            </div>
         </div>
         <!--  -->
+
+        <!-- шаблон не верного ответа -->
+        <div class="alert alert-danger wrong-alert wrong-alert-template hide">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <h4>Ответ не правильный! Ошибки допущены в вопросах:</h4>
+            <span class="wrong-questions"></span>
+        </div>
 
         <!-- ErrorModal -->
         @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
         <!--  -->
     </div><!-- /.container -->
 
-    <script src="~/Scripts/jquery-2.2.1.min.js"></script>
+    <script src="~/Scripts/jquery-2.2.2.min.js"></script>
+    <script src="~/Scripts/jquery.panzoom.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/ProjectScripts/test.js"></script>
 </body>

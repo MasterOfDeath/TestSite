@@ -6,14 +6,14 @@
                 <h4 class="modal-title test-title">Просмотр</h4>
             </div><!-- /.modal-header -->
             <div class="modal-body">
-                
+
                 <ul class="nav nav-tabs">
-                    @*<li class="active"><a data-toggle="tab" href="#testsTab">Вопрос 1</a></li>*@
+                    <!-- for replace -->
                 </ul>
 
                 <div class="tab-content">
                     <!-- for replace -->
-                </div> <!-- tab-content / end -->
+                </div>
 
                 <!-- шаблон для заголовка вкладки -->
                 <ul class="hide tab-header-template">
@@ -44,7 +44,18 @@
                     </div>
                 </div>
                 <!--  -->
-                
+
+                <!-- шаблон для схемы -->
+                <div class="hide schema-container schema-container-template">
+                    <button class="btn btn-default zoom-in-btn">Zoom in</button>
+                    <button class="btn btn-default reset-btn">Reset</button>
+                    <button class="btn btn-default zoom-out-btn">Zoom out</button>
+                    <div class="panzoom">
+                        <img class="schema" src="" />
+                    </div>
+                </div>
+                <!--  -->
+
             </div><!-- /.modal-body -->
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

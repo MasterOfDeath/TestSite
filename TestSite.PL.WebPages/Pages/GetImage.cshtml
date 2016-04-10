@@ -1,0 +1,26 @@
+﻿@using TestSite.PL.WebPages.Models
+@{
+    var imageQueries = GetImagePage.Queries;
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+
+    if (!IsPost)
+    {
+        var queryName = Request["queryName"];
+        byte[] result = null;
+
+        if (queryName != null && imageQueries.ContainsKey(queryName))
+        {
+            result = imageQueries[queryName].Invoke(Request);
+
+            if (result != null)
+            {
+                Response.WriteBinary(result, "image/svg+xml");
+            }
+        }
+    }
+}
