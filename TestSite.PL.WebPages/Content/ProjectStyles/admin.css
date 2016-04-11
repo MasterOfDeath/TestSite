@@ -1,4 +1,6 @@
 ﻿@import url("generals/tables.css");
+@import url("generals/schema.css");
+@import url("generals/testTabs.css");
 
 .tab-content .table > tbody > tr {
     cursor:pointer;
@@ -52,25 +54,23 @@
     overflow: auto;
 }
 
-.tab-content .test-preview .tab-pane .schema-container {
-    width: 100%;
-}
-
-.tab-content .test-preview .tab-pane .schema-container button {
-    position: relative;
-    z-index: 100;
-    opacity: 0.6;
-}
-
-.tab-content .test-preview .tab-pane .schema-container button:hover {
-    opacity: 1;
-}
-
-.tab-content .test-preview .tab-pane .schema-container img {
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.tab-content .btn {
+.tab-content .btn-group > .btn {
     margin: 10px 0;
+}
+
+.question-prompt textarea {
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    outline: none;
+    resize: none;
+}
+
+.question-prompt textarea:focus {
+    box-shadow: 0 0 3px .1px #66afe9;
+    border-color: #66afe9;
+}
+
+.question-prompt .add-answer-btn {
+    margin-left: 38%;
+    margin-bottom: 10px;
 }

@@ -1,21 +1,5 @@
-﻿.content-testt .tab-pane .schema-container {
-    width: 100%;
-}
-
-.content-test .tab-pane .schema-container button {
-    position: relative;
-    z-index: 100;
-    opacity: 0.6;
-}
-
-.content-test .tab-pane .schema-container button:hover {
-    opacity: 1;
-}
-
-.content-test .tab-pane .schema-container img {
-    max-width: 100%;
-    max-height: 100%;
-}
+﻿@import url("generals/schema.css");
+@import url("generals/testTabs.css");
 
 .content-test .wrong-msg-container .wrong-questions ul:last-child {
     margin: 0;

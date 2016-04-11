@@ -35,7 +35,7 @@
         catch (Exception ex)
         {
             errorMessage = ex.Message;
-            log.Error("ListAllTests", ex);
+            log.Error("ListTestsByDepId", ex);
         }
     }
 }
@@ -57,13 +57,14 @@
 
     <ul class="nav nav-tabs">
         <li class="listTests active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
-        <li class="editTest hide"><a data-toggle="tab" href="#editTestTab">Редактирование</a></li>
+        <li class="editTest hide"><a data-toggle="tab" href="#editTestTab"><b>Редактирование</b></a></li>
     </ul>
 
     <div class="tab-content">
         <div id="testsTab" class="tab-pane fade in active tests-tab">
-            <button class="btn btn-primary addTestBtn">Создать тест</button>
-
+            <div class="btn-group">
+                <button class="btn btn-primary addTestBtn">Создать тест</button>
+            </div>
             <div class="table-responsive general-table">
                 <table class="table table-hover tests-table">
                     <tbody>
@@ -79,7 +80,7 @@
             </div>
         </div>
 
-        <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1">
+        <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1" data-test-name="">
 
             <div class="btn-group">
                 <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
@@ -88,7 +89,7 @@
                 <button class="btn btn-default removeTestBtn">Удалить тест</button>
             </div>
 
-            <div class="general-table">
+            <div class="table-responsive general-table">
                 <table class="table table-hover questions-table">
                     <tbody>
                         <!-- for replace -->

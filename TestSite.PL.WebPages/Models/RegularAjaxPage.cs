@@ -7,6 +7,8 @@
     using Entites;
     using Logger;
     using System.Text;
+    using System.Web.Security;
+    using System.Web.WebPages;
     public class RegularAjaxPage
     {
         private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
@@ -14,7 +16,7 @@
 
         static RegularAjaxPage()
         {
-            _Queries.Add("clickDepSelector", ClickDepSelector);
+            _Queries.Add("changeDepSelector", ChangeDepSelector);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -22,10 +24,10 @@
             get { return _Queries; }
         }
 
-        private static AjaxResponse ClickDepSelector(HttpRequestBase request)
+        private static AjaxResponse ChangeDepSelector(HttpRequestBase request)
         {
             string depIdStr = null;
-            var methodName = nameof(ClickDepSelector);
+            var methodName = nameof(ChangeDepSelector);
 
             try
             {
@@ -61,7 +63,7 @@
 
             if (employees != null)
             {
-                var sb = new StringBuilder();
+                var sb = new StringBuilder(employees.Count);
                 foreach (var employee in employees)
                 {
                     sb.Append($"<option value='{employee.Id}'>{employee.LastName} {employee.FirstName}</option>");

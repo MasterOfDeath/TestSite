@@ -169,10 +169,9 @@
     function youWon() {
         $(".wrong-msg-container", $content).empty().append("<div class='alert alert-success'>" +
                 "Вы правильно решили тест!</div>");
-        $tabContent.empty();
-        $navTabs.empty();
-        $checkTestBtn.unbind("click");
-        $(".back-btn", ".navbar").text("Назад")
+        $checkTestBtn.unbind("click").addClass("hide");
+        $(".back-btn", ".navbar").text("Закрыть");
+        $(".check-input", $tabContent).click(function () { return false; });
     }
 
     function showError(str) {

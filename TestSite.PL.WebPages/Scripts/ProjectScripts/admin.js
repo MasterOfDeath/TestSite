@@ -84,12 +84,22 @@
 
     function clickTestsTable(event) {
         var testId = $(event.target).closest("tr").data("id"),
-            testName = $(event.target).html();
+            testName = $(event.target).text() + "",
+            titleName;
+
+        if (testName.length > 25) {
+            titleName = testName.substr(0, 25) + "...";
+        }
+        else {
+            titleName = testName;
+        }
 
         $(".editTest", $navTabs).removeClass("hide");
-        $(".editTest > a", $navTabs).tab("show").text(testName);
+        $(".editTest > a", $navTabs).tab("show");
+        $(".editTest > a > b", $navTabs).text(titleName);
 
         $(".editTest-tab", $tabContent).data("test-id", testId);
+        $(".editTest-tab", $tabContent).data("test-name", testName);
 
         clearQuestionPrompt();
         questionsListUpdate(testId);
@@ -197,7 +207,7 @@
     }
 
     function clickEditTestBtn(event) {
-        var textTest = $(".editTest-tab h2", $tabContent).text(),
+        var textTest = $(".editTest-tab", $tabContent).data("test-name"),
             testId = $(".editTest-tab", $tabContent).data("test-id");
 
         $namePrompt.modal("show");
@@ -206,7 +216,7 @@
     }
 
     function clickRemoveTestBtn(event) {
-        var textTest = $(".editTest-tab h2", $tabContent).text(),
+        var textTest = $(".editTest-tab", $tabContent).data("test-name"),
             testId = $(".editTest-tab", $tabContent).data("test-id");
 
         $removePrompt.modal("show");

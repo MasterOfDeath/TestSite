@@ -1,0 +1,27 @@
+﻿.schema-container {
+    width: 100%;
+}
+
+.schema-container button {
+    position: absolute;
+    z-index: 100;
+    opacity: 0.6;
+    font-size: 13pt;
+}
+
+.schema-container .reset-btn {
+    left: 45px;
+}
+
+.schema-container .zoom-out-btn {
+    left: 90px;
+}
+
+.schema-container button:hover {
+    opacity: 1;
+}
+
+.schema-container img {
+    max-width: 100%;
+    max-height: 100%;
+}

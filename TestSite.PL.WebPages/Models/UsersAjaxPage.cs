@@ -227,11 +227,6 @@
 
             ICollection<Question> questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(test.Id);
 
-            if (mixed)
-            {
-                questions = Shuffle(questions.ToList());
-            }
-            
             IList result = new ArrayList();
 
             if (questions != null)
@@ -245,7 +240,6 @@
                         answers = Shuffle(answers.Select(a => { a.Correct = false; return a; }).ToList());
                     }
 
-                    //result.Add(new { id = question.Id, text = question.Name, answers = answers });
                     result.Add(new { question, answers = answers });
                 }
             }

@@ -15,3 +15,7 @@
 .content-login .container-login-btn {
     margin-top: 10px;
 }
+
+.content-login .nodisplay {
+    display: none;
+}

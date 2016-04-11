@@ -1,12 +1,10 @@
-﻿<!DOCTYPE html>
-
-@using TestSite.PL.WebPages.Models
+﻿@using TestSite.PL.WebPages.Models
 @{
     Layout = null;
 
-    string userIdStr = null;
+    int employeeId = -1;
     string password = null;
-    string remember = null;
+    bool remember = false;
     string successMessage = null;
     string errorMessage = null;
 
@@ -24,59 +22,48 @@
         log.Error(ex.Message);
     }
 
-    if (!IsPost)
+    if (IsAjax && IsPost)
     {
-        
-    }
-
-    if (IsPost)
-    {   
-        userIdStr = Request["employee-selector"];
-        password = Request["password"];
-        remember = Request["remember"];
-
-        if (!string.IsNullOrEmpty(userIdStr) && !string.IsNullOrEmpty(password))
+        try
         {
-            TestSite.Entites.Employee employee;
+            employeeId = Convert.ToInt32(Request["employeeid"]);
+            password = Request["password"];
+            remember = Convert.ToBoolean(Request["remember"]);
+            var url = "";
 
-            try
-            {
-                int userId = Convert.ToInt32(userIdStr);
-                employee = LogicProvider.EmployeeLogic.CanLogin(userId, password);
-            }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-                goto End;
-            }
+            var employee = LogicProvider.EmployeeLogic.CanLogin(employeeId, password);
 
             if (employee != null)
             {
-                log.Info(userIdStr + " has been loged");
-                FormsAuthentication.SetAuthCookie(userIdStr, createPersistentCookie: (remember == "1"));
-                Response.Cookies["usernamecookie"].Value = 
+                log.Info(employeeId.ToString() + " has been loged");
+                FormsAuthentication.SetAuthCookie(employeeId.ToString(), createPersistentCookie: remember);
+                Response.Cookies["usernamecookie"].Value =
                    Server.UrlEncode(employee.LastName + " " + employee.FirstName);
                 Response.Cookies["usernamecookie"].Expires = DateTime.Now.AddDays(1);
-                Response.Redirect(Request["ReturnUrl"] ?? "/");
-                return;
+                url = Request["ReturnUrl"] ?? "/";
+                Response.Write(Json.Encode(new { Error = (string)null, Data = new { login = true, url } }));
             }
             else
             {
-                errorMessage = "Wrong name or password";
-                log.Info("An unsuccessful attempt to login with userId: " + userIdStr);
+                Response.Write(Json.Encode(new { Error = (string)null, Data = new { login = false } }));
             }
         }
-    }
+        catch (Exception ex)
+        {
+            Response.Write(Json.Encode(new { Error = ex.Message, Data = (object)null }));
+        }
 
-End:
+        return;
+    }
 }
 
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/ProjectStyles/style.css" />
-    <link rel="stylesheet" href="~/Content/ProjectStyles/login.css" />
+    <link rel="stylesheet" href="~/Content/ProjectStyles/signin.css" />
     <title>Вход</title>
 </head>
 <body>
@@ -119,15 +106,16 @@ End:
                             <div class="input-group">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="remember" value="1" checked> Запомнить
+                                        <input type="checkbox" class="password-remember" name="remember" value="1" checked> Запомнить
                                     </label>
                                 </div>
                             </div>
 
                             <div class="form-group container-login-btn">
-                                <!-- Button -->
                                 <div class="col-sm-12 controls">
-                                    <button class="btn btn-success" name="login-btn" value="1">Войти</button>
+                                    <button type="button" class="btn btn-success login-btn" name="login-btn" data-loading-text="Проверка...">
+                                        Войти
+                                    </button>
                                 </div>
                             </div>
 
@@ -142,6 +130,12 @@ End:
                             {
                                 <div class="alert alert-danger col-sm-12">@errorMessage</div>
                             }
+
+                            <div class="nodisplay wrong-password-alert">
+                                <div class="alert alert-danger col-sm-12">
+                                    Не верный пароль
+                                </div>
+                            </div>
 
                         </form>
                     </div>
