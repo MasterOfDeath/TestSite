@@ -19,7 +19,8 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <li role="presentation" class="dropdown">
-                        <a class="dropdown-toggle glyphicon glyphicon-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            <i class="glyphicon glyphicon-user"></i>
                             <b> @Server.UrlDecode(Request.Cookies["usernamecookie"].Value)</b><b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">

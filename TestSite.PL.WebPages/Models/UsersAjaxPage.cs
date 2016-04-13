@@ -22,6 +22,7 @@
             _Queries.Add("getMixedTest", GetMixedTest);
             _Queries.Add("checkMyAnswers", CheckMyAnswers);
             _Queries.Add("listTestsForEmployee", ListTestsForEmployee);
+            _Queries.Add("changePassword", ChangePassword);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -175,6 +176,38 @@
             }
 
             return new AjaxResponse(null, tests);
+        }
+
+        private static AjaxResponse ChangePassword(HttpRequestBase request)
+        {
+            var methodName = nameof(ChangePassword);
+            int employeeId = -1;
+            string oldPassword = "";
+            string newPassword = "";
+
+            try
+            {
+                employeeId = Convert.ToInt32(request["employeeid"]);
+                oldPassword = request["oldpassword"];
+                newPassword = request["newpassword"];
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            var result = false;
+
+            try
+            {
+                result = LogicProvider.EmployeeLogic.ChangePassword(employeeId, oldPassword, newPassword);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
         }
 
         private static AjaxResponse SendError(Exception ex, string sender = null)

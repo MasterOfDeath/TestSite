@@ -5,23 +5,32 @@
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Text.RegularExpressions;
     using Contract;
     using Entites;
+    using Logger;
 
     public class EmployeeMainLogic : IEmployeeLogic
     {
         private const int UsernameMinLength = 6;
         private const int PasswordMinLength = 6;
         private const string defaultRole = "user";
+        private readonly Regex passwordEx = new Regex("^(?=.{" + PasswordMinLength + ",}$)[^\\s]+$"); //^(?=.{6,}$)[^\s]+$
 
         public int AddEmployee(Employee employee, string password)
         {
+            if (!passwordEx.IsMatch(password))
+            {
+                throw new ArgumentException($"Пароль не соответсвует требованиям безопасности");
+            }
+
             employee.Hash = this.GetHash(password);
 
             int result = this.InsertEmployee(employee);
 
             if (result > 0)
             {
+                Logger.Log.Info($"Создан пользователь: {employee.Id} {employee.FirstName} {employee.LastName}");
                 Stores.RoleStore.GiveRole(result, defaultRole);
             }
 
@@ -90,6 +99,11 @@
 
         public bool RemoveEmployee(int employeeId)
         {
+            if (employeeId < 1)
+            {
+                throw new ArgumentException($"{nameof(employeeId)} не может быть 0 или меньше");
+            }
+
             try
             {
                 Stores.EmployeeStore.RemoveEmployee(employeeId);
@@ -102,15 +116,11 @@
             return true;
         }
 
-        public bool ChangePassword(Employee employee, string oldPassword, string newPassword)
+        public bool ChangePassword(int employeeId, string oldPassword, string newPassword)
         {
-            try
+            if (employeeId < 1)
             {
-                this.IsValidEmployee(employee);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                throw new ArgumentException($"{nameof(employeeId)} не может быть 0 или меньше");
             }
 
             if (string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(oldPassword))
@@ -118,7 +128,12 @@
                 throw new ArgumentException("Новый или старый пароль не может быть пуст");
             }
 
-            employee = this.CanLogin(employee.Id, oldPassword);
+            if (!passwordEx.IsMatch(newPassword))
+            {
+                throw new ArgumentException($"Пароль не соответсвует требованиям безопасности");
+            }
+
+            var employee = this.CanLogin(employeeId, oldPassword);
 
             if (employee != null)
             {
@@ -126,7 +141,8 @@
             }
             else
             {
-                throw new InvalidOperationException("Не верный старый пароль");
+                Logger.Log.Info($"При попытке смены пароля, пользовател: {employeeId} ввел не верный текущий пароль");
+                throw new InvalidOperationException("Не верный текущий пароль");
             }
 
             int result = -1;
@@ -139,28 +155,13 @@
                 throw ex;
             }
 
+            if (result > 0)
+            {
+                Logger.Log.Info($"Пользователь {employee.Id} {employee.FirstName} {employee.LastName} " +
+                                "сменил пароль");
+            }
+
             return result > 0;
-        }
-
-        private bool IsValidEmployee(Employee employee)
-        {
-            //if (string.IsNullOrWhiteSpace(admin.UserName))
-            //{
-            //    throw new ArgumentException("Имя пользователя не может быть пустым или состоять из пробелов");
-            //}
-
-            //if (admin.UserName.Length < UsernameMinLength)
-            //{
-            //    throw new ArgumentException($"Имя пользователя короче чем {UsernameMinLength}");
-            //}
-
-            return true;
-        }
-
-        private byte[] GetHash(string inputString)
-        {
-            HashAlgorithm algorithm = SHA256.Create();
-            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
         }
 
         public Employee GetEmployeeById(int employeeId)
@@ -203,6 +204,27 @@
             }
 
             return result;
+        }
+
+        private bool IsValidEmployee(Employee employee)
+        {
+            //if (string.IsNullOrWhiteSpace(employee.))
+            //{
+            //    throw new ArgumentException("Имя пользователя не может быть пустым или состоять из пробелов");
+            //}
+
+            //if (admin.UserName.Length < UsernameMinLength)
+            //{
+            //    throw new ArgumentException($"Имя пользователя короче чем {UsernameMinLength}");
+            //}
+
+            return true;
+        }
+
+        private byte[] GetHash(string inputString)
+        {
+            HashAlgorithm algorithm = SHA256.Create();
+            return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
         }
     }
 }

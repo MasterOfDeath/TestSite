@@ -17,7 +17,7 @@
 
         Employee CanLogin(int employeeId, string password);
 
-        bool ChangePassword(Employee employee, string oldPassword, string newPassword);
+        bool ChangePassword(int employeeId, string oldPassword, string newPassword);
 
         Employee GetEmployeeById(int employeeId);
     }

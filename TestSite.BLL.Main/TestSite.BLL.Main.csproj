@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\XT2015-5\Task 12 Final\Photos\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,6 +53,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Logger\TestSite.Logger.csproj">
+      <Project>{a2d49cda-aa67-45aa-b700-d7725a609061}</Project>
+      <Name>TestSite.Logger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TestSite.BLL.Contract\TestSite.BLL.Contract.csproj">
       <Project>{ffff2482-959e-4693-90d5-bb3aa4ffda43}</Project>
       <Name>TestSite.BLL.Contract</Name>

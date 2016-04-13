@@ -62,7 +62,6 @@
                 else {
                     showWrongAlert(result.Data.wrongQuestions);
                 }
-                console.log(result.Data);
             } else {
                 showError(result.Error);
             }
@@ -154,21 +153,19 @@
 
     function showWrongAlert(wrongQuestions) {
         var wrongText,
-            $newWrongAlert = $(".wrong-alert-template").clone();
+            $newWrongAlert = $(".wrong-notify-template .alert").clone();
 
-        wrongText = $.map(wrongQuestions, function (el) {
-            return "<ul><li>" + el + "</li></ul>"
-        }).join("");
+        wrongText = "<ul>" + $.map(wrongQuestions, function (el) {
+            return "<li>" + el + "</li>";
+        }).join("") + "</ul>";
 
-        $newWrongAlert.removeClass("wrong-alert-template").removeClass("hide");
         $(".wrong-questions", $newWrongAlert).append(wrongText);
 
-        $(".wrong-msg-container", $content).empty().append($newWrongAlert);
+        $(".notify-container", $content).empty().append($newWrongAlert);
     }
 
     function youWon() {
-        $(".wrong-msg-container", $content).empty().append("<div class='alert alert-success'>" +
-                "Вы правильно решили тест!</div>");
+        $(".notify-container", $content).empty().append($(".success-notify-template .alert", $content).clone());
         $checkTestBtn.unbind("click").addClass("hide");
         $(".back-btn", ".navbar").text("Закрыть");
         $(".check-input", $tabContent).click(function () { return false; });

@@ -1,0 +1,73 @@
+﻿@using TestSite.PL.WebPages.Models
+@{
+    Layout = "~/_Layout.cshtml";
+    PageData["Title"] = "Настройки";
+
+    string errorMessage = null;
+
+    if (!User.Identity.IsAuthenticated)
+    {
+        Response.StatusCode = 401;
+        return;
+    }
+
+    var log = TestSite.Logger.Logger.Log;
+
+    if (!IsPost)
+    {
+        if (User.Identity.IsAuthenticated)
+        {
+
+        }
+    }
+}
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="content content-profile container-fluid" data-user-id="@User.Identity.Name">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#passwordTab">Изменение пароля</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="passwordTab" class="tab-pane fade in active passwordTab">
+            <div class="row">
+                <div class="col-md-6 col-sm-8">
+                    <div class="form-group has-feedback">
+                        <label for="oldPassword" class="control-label">Старый пароль</label>
+                        <input id="oldPassword" type="password" class="form-control old-password-input" placeholder="текущий пароль">
+                        <span class="glyphicon form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <label for="newPassword" class="control-label">Новый пароль</label>
+                        <input id="newPassword" type="password" class="form-control new-password-input" placeholder="не менее 6 символов без пробелов">
+                        <span class="glyphicon form-control-feedback"></span>
+                    </div>
+
+                    <button class="btn btn-primary changePasswordBtn" data-loading-text="Загрузка...">Изменить пароль</button>
+
+                    <div class="notify-container">
+                        <div class="alert alert-success col-sm-12 hide">Пароль успешно изменён</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ErrorModal -->
+    @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
+    <!--  -->
+</div>
+
+@section header {
+    <link rel="icon" type="image/png" href="~/images/icons/profile.png" />
+    <link href="~/Content/ProjectStyles/profile.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/ProjectScripts/profile.js"></script>
+}

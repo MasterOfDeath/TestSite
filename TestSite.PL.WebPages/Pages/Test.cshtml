@@ -29,6 +29,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/jpg" href="~/images/icons/test.jpg" />
     <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/ProjectStyles/style.css" />
     <link rel="stylesheet" href="~/Content/ProjectStyles/test.css" />
@@ -66,7 +67,7 @@
 
         <h2 class="test-title"></h2>
 
-        <div class="wrong-msg-container">
+        <div class="notify-container">
             <!-- for replace -->
         </div>
 
@@ -82,11 +83,21 @@
         @RenderPage("~/Pages/_TestTabsTemplatePartial.cshtml")
         <!--  -->
 
+        <!-- шаблон правильного ответа -->
+        <div class="success-notify-template hide">
+            <div class="alert alert-success success-alert">
+                <h4><span class='glyphicon glyphicon-thumbs-up'></span> Вы правильно решили тест!</h4>
+            </div>
+        </div>
+        <!--  -->
+
         <!-- шаблон не верного ответа -->
-        <div class="alert alert-danger wrong-alert wrong-alert-template hide">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <h4>Ответ не правильный! Ошибки допущены в вопросах:</h4>
-            <span class="wrong-questions"></span>
+        <div class="wrong-notify-template hide">
+            <div class="alert alert-danger wrong-alert">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <h4><span class="glyphicon glyphicon-thumbs-down"></span> Ответ не правильный! Ошибки допущены в вопросах:</h4>
+                <span class="wrong-questions"></span>
+            </div>
         </div>
         <!--  -->
 

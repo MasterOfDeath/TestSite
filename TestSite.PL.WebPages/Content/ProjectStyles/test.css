@@ -4,3 +4,8 @@
 .content-test .wrong-msg-container .wrong-questions ul:last-child {
     margin: 0;
 }
+
+.content-test .notify-container .success-alert h4,
+.content-test .notify-container .wrong-alert ul {
+    margin: 0;
+}

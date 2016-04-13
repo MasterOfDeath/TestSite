@@ -1,0 +1,3 @@
+Добавил таблицу question_image
+в question добавил столбец type
+в test добавил столбец dep_id

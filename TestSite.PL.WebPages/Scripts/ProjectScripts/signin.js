@@ -16,7 +16,7 @@
 
         $.ajax({
             url: "RegularAjax",
-            method: "post",
+            method: "get",
             data: {
                 queryName: "changeDepSelector",
                 depid: depId
@@ -74,7 +74,7 @@
         var url = window.location.toString(),
             match;
 
-        match = /ReturnUrl=(.+)&/.exec(url);
+        match = /ReturnUrl=(.+)(?:&|$)/.exec(url);
 
         if (match === null)
         {

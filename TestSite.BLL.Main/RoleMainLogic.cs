@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using Contract;
     using Entites;
+    using Logger;
 
     public class RoleMainLogic : IRoleLogic
     {
@@ -13,7 +14,7 @@
         {
             if (userId < 0)
             {
-                throw new ArgumentException($"{nameof(userId)} должно быть положительным");
+                throw new ArgumentException($"{nameof(userId)} должно быть отрицательным");
             }
 
             if (string.IsNullOrWhiteSpace(roleName))
@@ -37,7 +38,14 @@
                 throw new InvalidOperationException($"Пользователь: {userId} уже имеет роль: {roleName}");
             }
 
-            return Stores.RoleStore.GiveRole(userId, roleName);
+            var result = Stores.RoleStore.GiveRole(userId, roleName);
+
+            if (result)
+            {
+                Logger.Log.Info($"Пользователю: {userId} присвоенна роль: {roleName}");
+            }
+
+            return result;
         }
 
         public ICollection<string> ListAllRoles()

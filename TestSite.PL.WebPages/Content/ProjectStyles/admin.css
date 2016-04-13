@@ -58,19 +58,11 @@
     margin: 10px 0;
 }
 
-.question-prompt textarea {
-    border-radius: 3px;
-    border: 1px solid #ccc;
-    outline: none;
-    resize: none;
-}
-
-.question-prompt textarea:focus {
-    box-shadow: 0 0 3px .1px #66afe9;
-    border-color: #66afe9;
-}
-
 .question-prompt .add-answer-btn {
     margin-left: 38%;
+    margin-bottom: 10px;
+}
+
+.question-prompt .question-textarea {
     margin-bottom: 10px;
 }
