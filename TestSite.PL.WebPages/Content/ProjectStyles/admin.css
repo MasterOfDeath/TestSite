@@ -1,8 +1,4 @@
-﻿@import url("generals/tables.css");
-@import url("generals/schema.css");
-@import url("generals/testTabs.css");
-
-.tab-content .table > tbody > tr {
+﻿.tab-content .table > tbody > tr {
     cursor:pointer;
 }
 
@@ -55,7 +51,7 @@
 }
 
 .tab-content .btn-group > .btn {
-    margin: 10px 0;
+    margin-bottom: 10px;
 }
 
 .question-prompt .add-answer-btn {

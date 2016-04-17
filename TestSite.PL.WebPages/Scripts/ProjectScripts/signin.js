@@ -5,6 +5,7 @@
 
     $depSelector.change(changeDepSelector);
     $(".login-btn", $content).click(clickLoginBtn);
+    $(".password-input", $content).keyup(onEnterPress);
 
     // Для отрисовки $employeeSelector
     changeDepSelector();
@@ -68,6 +69,12 @@
         }).always(function () {
             $(".login-btn", $content).button("reset");
         });
+    }
+
+    function onEnterPress(event) {
+        if (event.keyCode == 13) {
+            clickLoginBtn();
+        }
     }
 
     function getRedirectUrl() {

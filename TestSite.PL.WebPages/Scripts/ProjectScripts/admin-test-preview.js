@@ -89,6 +89,7 @@
                 $newTab.append($schemaContainer);
 
                 $(".schema", $schemaContainer).attr("src", "/Pages/GetImage.cshtml?queryName=getSchema&questionid=" + elQ.question.Id + "&time=" + new Date().getTime());
+                $schemaContainer.imagefit();
 
                 $(".panzoom", $schemaContainer).panzoom({
                     $zoomIn: $(".zoom-in-btn", $schemaContainer),

@@ -22,6 +22,7 @@
             _Queries.Add("removeTest", RemoveTest);
             _Queries.Add("removeQuestion", RemoveQuestion);
             _Queries.Add("getTestForPreview", GetTestForPreview);
+            _Queries.Add("getReportByDate", GetReportByDate);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -298,6 +299,88 @@
             }
 
             return new AjaxResponse(null, result);
+        }
+
+        private static AjaxResponse GetReportByDate(HttpRequestBase request)
+        {
+            var methodName = nameof(GetReportByDate);
+            DateTime dateStart;
+            DateTime dateEnd;
+            ICollection<Report> reports = null;
+
+            try
+            {
+                dateStart = Convert.ToDateTime(request["datestart"]);
+                dateEnd = Convert.ToDateTime(request["dateend"]);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            try
+            {
+                dateEnd = dateEnd.AddHours(23 - dateEnd.Hour);
+                reports = LogicProvider.ReportLogic.ListReportsByDate(dateStart, dateEnd);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            if (reports == null)
+            {
+                return new AjaxResponse(null, null);
+            }
+
+            object result = null;
+
+            try
+            {
+                var employeeFIOs = new Dictionary<int, string>();
+                var testNames = new Dictionary<int, string>();
+
+                result = reports.Select(
+                    r => new {
+                        r.Id,
+                        Employee = GetEmployeeFIO(r.EmployeeId, employeeFIOs),
+                        Test = GetTestName(r.TestId, testNames),
+                        r.Date,
+                        r.ErrCount,
+                        r.ErrPercent
+                    }).ToList();
+
+                employeeFIOs.Clear();
+                testNames.Clear();
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
+        }
+
+        private static string GetEmployeeFIO(int employeeId, IDictionary<int, string> cache)
+        {
+            if (!cache.ContainsKey(employeeId))
+            {
+                var employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+                cache.Add(employeeId, employee.LastName + " " + employee.FirstName);  
+            }
+
+            return cache[employeeId];
+        }
+
+        private static string GetTestName(int testId, IDictionary<int, string> cache)
+        {
+            if (!cache.ContainsKey(testId))
+            {
+                var test = LogicProvider.TestLogic.GetTestById(testId);
+                cache.Add(testId, test.Name);
+            }
+
+            return cache[testId];
         }
 
         private static AjaxResponse SendError(Exception ex, string sender = null)

@@ -17,5 +17,7 @@
         public static IQuestionStore QuestionStore { get; } = new QuestionSqliteStore();
 
         public static IAnswerStore AnswerStore { get; } = new AnswerSqliteStore();
+
+        public static IReportStore ReportStore { get; } = new ReportSqliteStore();
     }
 }

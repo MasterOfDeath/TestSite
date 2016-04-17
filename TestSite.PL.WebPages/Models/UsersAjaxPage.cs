@@ -89,12 +89,16 @@
         private static AjaxResponse CheckMyAnswers(HttpRequestBase request)
         {
             var methodName = nameof(CheckMyAnswers);
+            int employeeId = -1;
             int testId = -1;
+            bool rating = false;
             dynamic results = null;
 
             try
             {
+                employeeId = Convert.ToInt32(request["employeeid"]);
                 testId = Convert.ToInt32(request["testid"]);
+                rating = Convert.ToBoolean(request["rating"]);
                 results = Json.Decode(request["results"]);
             }
             catch (Exception ex)
@@ -111,12 +115,13 @@
             {
                 foreach (var result in results)
                 {
-                    correctAnswers = LogicProvider.AnswerLogic.ListCorrectAnswers((int)result.questionId);
+                    int questionId = (int)result.questionId;
+                    correctAnswers = LogicProvider.AnswerLogic.ListCorrectAnswers(questionId);
 
                     if (correctAnswers.Count != Enumerable.Count(result.answers))
                     {
                         correct = false;
-                        question = LogicProvider.QuestionLogic.GetQuestionById((int)result.questionId);
+                        question = LogicProvider.QuestionLogic.GetQuestionById(questionId);
                         wrongQuestions.Add(question.Name);
                         continue;
                     }
@@ -126,7 +131,7 @@
                         if (!correctAnswers.Select(a => a.Id).Contains((int)answer))
                         {
                             correct = false;
-                            question = LogicProvider.QuestionLogic.GetQuestionById((int)result.questionId);
+                            question = LogicProvider.QuestionLogic.GetQuestionById(questionId);
                             wrongQuestions.Add(question.Name);
                             break;
                         }
@@ -136,6 +141,21 @@
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
+            }
+
+            if (rating)
+            {
+                try
+                {
+                    var wrongsCount = wrongQuestions.Count;
+                    var wrongsPercent = wrongQuestions.Count * 100 / Enumerable.Count(results);
+                    var report = new Report(employeeId, testId, DateTime.Now, wrongsCount, wrongsPercent);
+                    LogicProvider.ReportLogic.InsertReport(report);
+                }
+                catch (Exception ex)
+                {
+                    return SendError(ex, methodName);
+                }
             }
 
             return new AjaxResponse(null, new { correct, wrongQuestions });

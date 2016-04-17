@@ -8,6 +8,10 @@
     margin-top: 50px;
 }
 
+.content-login .alert {
+    margin: 10px 0 0 0;
+}
+
 .content-login .input-group {
     margin-bottom: 15px;
 }

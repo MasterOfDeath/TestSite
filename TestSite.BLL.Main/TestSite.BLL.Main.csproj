@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestSite.BLL.Main</RootNamespace>
     <AssemblyName>TestSite.BLL.Main</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnswerMainLogic.cs" />
+    <Compile Include="ReportMainLogic.cs" />
     <Compile Include="QuestionMainLogic.cs" />
     <Compile Include="TestMainLogic.cs" />
     <Compile Include="DepMainLogic.cs" />

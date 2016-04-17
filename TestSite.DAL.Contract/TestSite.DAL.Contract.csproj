@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TestSite.DAL.Contract</RootNamespace>
     <AssemblyName>TestSite.DAL.Contract</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IReportStore.cs" />
     <Compile Include="IQuestionStore.cs" />
     <Compile Include="IAnswerStore.cs" />
     <Compile Include="ITestStore.cs" />

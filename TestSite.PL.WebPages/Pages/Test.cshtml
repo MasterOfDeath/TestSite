@@ -11,12 +11,14 @@
     string errorMessage = null;
     var log = TestSite.Logger.Logger.Log;
     var testId = -1;
+    var rating = "false";
 
     if (!IsPost)
     {
         try
         {
             testId = Convert.ToInt32(Request["testid"]);
+            rating = Request["rating"];
         }
         catch (Exception ex)
         {
@@ -49,11 +51,8 @@
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            @if (User.Identity.IsAuthenticated)
-            {
                 <a href="~/" class="btn btn-default navbar-btn back-btn">Отмена</a>
                 <button type="button" class="btn btn-primary navbar-btn check-test-btn" data-loading-text="Проверка...">Проверить</button>
-            } 
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
@@ -63,7 +62,7 @@
         <div class="alert alert-danger">@errorMessage</div>
     }
 
-    <div class="container content-test" data-test-id="@testId">
+    <div class="container content-test" data-user-id="@User.Identity.Name" data-test-id="@testId" data-rating="@rating">
 
         <h2 class="test-title"></h2>
 
@@ -108,6 +107,7 @@
 
     <script src="~/Scripts/jquery-2.2.2.min.js"></script>
     <script src="~/Scripts/jquery.panzoom.min.js"></script>
+    <script src="~/Scripts/jquery.imagefit-0.2.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script src="~/Scripts/ProjectScripts/test.js"></script>
 </body>

@@ -11,6 +11,10 @@
     border: none;
 }
 
-.general-table table tr {
+.general-table table tbody tr {
     background-color: #fafafa;
+}
+
+.general-table table thead tr {
+    background-color: #dddddd;
 }

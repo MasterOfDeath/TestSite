@@ -1,4 +1,9 @@
 ﻿@import url("generals/tables.css");
+@import url("generals/testTabs.css");
+
+.content-index .dep-label {
+    margin-bottom: 15px;
+}
 
 .content-index .table > tbody > tr a {
     display: block;
@@ -7,4 +12,19 @@
 
 .content-index .table > tbody > tr a:hover {
     text-decoration: none;
+}
+
+.content-index .tab-content .training-note,
+.content-index .tab-content .rating-note {
+    text-align: end;
+}
+
+.content-index .tab-content .training-note label {
+    background-color: #DFF0D8;
+    padding: 0 5px;
+}
+
+.content-index .tab-content .rating-note label {
+    background-color: #F2DEDE;
+    padding: 0 5px;
 }

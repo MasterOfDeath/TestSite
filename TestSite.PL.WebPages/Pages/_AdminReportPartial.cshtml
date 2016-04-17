@@ -1,0 +1,26 @@
+﻿<div class="input-daterange input-group datepicker">
+    <input type="text" class="form-control date-start" value="@DateTime.Now.AddMonths(-1).ToShortDateString()"/>
+    <span class="input-group-addon">по</span>
+    <input type="text" class="form-control date-end"  value="@DateTime.Now.ToShortDateString()"/>
+    <span class="input-group-btn">
+        <button class="btn btn-default report-save-btn" type="button"><i class="glyphicon glyphicon-floppy-save"></i></button>
+        <button class="btn btn-primary report-refresh-btn" type="button">Обновить</button>
+    </span>
+</div>
+
+<div class="table-responsive general-table">
+    <table class="table table-hover report-table">
+        <thead>
+            <tr>
+                <td>Дата</td>
+                <td>Сотрудник</td>
+                <td>Тест</td>
+                <td>Кол ошиб</td>
+                <td>% ошибок</td>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- for replace -->
+        </tbody>
+    </table>
+</div>

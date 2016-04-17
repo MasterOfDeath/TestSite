@@ -1,6 +1,6 @@
 ﻿@{
     Response.Cookies["usernamecookie"].Expires = DateTime.Now.AddYears(-1);
-    TestSite.Logger.Logger.Log.Info($"The user {User.Identity.Name} logged out");
+    TestSite.Logger.Logger.Log.Info("The user " + User.Identity.Name + " logged out");
     FormsAuthentication.SignOut();
     Response.Redirect("/");
 }

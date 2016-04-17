@@ -38,19 +38,53 @@
 }
 
 <div class="content content-index container-fluid">
+
     @if (tests != null)
     {
-        <label>Тесты доступные для отдела @depName: </label>
-        <div class="table-responsive general-table">
-            <table class="table table-hover tests-table">
-                <tbody>
-                    @foreach (var test in tests)
-                    {
-                        <tr><td><a href="~/Pages/Test?testid=@test.Id">@test.Name</a></td></tr>
-                    }
-                </tbody>
-            </table>
+        <label class="dep-label">Тесты доступные для отдела @depName: </label>
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#training">Тренировка</a></li>
+            <li><a data-toggle="tab" href="#rating"><b>На зачёт</b></a></li>
+        </ul>
+
+        <div class="tab-content">
+
+            <div id="training" class="tab-pane fade in active trainingTab">
+                <div class="training-note">
+                    <label>Результат не будет учитываться нигде</label>
+                </div>
+                <div class="table-responsive general-table">
+                    <table class="table table-hover tests-table">
+                        <tbody>
+                            @foreach (var test in tests)
+                            {
+                                <tr><td><a href="~/Pages/Test?testid=@test.Id&rating=false">@test.Name</a></td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="rating" class="tab-pane fade in ratingTab">
+                <div class="rating-note">
+                    <label>Результат будет занесен в протокол</label>
+                </div>
+                <div class="table-responsive general-table">
+                    <table class="table table-hover tests-table">
+                        <tbody>
+                            @foreach (var test in tests)
+                            {
+                                <tr><td><a href="~/Pages/Test?testid=@test.Id&rating=true">@test.Name</a></td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
+
+
     }
 </div>
 

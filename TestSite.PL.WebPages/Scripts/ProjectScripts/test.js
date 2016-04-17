@@ -12,6 +12,7 @@
     function clickCheckTestBtn() {
         var result = [],
             answers = [],
+            rating = false,
             checked = false,
             checkedAnswerId = -1,
             exit = false;
@@ -38,10 +39,15 @@
         // Если экстренно вышли из предыдущего each - выходим из функции
         if (exit) { return; }
 
-        checkMyAnswers(result, $content.data("test-id"));
+        rating = $content.data("rating");
+
+        console.log($content.data("rating"));
+        console.log(rating);
+
+        checkMyAnswers(result, $content.data("test-id"), rating);
     }
 
-    function checkMyAnswers(results, testId) {
+    function checkMyAnswers(results, testId, rating) {
         $checkTestBtn.button("loading");
 
         $.ajax({
@@ -49,7 +55,9 @@
             method: "post",
             data: {
                 queryName: "checkMyAnswers",
+                employeeid: $content.data("user-id"),
                 testid: testId,
+                rating: rating,
                 results: JSON.stringify(results)
             }
         }).success(function (data) {
@@ -138,7 +146,9 @@
                 $schemaContainer.removeClass("hide").removeClass("schema-container-template");
                 $newTab.append($schemaContainer);
 
+
                 $(".schema", $schemaContainer).attr("src", "/Pages/GetImage.cshtml?queryName=getSchema&questionid=" + elQ.question.Id + "&time=" + new Date().getTime());
+                $schemaContainer.imagefit();
 
                 $(".panzoom", $schemaContainer).panzoom({
                     $zoomIn: $(".zoom-in-btn", $schemaContainer),
