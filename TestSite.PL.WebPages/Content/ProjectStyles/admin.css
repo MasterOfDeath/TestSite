@@ -62,3 +62,8 @@
 .question-prompt .question-textarea {
     margin-bottom: 10px;
 }
+
+.tab-content .employee-prompt .remove-employee-btn,
+.tab-content .employee-prompt .change-pass-btn {
+    float: left;
+}

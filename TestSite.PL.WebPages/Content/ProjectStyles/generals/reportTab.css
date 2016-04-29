@@ -1,0 +1,17 @@
+﻿.tab-content .report-tab .datepicker {
+    margin-bottom: 20px;
+}
+
+.tab-content .report-tab .report-table thead {
+    font-size: 9pt;
+    font-weight: bold;
+}
+
+.tab-content .report-tab .report-save-btn .hide-element {
+    visibility: hidden;
+}
+
+.tab-content .report-tab .report-save-btn .show-element {
+    visibility: visible;
+}
+

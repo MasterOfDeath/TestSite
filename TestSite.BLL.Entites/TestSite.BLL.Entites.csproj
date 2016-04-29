@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BA30E12E-4766-48A2-9203-3AC1BA47DD90}</ProjectGuid>
+    <ProjectGuid>{EA0A59E2-C78D-4C88-8483-6905C414130A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestSite.DAL.Contract</RootNamespace>
-    <AssemblyName>TestSite.DAL.Contract</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>TestSite.BLL.Entites</RootNamespace>
+    <AssemblyName>TestSite.BLL.Entites</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,21 +36,16 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IReportStore.cs" />
-    <Compile Include="IQuestionStore.cs" />
-    <Compile Include="IAnswerStore.cs" />
-    <Compile Include="ITestStore.cs" />
-    <Compile Include="IDepStore.cs" />
-    <Compile Include="IRoleStore.cs" />
-    <Compile Include="IEmployeeStore.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestSite.Entites\TestSite.Entites.csproj">
-      <Project>{bc236b12-1cb4-4d29-b56c-f13d095d3f05}</Project>
+      <Project>{BC236B12-1CB4-4D29-B56C-F13D095D3F05}</Project>
       <Name>TestSite.Entites</Name>
     </ProjectReference>
   </ItemGroup>

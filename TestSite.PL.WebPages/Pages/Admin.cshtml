@@ -6,7 +6,6 @@
     const string adminRole = "admin";
 
     string errorMessage = null;
-    ICollection<TestSite.Entites.Test> tests = null;
 
     var log = TestSite.Logger.Logger.Log;
 
@@ -16,27 +15,10 @@
         return;
     }
 
-    if (!User.IsInRole(adminRole))
+    if (!User.IsInRole(adminRole) && !User.IsInRole("superadmin") && !User.IsInRole("inspector"))
     {
         Response.StatusCode = 403;
         return;
-    }
-
-    if (!IsPost)
-    {
-        TestSite.Entites.Employee employee;
-        var employeeId = Convert.ToInt32(User.Identity.Name);
-
-        try
-        {
-            employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
-            tests = LogicProvider.TestLogic.ListTestsByDepId(employee.Dep_Id);
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-            log.Error("ListTestsByDepId", ex);
-        }
     }
 }
 
@@ -56,55 +38,57 @@
     </div>
 
     <ul class="nav nav-tabs">
-        <li class="listTests active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
-        <li class="editTest hide"><a data-toggle="tab" href="#editTestTab"><b>Редактирование</b></a></li>
-        <li><a data-toggle="tab" href="#reportTab">Статистика</a></li>
+        @if (User.IsInRole(adminRole))
+        {
+            <li class="listTests active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
+            <li class="editTest hide"><a data-toggle="tab" href="#editTestTab"><b>Редактирование</b></a></li>
+            <li><a data-toggle="tab" href="#personalTab">Персонал</a></li>
+            <li><a data-toggle="tab" href="#reportTab">Статистика моего отдела</a></li>
+        }
+        @if (User.IsInRole("superadmin"))
+        {
+            <li class="active"><a data-toggle="tab" href="#depsTab">Отделы</a></li>
+        }
     </ul>
 
     <div class="tab-content">
-        <div id="testsTab" class="tab-pane fade in active tests-tab">
-            <div class="btn-group">
-                <button class="btn btn-primary addTestBtn">Создать тест</button>
-            </div>
-            <div class="table-responsive general-table">
-                <table class="table table-hover tests-table">
-                    <tbody>
-                        @if (tests != null)
-                        {
-                            foreach (var test in tests)
-                            {
-                                <tr data-id="@test.Id"><td>@test.Name</td></tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1" data-test-name="">
-
-            <div class="btn-group">
-                <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
-                <button class="btn btn-default testPreviewBtn">Просмотр теста</button>
-                <button class="btn btn-default editTestBtn">Изменить название теста</button>
-                <button class="btn btn-default removeTestBtn">Удалить тест</button>
+        @if (User.IsInRole(adminRole))
+        {
+            <div id="testsTab" class="tab-pane fade in active tests-tab">
+                <!-- Tests tab -->
+                @RenderPage("~/Pages/_TestsTabPartial.cshtml")
+                <!--  -->
             </div>
 
-            <div class="table-responsive general-table">
-                <table class="table table-hover questions-table">
-                    <tbody>
-                        <!-- for replace -->
-                    </tbody>
-                </table>
+            <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1" data-test-name="">
+                <!-- Tests tab -->
+                @RenderPage("~/Pages/_EditTestTabPartial.cshtml")
+                <!--  -->
             </div>
 
-        </div>
+            <div id="personalTab" class="tab-pane fade in personal-tab">
+                <!-- Personal tab -->
+                @RenderPage("~/Pages/_PersonalTabPartial.cshtml")
+                <!--  -->
+            </div>
 
-        <div id="reportTab" class="tab-pane fade in report-tab">
-            <!-- Report tab -->
-            @RenderPage("~/Pages/_AdminReportPartial.cshtml")
-            <!--  -->
-        </div>
+            <div id="reportTab" class="tab-pane fade in report-tab">
+                <!-- Report tab -->
+                @RenderPage("~/Pages/_ReportTabPartial.cshtml")
+                <!--  -->
+
+            </div>
+        }
+
+        @if (User.IsInRole("superadmin"))
+        {
+            <div id="depsTab" class="tab-pane fade in active deps-tab">
+                <!-- Tests tab -->
+                @RenderPage("~/Pages/_DepsTabPartial.cshtml")
+                <!--  -->
+            </div>
+        }
 
         <!-- Modal for edit and create test -->
         @RenderPage("~/Pages/_NamePromptPartial.cshtml")
@@ -115,8 +99,11 @@
         <!-- Modal for edit and create question -->
         @RenderPage("~/Pages/_QuestionPromptPartial.cshtml")
         <!--  -->
-        <!-- Modal for delete -->
+        <!-- Modal for remove -->
         @RenderPage("~/Pages/_RemovePromptPartial.cshtml")
+        <!--  -->
+        <!-- Modal for create/edit employee -->
+        @RenderPage("~/Pages/_EmployeePromptPartial.cshtml")
         <!--  -->
 
     </div> <!-- tab-content / end -->
@@ -130,7 +117,7 @@
     <link rel="icon" type="image/png" href="~/images/icons/adminka.png" />
     <link href="~/Content/bootstrap-datepicker3.min.css" rel="stylesheet" />
     <link href="~/Content/ProjectStyles/admin.css" rel="stylesheet" />
-    <link href="~/Content/ProjectStyles/admin-report.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/generals/reportTab.css" rel="stylesheet" />
     <link href="~/Content/ProjectStyles/generals/tables.css" rel="stylesheet" />
     <link href="~/Content/ProjectStyles/generals/schema.css" rel="stylesheet" />
     <link href="~/Content/ProjectStyles/generals/testTabs.css" rel="stylesheet" />
@@ -139,11 +126,12 @@
 @section scripts {
     <script src="~/Scripts/jquery.panzoom.min.js"></script>
     <script src="~/Scripts/jquery.imagefit-0.2.js"></script>
-    <script src="~/Scripts/jquery.table2excel.min.js"></script>
+    <script src="~/Scripts/jquery.fileDownload.js"></script>
+    <script src="~/Scripts/spin.min.js"></script>
     <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
     <script src="~/Scripts/locales/bootstrap-datepicker.ru.min.js"></script>
-    <script src="~/Scripts/moment.min.js"></script>
     <script src="~/Scripts/ProjectScripts/admin.js"></script>
     <script src="~/Scripts/ProjectScripts/admin-test-preview.js"></script>
     <script src="~/Scripts/ProjectScripts/admin-report.js"></script>
+    <script src="~/Scripts/ProjectScripts/admin-personal.js"></script>
 }

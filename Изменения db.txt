@@ -1,3 +1,9 @@
-Добавил таблицу question_image
-в question добавил столбец type
-в test добавил столбец dep_id
+1) Р”РѕР±Р°РІРёР» FOREIGIN KEY РІ С‚Р°Р±Р»РёС†Сѓ employee_role:
+CREATE TABLE "employee_role2" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "role_id" INTEGER NOT NULL,
+    FOREIGN KEY ("user_id") references employee(id) ON DELETE CASCADE
+)
+
+РљРѕРїРёСЂРѕРІР°РЅРёРµ РёР· С‚Р°Р±Р». РІ С‚Р°Р±Р».: INSERT INTO employee_role SELECT * FROM employee_role2;

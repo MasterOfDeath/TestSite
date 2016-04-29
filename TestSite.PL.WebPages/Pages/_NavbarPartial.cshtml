@@ -24,7 +24,7 @@
                             <b> @Server.UrlDecode(Request.Cookies["usernamecookie"].Value)</b><b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            @if (User.IsInRole("admin"))
+                            @if (User.IsInRole("admin") || User.IsInRole("superadmin") || User.IsInRole("inspector"))
                             {
                                 <li><a href="~/Pages/Admin"><i class="glyphicon glyphicon-wrench"></i> Админка</a></li>
                             }

@@ -8,7 +8,7 @@
     using System.Web.Helpers;
     using Entites;
     using Logger;
-    
+
     public static class UsersAjaxPage
     {
         private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
@@ -23,6 +23,8 @@
             _Queries.Add("checkMyAnswers", CheckMyAnswers);
             _Queries.Add("listTestsForEmployee", ListTestsForEmployee);
             _Queries.Add("changePassword", ChangePassword);
+            _Queries.Add("getReportByDep", GetReport);
+            _Queries.Add("getReportByEmployee", GetReport);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -220,7 +222,7 @@
 
             try
             {
-                result = LogicProvider.EmployeeLogic.ChangePassword(employeeId, oldPassword, newPassword);
+                result = LogicProvider.EmployeeLogic.ChangePassword(employeeId, oldPassword, newPassword, godMode: false);
             }
             catch (Exception ex)
             {
@@ -228,6 +230,111 @@
             }
 
             return new AjaxResponse(null, result);
+        }
+
+        private static AjaxResponse GetReport(HttpRequestBase request)
+        {
+            var methodName = nameof(GetReport);
+            string queryName;
+            int employeeId = -1;
+            DateTime dateStart;
+            DateTime dateEnd;
+
+            try
+            {
+                queryName = request["queryName"];
+                employeeId = Convert.ToInt32(request["employeeid"]);
+                dateStart = Convert.ToDateTime(request["datestart"]);
+                dateEnd = Convert.ToDateTime(request["dateend"]);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            List<Dictionary<string, object>> result = null;
+
+            try
+            {
+                var employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+                dateEnd = dateEnd.AddHours(23 - dateEnd.Hour);
+                ICollection<Report> reports = null;
+
+                if (queryName == "getReportByEmployee")
+                {
+                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(employee.Id, dateStart, dateEnd);
+                }
+
+                if (queryName == "getReportByDep")
+                {
+                    reports = LogicProvider.ReportLogic.ListReportsByDep(employee.Dep_Id, dateStart, dateEnd);
+                }
+
+                if (reports == null)
+                {
+                    return new AjaxResponse("Данные отсутствуют", null);
+                }
+
+                result = GetReportData(reports);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
+        }
+
+        internal static List<Dictionary<string, object>> GetReportData(ICollection<Report> reports)
+        {
+            if (reports == null)
+            {
+                return null;
+            }
+
+            List<Dictionary<string, object>> result = new List<Dictionary<string, object>>(reports.Count);
+
+            var employeeFIOs = new Dictionary<int, string>();
+            var testNames = new Dictionary<int, string>();
+
+            result = reports.Select(
+                    r => new Dictionary<string, object>()
+                    {
+                        { "Id", r.Id },
+                        { "Employee", GetEmployeeFIO(r.EmployeeId, employeeFIOs) },
+                        { "Test", GetTestName(r.TestId, testNames) },
+                        { "Date", r.Date.ToString("dd.MM.yyyy HH:mm") },
+                        { "ErrCount", r.ErrCount },
+                        { "ErrPercent", r.ErrPercent }
+                    }
+                ).ToList();
+
+            employeeFIOs.Clear();
+            testNames.Clear();
+
+            return result;
+        }
+
+        private static string GetEmployeeFIO(int employeeId, IDictionary<int, string> cache)
+        {
+            if (!cache.ContainsKey(employeeId))
+            {
+                var employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+                cache.Add(employeeId, employee.LastName + " " + employee.FirstName);
+            }
+
+            return cache[employeeId];
+        }
+
+        private static string GetTestName(int testId, IDictionary<int, string> cache)
+        {
+            if (!cache.ContainsKey(testId))
+            {
+                var test = LogicProvider.TestLogic.GetTestById(testId);
+                cache.Add(testId, test.Name);
+            }
+
+            return cache[testId];
         }
 
         private static AjaxResponse SendError(Exception ex, string sender = null)

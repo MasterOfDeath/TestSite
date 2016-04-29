@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.DAL.Contract", "TestSite.DAL.Contract\TestSite.DAL.Contract.csproj", "{BA30E12E-4766-48A2-9203-3AC1BA47DD90}"
 EndProject
@@ -26,11 +26,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.Logger", "Logger\TestSite.Logger.csproj", "{A2D49CDA-AA67-45AA-B700-D7725A609061}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.DAL.Sqlite", "TestSite.DAL.Sqlite\TestSite.DAL.Sqlite.csproj", "{5BCEFF76-D972-41DE-94FF-00CFDFD7AB69}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{956F2227-C880-4B96-9D8A-BBA3E783463B}"
-	ProjectSection(SolutionItems) = preProject
-		WebEssentials2015-Settings.json = WebEssentials2015-Settings.json
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

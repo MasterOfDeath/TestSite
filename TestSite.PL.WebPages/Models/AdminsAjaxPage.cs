@@ -8,8 +8,11 @@
     using Entites;
     using Logger;
     using System.IO;
+
     public static class AdminsAjaxPage
     {
+        private const string adminRole = "admin";
+
         private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
             = new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>();
 
@@ -22,7 +25,9 @@
             _Queries.Add("removeTest", RemoveTest);
             _Queries.Add("removeQuestion", RemoveQuestion);
             _Queries.Add("getTestForPreview", GetTestForPreview);
-            _Queries.Add("getReportByDate", GetReportByDate);
+            _Queries.Add("listEmployeesByDep", ListEmployeesByDep);
+            _Queries.Add("saveEmployee", SaveEmployee);
+            _Queries.Add("removeEmployee", RemoveEmployee);
         }
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
@@ -301,17 +306,15 @@
             return new AjaxResponse(null, result);
         }
 
-        private static AjaxResponse GetReportByDate(HttpRequestBase request)
+        private static AjaxResponse ListEmployeesByDep(HttpRequestBase request)
         {
-            var methodName = nameof(GetReportByDate);
-            DateTime dateStart;
-            DateTime dateEnd;
-            ICollection<Report> reports = null;
+            var methodName = nameof(ListEmployeesByDep);
+            int requestOwnerId = -1;
+            ICollection<Employee> employees;
 
             try
             {
-                dateStart = Convert.ToDateTime(request["datestart"]);
-                dateEnd = Convert.ToDateTime(request["dateend"]);
+                requestOwnerId = Convert.ToInt32(request["requestowner"]);
             }
             catch (Exception ex)
             {
@@ -320,38 +323,62 @@
 
             try
             {
-                dateEnd = dateEnd.AddHours(23 - dateEnd.Hour);
-                reports = LogicProvider.ReportLogic.ListReportsByDate(dateStart, dateEnd);
+                var requestOwner = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId);
+                employees = LogicProvider.EmployeeLogic.ListEmployeesByDepId(requestOwner.Dep_Id);
             }
             catch (Exception ex)
             {
                 return SendError(ex, methodName);
             }
 
-            if (reports == null)
-            {
-                return new AjaxResponse(null, null);
-            }
+            return new AjaxResponse(null, employees);
+        }
 
-            object result = null;
+        private static AjaxResponse SaveEmployee(HttpRequestBase request)
+        {
+            var methodName = nameof(SaveEmployee);
+            int requestOwnerId = -1;
+            int employeeId = -1;
+            string firstName;
+            string laststName;
+            string password;
 
             try
             {
-                var employeeFIOs = new Dictionary<int, string>();
-                var testNames = new Dictionary<int, string>();
+                requestOwnerId = Convert.ToInt32(request["requestowner"]);
+                employeeId = Convert.ToInt32(request["employeeid"]);
+                firstName = request["firstname"];
+                laststName = request["lastname"];
+                password = request["password"];
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
+            }
+            
+            Employee employee = null;
+            int result = -1;
 
-                result = reports.Select(
-                    r => new {
-                        r.Id,
-                        Employee = GetEmployeeFIO(r.EmployeeId, employeeFIOs),
-                        Test = GetTestName(r.TestId, testNames),
-                        r.Date,
-                        r.ErrCount,
-                        r.ErrPercent
-                    }).ToList();
+            try
+            {
+                if (employeeId == -1)
+                {
+                    var requestOwner = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId);
+                    employee = new Employee(requestOwner.Dep_Id, firstName, laststName, null, enabled: true);
+                    result = LogicProvider.EmployeeLogic.AddEmployee(employee, password);
+                }
+                else
+                {
+                    employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+                    employee.FirstName = firstName;
+                    employee.LastName = laststName;
+                    result = LogicProvider.EmployeeLogic.InsertEmployee(employee);
 
-                employeeFIOs.Clear();
-                testNames.Clear();
+                    if (password != "" && result > 0)
+                    {
+                        LogicProvider.EmployeeLogic.ChangePassword(employeeId, "IamGod", password, godMode: true);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -361,26 +388,32 @@
             return new AjaxResponse(null, result);
         }
 
-        private static string GetEmployeeFIO(int employeeId, IDictionary<int, string> cache)
+        private static AjaxResponse RemoveEmployee(HttpRequestBase request)
         {
-            if (!cache.ContainsKey(employeeId))
+            var methodName = nameof(RemoveEmployee);
+            int employeeId = -1;
+
+            try
             {
-                var employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
-                cache.Add(employeeId, employee.LastName + " " + employee.FirstName);  
+                employeeId = Convert.ToInt32(request["employeeid"]);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
             }
 
-            return cache[employeeId];
-        }
+            bool result = false;
 
-        private static string GetTestName(int testId, IDictionary<int, string> cache)
-        {
-            if (!cache.ContainsKey(testId))
+            try
             {
-                var test = LogicProvider.TestLogic.GetTestById(testId);
-                cache.Add(testId, test.Name);
+                result = LogicProvider.EmployeeLogic.RemoveEmployee(employeeId);
+            }
+            catch (Exception ex)
+            {
+                return SendError(ex, methodName);
             }
 
-            return cache[testId];
+            return new AjaxResponse(null, result);
         }
 
         private static AjaxResponse SendError(Exception ex, string sender = null)

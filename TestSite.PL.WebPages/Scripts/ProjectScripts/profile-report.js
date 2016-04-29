@@ -1,5 +1,5 @@
 ﻿(function () {
-    var $content = $(".content-admin"),
+    var $content = $(".content-profile"),
         $tabContent = $(".tab-content", $content),
         $reportTab = $(".report-tab", $tabContent),
         dateExp = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
@@ -18,7 +18,7 @@
             return;
         }
 
-        getReportByDep(dateStart, dateEnd, employeeId);
+        getReportByEmployee(dateStart, dateEnd, employeeId);
     }
 
     function clickSaveBtn(event) {
@@ -45,7 +45,7 @@
 
         $.fileDownload("GetFile", {
             data: {
-                queryName: "saveDataToFileByDep",
+                queryName: "saveDataToFileByEmployee",
                 employeeid: employeeId,
                 datestart: dateStart,
                 dateend: dateEnd
@@ -59,7 +59,7 @@
         });
     }
 
-    function getReportByDep(dateStart, dateEnd, employeeId) {
+    function getReportByEmployee(dateStart, dateEnd, employeeId) {
         var spinner = new Spinner({
             lines: 11,
             length: 16,
@@ -71,7 +71,7 @@
             url: "UsersAjax",
             method: "get",
             data: {
-                queryName: "getReportByDep",
+                queryName: "getReportByEmployee",
                 employeeid: employeeId,
                 datestart: dateStart,
                 dateend: dateEnd

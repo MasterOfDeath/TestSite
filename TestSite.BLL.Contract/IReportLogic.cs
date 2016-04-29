@@ -10,6 +10,8 @@
 
         bool RemoveReport(int reportId);
 
-        ICollection<Report> ListReportsByDate(DateTime start, DateTime end);
+        ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end);
+
+        ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end);
     }
 }

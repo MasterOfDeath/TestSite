@@ -18,6 +18,8 @@
         currentAnswers = [],
         testNameExp = /^\S.+\S$/;
 
+    testsListUpdate();
+
     $addTestBtn.click(clickAddTestBtn);
     $editTestBtn.click(clickEditTestBtn);
     $removeTestBtn.click(clickRemoveTestBtn);

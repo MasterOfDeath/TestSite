@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Contract;
     using Entites;
 
@@ -25,9 +26,14 @@
             return result;
         }
 
-        public ICollection<Report> ListReportsByDate(DateTime start, DateTime end)
+        public ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end)
         {
             ICollection<Report> result = null;
+
+            if (depId < -1)
+            {
+                throw new ArgumentException($"{nameof(depId)} не может быть отрицательным");
+            }
 
             if (start == null && end == null)
             {
@@ -36,7 +42,33 @@
 
             try
             {
-                result = Stores.ReportStore.ListReportsByDate(start, end);
+                result = Stores.ReportStore.ListReportsByDep(depId, start, end);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+        public ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end)
+        {
+            ICollection<Report> result = null;
+
+            if (employeeId < -1)
+            {
+                throw new ArgumentException($"{nameof(employeeId)} не может быть отрицательным");
+            }
+
+            if (start == null && end == null)
+            {
+                throw new ArgumentException($"{nameof(start)} и {nameof(end)} не могут быть отрицательными");
+            }
+
+            try
+            {
+                result = Stores.ReportStore.ListReportsByEmployee(employeeId, start, end);
             }
             catch (Exception ex)
             {

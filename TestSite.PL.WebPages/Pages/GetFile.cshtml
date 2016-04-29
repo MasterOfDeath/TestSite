@@ -1,6 +1,6 @@
 ﻿@using TestSite.PL.WebPages.Models
 @{
-    var imageQueries = GetImagePage.Queries;
+    var fileQueries = GetFilePage.Queries;
 
     if (!User.Identity.IsAuthenticated)
     {
@@ -11,15 +11,15 @@
     if (!IsPost)
     {
         var queryName = Request["queryName"];
-        byte[] result = null;
+        Tuple<byte[], string> result = null;
 
-        if (queryName != null && imageQueries.ContainsKey(queryName))
+        if (queryName != null && fileQueries.ContainsKey(queryName))
         {
-            result = imageQueries[queryName].Invoke(Request);
+            result = fileQueries[queryName].Invoke(Request);
 
             if (result != null)
             {
-                Response.WriteBinary(result, "image/svg+xml");
+                Response.WriteBinary(result.Item1, result.Item2);
             }
         }
     }

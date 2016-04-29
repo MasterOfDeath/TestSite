@@ -116,7 +116,7 @@
             return true;
         }
 
-        public bool ChangePassword(int employeeId, string oldPassword, string newPassword)
+        public bool ChangePassword(int employeeId, string oldPassword, string newPassword, bool godMode)
         {
             if (employeeId < 1)
             {
@@ -133,7 +133,16 @@
                 throw new ArgumentException($"Пароль не соответсвует требованиям безопасности");
             }
 
-            var employee = this.CanLogin(employeeId, oldPassword);
+            Employee employee = null;
+
+            if (godMode)
+            {
+                employee = this.GetEmployeeById(employeeId);
+            }
+            else
+            {
+                employee = this.CanLogin(employeeId, oldPassword);
+            }
 
             if (employee != null)
             {

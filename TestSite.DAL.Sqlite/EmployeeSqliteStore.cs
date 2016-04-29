@@ -206,7 +206,9 @@
             {
                 connection.Open();
 
-                using (var command = new SQLiteCommand("DELETE FROM employee WHERE id=:id", connection))
+                var delete = "PRAGMA foreign_keys = ON; DELETE FROM employee WHERE id=:id";
+
+                using (var command = new SQLiteCommand(delete, connection))
                 {
                     command.Parameters.AddWithValue(":id", employeeId);
                     var result = command.ExecuteNonQuery();

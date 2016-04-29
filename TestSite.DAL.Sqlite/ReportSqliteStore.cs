@@ -97,10 +97,12 @@
             }
         }
 
-        public ICollection<Report> ListReportsByDate(DateTime start, DateTime end)
+        public ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end)
         {
-            var select = "SELECT * FROM report " +
-                         "WHERE \"date\" BETWEEN :dateStart AND :dateEnd";
+            var select = "SELECT report.* , employee.dep_id " +
+                         "FROM report " +
+                         "JOIN employee ON report.employee_id = employee.id " +
+                         "WHERE (\"date\" BETWEEN :dateStart AND :dateEnd) AND (employee.dep_id = :depId)";
 
             using (var connection = new SQLiteConnection(this.connectionString))
             {
@@ -108,6 +110,7 @@
                 {
                     command.Parameters.AddWithValue(":dateStart", this.DateTimeToUnixTime(start));
                     command.Parameters.AddWithValue(":dateEnd", this.DateTimeToUnixTime(end));
+                    command.Parameters.AddWithValue(":depId", depId);
                     List<Report> result = null;
 
                     connection.Open();
@@ -130,40 +133,40 @@
             }
         }
 
-        //public ICollection<List<string[]>> ListReportsByDate(DateTime start, DateTime end)
-        //{
-        //    var select = "SELECT report.id, employee.last_name, employee.first_name, test.name, \"date\", err_count, err_percent " +
-        //                 "FROM report " +
-        //                 "JOIN employee ON report.employee_id = employee.id " +
-        //                 "JOIN test ON report.test_id = test.id " +
-        //                 "WHERE \"date\" BETWEEN :dateStart AND :dateEnd";
+        public ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end)
+        {
+            var select = "SELECT * " +
+                         "FROM report " +
+                         "WHERE (\"date\" BETWEEN :dateStart AND :dateEnd) AND (employee_id = :employeeId)";
 
-        //    using (var connection = new SQLiteConnection(this.connectionString))
-        //    {
-        //        using (var command = new SQLiteCommand(select, connection))
-        //        {
-        //            command.Parameters.AddWithValue(":testId", testId);
-        //            List<Question> result = null;
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                using (var command = new SQLiteCommand(select, connection))
+                {
+                    command.Parameters.AddWithValue(":dateStart", this.DateTimeToUnixTime(start));
+                    command.Parameters.AddWithValue(":dateEnd", this.DateTimeToUnixTime(end));
+                    command.Parameters.AddWithValue(":employeeId", employeeId);
+                    List<Report> result = null;
 
-        //            connection.Open();
+                    connection.Open();
 
-        //            using (var reader = command.ExecuteReader())
-        //            {
-        //                if (reader.HasRows)
-        //                {
-        //                    result = new List<Question>(reader.StepCount);
-        //                }
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            result = new List<Report>(reader.StepCount);
+                        }
 
-        //                while (reader.Read())
-        //                {
-        //                    result.Add(this.RowToQuestion(reader));
-        //                }
+                        while (reader.Read())
+                        {
+                            result.Add(this.RowToReport(reader));
+                        }
 
-        //                return result;
-        //            }
-        //        }
-        //    }
-        //}
+                        return result;
+                    }
+                }
+            }
+        }
 
         public bool RemoveReport(int reportId)
         {
@@ -197,7 +200,7 @@
 
         private DateTime UnixTimeToDateTime(long unixTimeStamp)
         {
-            return zeroUnixDate.AddSeconds(unixTimeStamp).ToLocalTime();
+            return zeroUnixDate.AddSeconds(unixTimeStamp).ToUniversalTime();
         }
 
         private long DateTimeToUnixTime(DateTime date)

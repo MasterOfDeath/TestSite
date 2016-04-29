@@ -27,6 +27,7 @@
 <div class="content content-profile container-fluid" data-user-id="@User.Identity.Name">
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#passwordTab">Изменение пароля</a></li>
+        <li><a data-toggle="tab" href="#reportTab">Моя статистика</a></li>
     </ul>
 
     <div class="tab-content">
@@ -53,6 +54,13 @@
                 </div>
             </div>
         </div>
+
+        <div id="reportTab" class="tab-pane fade in report-tab">
+            <!-- Report tab -->
+            @RenderPage("~/Pages/_ReportPartial.cshtml")
+            <!--  -->
+        </div>
+
     </div>
 
     <!-- ErrorModal -->
@@ -62,9 +70,18 @@
 
 @section header {
     <link rel="icon" type="image/png" href="~/images/icons/profile.png" />
+    <link href="~/Content/bootstrap-datepicker3.min.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/generals/testTabs.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/generals/tables.css" rel="stylesheet" />
+    <link href="~/Content/ProjectStyles/generals/reportTab.css" rel="stylesheet" />
     <link href="~/Content/ProjectStyles/profile.css" rel="stylesheet" />
 }
 
 @section scripts {
+    <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+    <script src="~/Scripts/locales/bootstrap-datepicker.ru.min.js"></script>
+    <script src="~/Scripts/jquery.fileDownload.js"></script>
+    <script src="~/Scripts/spin.min.js"></script>
     <script src="~/Scripts/ProjectScripts/profile.js"></script>
+    <script src="~/Scripts/ProjectScripts/profile-report.js"></script>
 }
