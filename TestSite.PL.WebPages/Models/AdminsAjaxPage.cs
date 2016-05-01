@@ -2,38 +2,47 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Web;
     using System.Web.Helpers;
     using Entites;
-    using Logger;
-    using System.IO;
 
     public static class AdminsAjaxPage
     {
         private const string adminRole = "admin";
+        private const int UserRoleId = 2;
 
-        private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
-            = new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>();
+        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> AdminsQueries { get; } =
+            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
+            {
+                ["clickSaveTestBtn"] = ClickSaveTestBtn,
+                ["listQuestionsByTestId"] = ListQuestionsByTestId,
+                ["saveQuestionAndAnswers"] = SaveQuestionAndAnswers,
+                ["getQuestionAndAnswers"] = GetQuestionAndAnswers,
+                ["removeTest"] = RemoveTest,
+                ["removeQuestion"] = RemoveQuestion,
+                ["getTestForPreview"] = GetTestForPreview,
+                ["saveEmployeeByDepFromOwner"] = SaveEmployeeByDepFromOwner,
+                ["removeEmployee"] = RemoveEmployee,
+            };
 
-        static AdminsAjaxPage()
-        {
-            _Queries.Add("clickSaveTestBtn", ClickSaveTestBtn);
-            _Queries.Add("listQuestionsByTestId", ListQuestionsByTestId);
-            _Queries.Add("saveQuestionAndAnswers", SaveQuestionAndAnswers);
-            _Queries.Add("getQuestionAndAnswers", GetQuestionAndAnswers);
-            _Queries.Add("removeTest", RemoveTest);
-            _Queries.Add("removeQuestion", RemoveQuestion);
-            _Queries.Add("getTestForPreview", GetTestForPreview);
-            _Queries.Add("listEmployeesByDep", ListEmployeesByDep);
-            _Queries.Add("saveEmployee", SaveEmployee);
-            _Queries.Add("removeEmployee", RemoveEmployee);
-        }
+        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> SuperadminsQueries { get; } =
+            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
+            {
+                ["insertDep"] = InsertDep,
+                ["removeDep"] = RemoveDep,
+                ["saveEmployeeByDep"] = SaveEmployeeByDep,
+                ["removeEmployee"] = RemoveEmployee,
+            };
 
-        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
-        {
-            get { return _Queries; }
-        }
+        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> InspectorsQueries { get; } =
+            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
+            {
+                ["listQuestionsByTestId"] = ListQuestionsByTestId,
+                ["getQuestionAndAnswers"] = GetQuestionAndAnswers,
+                ["getTestForPreview"] = GetTestForPreview,
+            };
 
         private static AjaxResponse ClickSaveTestBtn(HttpRequestBase request)
         {
@@ -51,7 +60,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -60,7 +69,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             Test test = (testId > 0) ? new Test(testId, testName, depId) : new Test(testName, depId);
@@ -71,7 +80,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
             
             return new AjaxResponse(null, true);
@@ -89,7 +98,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -98,7 +107,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, questions);
@@ -133,7 +142,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -142,12 +151,12 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             if (questionId < 0)
             {
-                return SendError(new InvalidOperationException("Не известная ошибка"), methodName);
+                return Common.SendError(new InvalidOperationException("Не известная ошибка"), methodName);
             }
 
             foreach (var answer in answers)
@@ -167,7 +176,7 @@
                 }
                 catch (Exception ex)
                 {
-                    return SendError(ex, methodName);
+                    return Common.SendError(ex, methodName);
                 }
             }
 
@@ -179,7 +188,7 @@
                 }
                 catch (Exception ex)
                 {
-                    return SendError(ex, methodName);
+                    return Common.SendError(ex, methodName);
                 }
             }
 
@@ -190,7 +199,6 @@
         {
             var methodName = nameof(GetQuestionAndAnswers);
             int questionId = -1;
-            //string text = null;
             Question question = null;
 
             try
@@ -199,7 +207,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -208,7 +216,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             ICollection<Answer> answers = null;
@@ -219,7 +227,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             dynamic questionAndAnswers = new { text = question.Name, questionType = question.Type, answers = answers };
@@ -238,7 +246,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -247,7 +255,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, true);
@@ -264,7 +272,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -273,7 +281,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, true);
@@ -291,7 +299,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -300,17 +308,16 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, result);
         }
 
-        private static AjaxResponse ListEmployeesByDep(HttpRequestBase request)
+        private static AjaxResponse SaveEmployeeByDepFromOwner(HttpRequestBase request)
         {
-            var methodName = nameof(ListEmployeesByDep);
+            var methodName = nameof(SaveEmployeeByDepFromOwner);
             int requestOwnerId = -1;
-            ICollection<Employee> employees;
 
             try
             {
@@ -318,71 +325,49 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
-            try
-            {
-                var requestOwner = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId);
-                employees = LogicProvider.EmployeeLogic.ListEmployeesByDepId(requestOwner.Dep_Id);
-            }
-            catch (Exception ex)
-            {
-                return SendError(ex, methodName);
-            }
-
-            return new AjaxResponse(null, employees);
-        }
-
-        private static AjaxResponse SaveEmployee(HttpRequestBase request)
-        {
-            var methodName = nameof(SaveEmployee);
-            int requestOwnerId = -1;
-            int employeeId = -1;
-            string firstName;
-            string laststName;
-            string password;
-
-            try
-            {
-                requestOwnerId = Convert.ToInt32(request["requestowner"]);
-                employeeId = Convert.ToInt32(request["employeeid"]);
-                firstName = request["firstname"];
-                laststName = request["lastname"];
-                password = request["password"];
-            }
-            catch (Exception ex)
-            {
-                return SendError(ex, methodName);
-            }
-            
-            Employee employee = null;
             int result = -1;
 
             try
             {
-                if (employeeId == -1)
-                {
-                    var requestOwner = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId);
-                    employee = new Employee(requestOwner.Dep_Id, firstName, laststName, null, enabled: true);
-                    result = LogicProvider.EmployeeLogic.AddEmployee(employee, password);
-                }
-                else
-                {
-                    employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
-                    employee.FirstName = firstName;
-                    employee.LastName = laststName;
-                    result = LogicProvider.EmployeeLogic.InsertEmployee(employee);
-
-                    if (password != "" && result > 0)
-                    {
-                        LogicProvider.EmployeeLogic.ChangePassword(employeeId, "IamGod", password, godMode: true);
-                    }
-                }
+                var depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
+                result = SaveEmployee(request, depId, UserRoleId);
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
+        }
+
+        private static AjaxResponse SaveEmployeeByDep(HttpRequestBase request)
+        {
+            var methodName = nameof(SaveEmployeeByDep);
+            int depId = -1;
+            int roleId = -1;
+
+            try
+            {
+                depId = Convert.ToInt32(request["depid"]);
+                roleId = Convert.ToInt32(request["roleid"]);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            int result = -1;
+
+            try
+            {
+                result = SaveEmployee(request, depId, roleId);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, result);
@@ -399,7 +384,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             bool result = false;
@@ -410,38 +395,108 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, result);
         }
 
-        private static AjaxResponse SendError(Exception ex, string sender = null)
+        private static AjaxResponse InsertDep(HttpRequestBase request)
         {
-            if (sender == null)
+            var methodName = nameof(InsertDep);
+            int employeeId = -1;
+            int depId = -1;
+            string depName = null;
+
+            try
             {
-                Logger.Log.Error(ex.Message);
+                employeeId = Convert.ToInt32(request["employeeid"]);
+                depId = Convert.ToInt32(request["depid"]);
+                depName = request["depname"];
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Log.Error(sender, ex);
+                return Common.SendError(ex, methodName);
             }
 
-            return new AjaxResponse(ex.Message);
+            bool result = false;
+
+            try
+            {
+                result = LogicProvider.DepLogic.InsertDep(new Dep(depId, depName));
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
         }
 
-        private static AjaxResponse SendError(string message, string logMessage, string sender = null)
+        private static AjaxResponse RemoveDep(HttpRequestBase request)
         {
-            if (sender == null)
+            int depId = -1;
+            var methodName = nameof(RemoveTest);
+
+            try
             {
-                Logger.Log.Error(logMessage);
+                depId = Convert.ToInt32(request["depid"]);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            bool result = false;
+
+            try
+            {
+                result = LogicProvider.DepLogic.RemoveDep(depId);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
+        }
+        
+        // Вызывать только в try catch
+        private static int SaveEmployee(HttpRequestBase request, int depId, int roleId)
+        {
+            int employeeId = -1;
+            string firstName;
+            string laststName;
+            string password;
+
+            employeeId = Convert.ToInt32(request["employeeid"]);
+            firstName = request["firstname"];
+            laststName = request["lastname"];
+            password = request["password"];
+
+            Employee employee = null;
+            int result = -1;
+
+            if (employeeId == -1)
+            {
+                employee = new Employee(depId, firstName, laststName, null, true, roleId);
+                result = LogicProvider.EmployeeLogic.AddEmployee(employee, password);
             }
             else
             {
-                Logger.Log.Error(sender, new Exception(logMessage));
+                employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+                employee.FirstName = firstName;
+                employee.LastName = laststName;
+                employee.Role_Id = roleId;
+                result = LogicProvider.EmployeeLogic.InsertEmployee(employee);
+
+                if (password != "" && result > 0)
+                {
+                    LogicProvider.EmployeeLogic.ChangePassword(employeeId, "IamGod", password, godMode: true);
+                }
             }
 
-            return new AjaxResponse(message);
+            return result;
         }
     }
 }

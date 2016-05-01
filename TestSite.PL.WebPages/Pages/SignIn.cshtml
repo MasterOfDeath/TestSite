@@ -22,6 +22,19 @@
         log.Error(ex.Message);
     }
 
+    if (deps != null)
+    {
+        // Отдел Супер Администратора и Инспекторы перемещаем в конец списка 
+        var item1 = deps.Where(d => d.Id == 1).SingleOrDefault();
+        var item2 = deps.Where(d => d.Id == 2).SingleOrDefault();
+
+        deps.Remove(item1);
+        deps.Remove(item2);
+
+        deps.Add(item2);
+        deps.Add(item1);
+    }
+
     if (IsAjax && IsPost)
     {
         try
@@ -84,6 +97,11 @@
                                 {
                                     foreach (var dep in deps)
                                     {
+                                        if (dep.Id == 2)
+                                        {
+                                            <option disabled>──────────</option>
+                                        }
+
                                         <option value="@dep.Id">@dep.Name</option>
                                     }
                                 }

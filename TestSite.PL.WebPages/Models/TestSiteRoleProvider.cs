@@ -27,11 +27,11 @@
             try
             {
                 int userId = Convert.ToInt32(username);
-                result = LogicProvider.RoleLogic.ListRolesForUserByUserId(userId).ToArray();
+                result = LogicProvider.EmployeeLogic.ListRolesForUserByUserId(userId).ToArray();
             }
             catch (Exception ex)
             {   // TODO Maybe FATAL?
-                Logger.Log.Error(nameof(LogicProvider.RoleLogic.ListRolesForUserByUserId), ex);
+                Logger.Log.Error(nameof(LogicProvider.EmployeeLogic.ListRolesForUserByUserId), ex);
             }
 
             return result;

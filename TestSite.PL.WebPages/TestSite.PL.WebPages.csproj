@@ -161,6 +161,7 @@
     <Content Include="Pages\_TestsTabPartial.cshtml" />
     <Content Include="Pages\_EditTestTabPartial.cshtml" />
     <Content Include="Pages\_DepsTabPartial.cshtml" />
+    <Content Include="Pages\_EditDepTabPartial.cshtml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -237,6 +238,7 @@
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-CN.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-TW.min.js" />
     <Content Include="Scripts\ProjectScripts\admin-personal.js" />
+    <Content Include="Scripts\ProjectScripts\admin-deps.js" />
     <Content Include="Scripts\ProjectScripts\profile-report.js" />
     <Content Include="Scripts\ProjectScripts\admin-report.js" />
     <Content Include="Scripts\ProjectScripts\admin-test-preview.js" />
@@ -286,6 +288,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Common.cs" />
     <Compile Include="Models\GetFilePage.cs" />
     <Compile Include="Models\UsersAjaxPage.cs" />
     <Compile Include="Models\AjaxResponse.cs" />

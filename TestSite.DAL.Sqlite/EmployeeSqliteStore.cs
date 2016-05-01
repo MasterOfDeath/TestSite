@@ -54,12 +54,13 @@
                              "first_name=:first_name, " +
                              "last_name=:last_name, " +
                              "hash=:hash, " +
-                             "enabled=:enabled " +
+                             "enabled=:enabled, " +
+                             "role_id=:role_id " +
                              "WHERE id=:id";
 
                 var insert = "INSERT INTO employee " +
-                             "(dep_id, first_name, last_name, hash, enabled) " +
-                             "VALUES (:dep_id, :first_name, :last_name, :hash, :enabled); " +
+                             "(dep_id, first_name, last_name, hash, enabled, role_id) " +
+                             "VALUES (:dep_id, :first_name, :last_name, :hash, :enabled, :role_id); " +
                              "SELECT last_insert_rowid() AS id;";
 
                 if (employee.Id > 0)
@@ -72,6 +73,7 @@
                         command.Parameters.AddWithValue(":last_name", employee.LastName);
                         command.Parameters.AddWithValue(":hash", employee.Hash);
                         command.Parameters.AddWithValue(":enabled", employee.Enabled);
+                        command.Parameters.AddWithValue(":role_id", employee.Role_Id);
 
                         result = (command.ExecuteNonQuery() > 0) ? employee.Id : -1;
                     }
@@ -85,6 +87,7 @@
                         command.Parameters.AddWithValue(":last_name", employee.LastName);
                         command.Parameters.AddWithValue(":hash", employee.Hash);
                         command.Parameters.AddWithValue(":enabled", employee.Enabled);
+                        command.Parameters.AddWithValue(":role_id", employee.Role_Id);
 
                         using (var reader = command.ExecuteReader())
                         {
@@ -218,16 +221,51 @@
             }
         }
 
+        public ICollection<string> ListRolesForUserByUserId(int employeeId)
+        {
+            using (var connection = new SQLiteConnection(this.connectionString))
+            {
+                connection.Open();
+
+                var select = "SELECT employee.id, role.name " +
+                             "FROM employee " +
+                             "JOIN role ON role.id = employee.role_id " +
+                             "WHERE employee.id = :employeeId";
+
+                using (var command = new SQLiteCommand(select, connection))
+                {
+                    List<string> result = null;
+                    command.Parameters.AddWithValue(":employeeId", employeeId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            result = new List<string>();
+                        }
+
+                        while (reader.Read())
+                        {
+                            result.Add((string)reader["name"]);
+                        }
+
+                        return result;
+                    }
+                }
+            }
+        }
+
         private Employee RowToEmployee(SQLiteDataReader reader)
         {
-            var id = reader.GetInt32(0);
-            var dep_id = reader.GetInt32(1);
-            var first_name = reader.GetString(2);
-            var last_name = reader.GetString(3);
-            var hash = (byte[])reader.GetValue(4);
-            var enabled = reader.GetBoolean(5);
+            var id = (int)(long)reader["id"];
+            var dep_id = (int)(long)reader["dep_id"];
+            var first_name = (string)reader["first_name"];
+            var last_name = (string)reader["last_name"];
+            var hash = (byte[])reader["hash"];
+            var enabled = Convert.ToBoolean((long)reader["enabled"]);
+            var role_id = (int)(long)reader["role_id"];
 
-            return new Employee(id, dep_id, first_name, last_name, hash, enabled);
+            return new Employee(id, dep_id, first_name, last_name, hash, enabled, role_id);
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
@@ -12,17 +13,23 @@
 
     public class EmployeeMainLogic : IEmployeeLogic
     {
-        private const int UsernameMinLength = 6;
+        private readonly string SuperAdminPass = ConfigurationManager.AppSettings["superAdminPass"];
+
         private const int PasswordMinLength = 6;
-        private const string defaultRole = "user";
-        private readonly Regex passwordEx = new Regex("^(?=.{" + PasswordMinLength + ",}$)[^\\s]+$"); //^(?=.{6,}$)[^\s]+$
+        private const int AdminRoleId = 1;
+        private const int InspectorRoleId = 4;
+        private const int InspectorsDepId = 2;
+        private const int SuperAdminId = 1;
+        private readonly Regex passwordEx = new Regex($"^(?=.{{{PasswordMinLength},}}$)[^\\s]+$"); //^(?=.{6,}$)[^\s]+$
 
         public int AddEmployee(Employee employee, string password)
         {
-            if (!passwordEx.IsMatch(password))
+            if (password == null || !passwordEx.IsMatch(password))
             {
                 throw new ArgumentException($"Пароль не соответсвует требованиям безопасности");
             }
+
+            this.IsValidEmployee(employee);
 
             employee.Hash = this.GetHash(password);
 
@@ -31,7 +38,6 @@
             if (result > 0)
             {
                 Logger.Log.Info($"Создан пользователь: {employee.Id} {employee.FirstName} {employee.LastName}");
-                Stores.RoleStore.GiveRole(result, defaultRole);
             }
 
             return result;
@@ -44,7 +50,7 @@
                 throw new ArgumentException($"{nameof(employeeId)} не может быть 0 или меньше");
             }
 
-            var employee = new Employee(0, null, null, null, false);
+            Employee employee = null;
 
             try
             {
@@ -60,6 +66,15 @@
                 throw new InvalidOperationException($"Пользователь {employeeId} не найден");
             }
 
+            // Пароль Супер админа из Web.config
+            if (employeeId == SuperAdminId)
+            {
+                if (SuperAdminPass != null && passwordEx.IsMatch(SuperAdminPass) && password == SuperAdminPass)
+                {
+                    return employee;
+                }
+            }
+
             return employee.Hash.SequenceEqual(this.GetHash(password)) ? employee : null;
         }
 
@@ -67,10 +82,39 @@
         {
             int result = -1;
 
+            this.IsValidEmployee(employee);
+
+            if (employee.Id == SuperAdminId)
+            {
+                throw new ArgumentException("Данный пользователь является системным, изменение запрещено");
+            }
+
+            // Инспекторы лежат только в отделе Инспекторы
+            if (employee.Role_Id == InspectorRoleId)
+            {
+                employee.Dep_Id = InspectorsDepId;
+            }
+
+            // Проверка на последнего администратора
             try
             {
-                this.IsValidEmployee(employee);
+                var oldEmployee = Stores.EmployeeStore.GetEmployeeById(employee.Id);
+                if (oldEmployee != null && oldEmployee.Role_Id == AdminRoleId && employee.Role_Id != AdminRoleId)
+                {
+                    var employees = Stores.EmployeeStore.ListEmployeesByDepId(employee.Dep_Id);
+                    if (employees.Count(e => e.Role_Id == AdminRoleId) == 1)
+                    {
+                        throw new InvalidOperationException("Нельзя удалить последнего администратора в отделе");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
+            try
+            {
                 result = Stores.EmployeeStore.InsertEmployee(employee);
             }
             catch (Exception ex)
@@ -102,6 +146,29 @@
             if (employeeId < 1)
             {
                 throw new ArgumentException($"{nameof(employeeId)} не может быть 0 или меньше");
+            }
+
+            if (employeeId == SuperAdminId)
+            {
+                throw new ArgumentException("Данный пользователь является системным, удаление запрещено");
+            }
+
+            // Проверка на последнего администратора
+            try
+            {
+                var employee = Stores.EmployeeStore.GetEmployeeById(employeeId);
+                if (employee != null && employee.Role_Id == AdminRoleId)
+                {
+                    var employees = Stores.EmployeeStore.ListEmployeesByDepId(employee.Dep_Id);
+                    if (employees.Count(e => e.Role_Id == AdminRoleId) == 1)
+                    {
+                        throw new InvalidOperationException("Нельзя удалить последнего администратора в отделе");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
             try
@@ -215,12 +282,22 @@
             return result;
         }
 
+        public ICollection<string> ListRolesForUserByUserId(int employeeId)
+        {
+            if (employeeId < 0)
+            {
+                throw new ArgumentException($"{nameof(employeeId)} не может быть отрицательным");
+            }
+
+            return Stores.EmployeeStore.ListRolesForUserByUserId(employeeId);
+        }
+
         private bool IsValidEmployee(Employee employee)
         {
-            //if (string.IsNullOrWhiteSpace(employee.))
-            //{
-            //    throw new ArgumentException("Имя пользователя не может быть пустым или состоять из пробелов");
-            //}
+            if (employee == null)
+            {
+                throw new ArgumentException($"{nameof(employee)} не может быть null");
+            }
 
             //if (admin.UserName.Length < UsernameMinLength)
             //{

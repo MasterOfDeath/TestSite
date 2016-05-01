@@ -4,6 +4,9 @@
     PageData["Title"] = "Администрирование";
 
     const string adminRole = "admin";
+    const string superAdminRole = "superadmin";
+    const string inspectorRole = "inspector";
+    ICollection<string> usersRoles = null;
 
     string errorMessage = null;
 
@@ -15,7 +18,25 @@
         return;
     }
 
-    if (!User.IsInRole(adminRole) && !User.IsInRole("superadmin") && !User.IsInRole("inspector"))
+    try
+    {
+        var userId = Convert.ToInt32(User.Identity.Name);
+        usersRoles = LogicProvider.EmployeeLogic.ListRolesForUserByUserId(userId);
+    }
+    catch (Exception ex)
+    {
+        // TODO Fatal Page
+        errorMessage = ex.Message;
+    }
+
+    if (usersRoles == null)
+    {
+        // TODO Fatal Page
+    }
+
+    if (!usersRoles.Contains(adminRole) &&
+        !usersRoles.Contains("superadmin") &&
+        !usersRoles.Contains("inspector"))
     {
         Response.StatusCode = 403;
         return;
@@ -38,22 +59,23 @@
     </div>
 
     <ul class="nav nav-tabs">
-        @if (User.IsInRole(adminRole))
+        @if (usersRoles.Contains(adminRole) || usersRoles.Contains(inspectorRole))
         {
             <li class="listTests active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
             <li class="editTest hide"><a data-toggle="tab" href="#editTestTab"><b>Редактирование</b></a></li>
             <li><a data-toggle="tab" href="#personalTab">Персонал</a></li>
             <li><a data-toggle="tab" href="#reportTab">Статистика моего отдела</a></li>
         }
-        @if (User.IsInRole("superadmin"))
+        @if (usersRoles.Contains(superAdminRole))
         {
-            <li class="active"><a data-toggle="tab" href="#depsTab">Отделы</a></li>
+            <li class="listDeps active"><a data-toggle="tab" href="#depsTab">Отделы</a></li>
+            <li class="editDep hide"><a data-toggle="tab" href="#editDepTab"><b>Редактирование</b></a></li>
         }
     </ul>
 
     <div class="tab-content">
 
-        @if (User.IsInRole(adminRole))
+        @if (usersRoles.Contains(adminRole) || usersRoles.Contains(inspectorRole))
         {
             <div id="testsTab" class="tab-pane fade in active tests-tab">
                 <!-- Tests tab -->
@@ -81,11 +103,17 @@
             </div>
         }
 
-        @if (User.IsInRole("superadmin"))
+        @if (usersRoles.Contains(superAdminRole))
         {
             <div id="depsTab" class="tab-pane fade in active deps-tab">
-                <!-- Tests tab -->
+                <!-- Deps tab -->
                 @RenderPage("~/Pages/_DepsTabPartial.cshtml")
+                <!--  -->
+            </div>
+
+            <div id="editDepTab" class="tab-pane fade in editDep-tab" data-dep-id="-1" data-dep-name="">
+                <!-- Edit dep tab -->
+                @RenderPage("~/Pages/_EditDepTabPartial.cshtml")
                 <!--  -->
             </div>
         }
@@ -131,7 +159,15 @@
     <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
     <script src="~/Scripts/locales/bootstrap-datepicker.ru.min.js"></script>
     <script src="~/Scripts/ProjectScripts/admin.js"></script>
-    <script src="~/Scripts/ProjectScripts/admin-test-preview.js"></script>
-    <script src="~/Scripts/ProjectScripts/admin-report.js"></script>
-    <script src="~/Scripts/ProjectScripts/admin-personal.js"></script>
+    @if (usersRoles.Contains(adminRole) || usersRoles.Contains(inspectorRole))
+    {
+        <script src="~/Scripts/ProjectScripts/admin-test-preview.js"></script>
+        <script src="~/Scripts/ProjectScripts/admin-report.js"></script>
+        <script src="~/Scripts/ProjectScripts/admin-personal.js"></script>
+    }
+    
+    @if (usersRoles.Contains(superAdminRole))
+    {
+        <script src="~/Scripts/ProjectScripts/admin-deps.js"></script>
+    }
 }

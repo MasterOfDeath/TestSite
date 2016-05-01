@@ -1,7 +1,8 @@
 ﻿(function () {
     var $content = $(".content-admin"),
         $tabContent = $(".tab-content", $content),
-        $employeePrompt = $(".employee-prompt", $tabContent),
+        $employeePromptTemplate = $(".employee-prompt-template", $tabContent),
+        $employeePrompt,
         $removePrompt = $(".remove-prompt", $tabContent),
         $personalTab = $(".personal-tab", $tabContent),
         nameExp = /^\S.+\S$/,
@@ -10,22 +11,25 @@
     personalListUpdate();
 
     $(".personal-table", $personalTab).on("click", "tr", clickPersonalTable);
-    $(".save-employee-btn", $employeePrompt).click(clickSaveEmployeeBtn);
-    $(".remove-employee-btn", $employeePrompt).click(clickRemoveEmployeeBtn);
-    $(".change-pass-btn", $employeePrompt).click(clickChangePassBtn);
+    $(".save-employee-btn", $employeePromptTemplate).click(clickSaveEmployeeBtn);
+    $(".remove-employee-btn", $employeePromptTemplate).click(clickRemoveEmployeeBtn);
     $(".add-employee-btn", $personalTab).click(clickAddEmployeeBtn);
-    $(".firstname-input", $employeePrompt).keyup(changeNameInput).on("input", changeNameInput);
-    $(".lastname-input", $employeePrompt).keyup(changeNameInput).on("input", changeNameInput);
-    $(".pass-input", $employeePrompt).keyup(changePassInput).on("input", changePassInput);
-    $(".pass-check", $employeePrompt).change(changePassCheck);
+    $employeePromptTemplate.on("hidden.bs.modal", removeFromMemory);
+    $(".firstname-input", $employeePromptTemplate).keyup(changeNameInput).on("input", changeNameInput);
+    $(".lastname-input", $employeePromptTemplate).keyup(changeNameInput).on("input", changeNameInput);
+    $(".pass-input", $employeePromptTemplate).keyup(changePassInput).on("input", changePassInput);
+    $(".pass-check", $employeePromptTemplate).change(changePassCheck);
 
     function clickPersonalTable(event) {
         var $currentRow = $(event.target).closest("tr"),
             employeeId = $currentRow.data("employee-id"),
-            firstName = $(".firstname-td", $currentRow).text();
+            firstName = $(".firstname-td", $currentRow).text(),
             lastName = $(".lastname-td", $currentRow).text();
 
-        clearEmployeePrompt();
+        $(".employee-prompt").remove();
+        $employeePrompt = $employeePromptTemplate.clone(true);
+        $employeePrompt.removeClass("employee-prompt-template").addClass("employee-prompt");
+
         $employeePrompt.data("employee-id", employeeId);
         $(".firstname-input", $employeePrompt).val(firstName);
         $(".lastname-input", $employeePrompt).val(lastName);
@@ -36,7 +40,10 @@
     }
 
     function clickAddEmployeeBtn() {
-        clearEmployeePrompt();
+        $(".employee-prompt").remove();
+        $employeePrompt = $employeePromptTemplate.clone(true);
+        $employeePrompt.removeClass("employee-prompt-template").addClass("employee-prompt");
+
         $employeePrompt.data("employee-id", -1);
         $(".firstname-input", $employeePrompt).val("");
         $(".lastname-input", $employeePrompt).val("");
@@ -173,7 +180,7 @@
             url: "AdminsAjax",
             method: "post",
             data: {
-                queryName: "saveEmployee",
+                queryName: "saveEmployeeByDepFromOwner",
                 requestowner: requestOwner,
                 employeeid: employeeId,
                 firstname: firstName,
@@ -198,10 +205,10 @@
         var requestOwner = $content.data("user-id") + "";
 
         $.ajax({
-            url: "AdminsAjax",
+            url: "RegularAjax",
             method: "get",
             data: {
-                queryName: "listEmployeesByDep",
+                queryName: "listEmployeesByDepFromOwner",
                 requestowner: requestOwner
             }
         }).success(function (data) {
@@ -216,33 +223,24 @@
     }
 
     function populatePersonalTable(data) {
-        var tRows = [],
-            $row;
+        var $row;
 
         $(".personal-table tbody", $personalTab).empty();
 
         if (data !== null) {
             $(data).each(function (index, el) {
-                $row = $("<tr></tr>").clone();
                 $row = $("<tr data-employee-id=\"" + el.Id + "\"></tr>").clone();
                 $row.append("<td class='lastname-td'>" + el.LastName + "</td>");
                 $row.append("<td class='firstname-td'>" + el.FirstName + "</td>");
-                tRows.push($row);
+                $(".personal-table tbody", $personalTab).append($row);
             });
-
-            $(".personal-table tbody", $personalTab).append(tRows);
         }
     }
 
-    function clearEmployeePrompt() {
-        $employeePrompt.data("employee-id", "-1");
-        $(".firstname-input", $employeePrompt).val("");
-        $(".lastname-input", $employeePrompt).val("");
-        $(".pass-input", $employeePrompt).val("").prop("readonly", false);
-        $(".pass-group", $employeePrompt).val("");
-        $(".pass-check", $employeePrompt).prop("checked", true);
-        $(".has-feedback", $employeePrompt).removeClass("has-success").removeClass("has-error");
-        $(".form-control-feedback", $employeePrompt).removeClass("glyphicon-warning-sign").removeClass("glyphicon-ok");
+    function removeFromMemory(event) {
+        //$(event.target).remove();
+        //$(".modal-backdrop").remove();
+        $(this).data("modal", null);
     }
 
     function toggleInputFeedback($el, show) {

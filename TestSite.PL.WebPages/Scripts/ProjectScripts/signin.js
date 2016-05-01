@@ -19,15 +19,14 @@
             url: "RegularAjax",
             method: "get",
             data: {
-                queryName: "changeDepSelector",
+                queryName: "listEmployeesByDep",
                 depid: depId
             }
         }).success(function (data) {
             var result = JSON.parse(data);
 
             if (result.Error === null) {
-                $employeeSelector.empty();
-                $employeeSelector.append($(result.Data));
+                populateEmployeeSelector(result.Data);
             } else {
                 showError(result.Error);
             }
@@ -74,6 +73,16 @@
     function onEnterPress(event) {
         if (event.keyCode == 13) {
             clickLoginBtn();
+        }
+    }
+
+    function populateEmployeeSelector(data) {
+        $employeeSelector.empty();
+
+        if (data !== null) {
+            $(data).each(function (index, el) {
+                $employeeSelector.append("<option value=" + el.Id + ">" + el.LastName + " " + el.FirstName + "</option>");
+            });
         }
     }
 

@@ -5,102 +5,97 @@
     using System.Linq;
     using System.Web;
     using Entites;
-    using Logger;
-    using System.Text;
-    using System.Web.Security;
-    using System.Web.WebPages;
+
     public class RegularAjaxPage
     {
-        private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
-            = new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>();
+        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries { get; } =
+            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
+            {
+                ["listEmployeesByDep"] = ListEmployeesByDep,
+                ["listEmployeesByDepFromOwner"] = ListEmployeesByDepFromOwner,
+                ["listDeps"] = ListDeps,
+            };
 
-        static RegularAjaxPage()
+        private static AjaxResponse ListEmployeesByDepFromOwner(HttpRequestBase request)
         {
-            _Queries.Add("changeDepSelector", ChangeDepSelector);
-        }
-
-        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
-        {
-            get { return _Queries; }
-        }
-
-        private static AjaxResponse ChangeDepSelector(HttpRequestBase request)
-        {
-            string depIdStr = null;
-            var methodName = nameof(ChangeDepSelector);
+            var methodName = nameof(ListEmployeesByDepFromOwner);
+            int requestOwnerId = -1;
+            ICollection<Employee> employees;
 
             try
             {
-                depIdStr = request["depid"];
+                requestOwnerId = Convert.ToInt32(request["requestowner"]);
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
-
-            int depId;
 
             try
             {
-                depId = Convert.ToInt32(depIdStr);
+                var depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
+                employees = LogicProvider.EmployeeLogic.ListEmployeesByDepId(depId);
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
-            ICollection<Employee> employees = null;
+            if (employees != null)
+            {
+                employees = employees.Select(e => { e.Hash = null; return e; }).ToList();
+            }
+
+            return new AjaxResponse(null, employees);
+        }
+
+        private static AjaxResponse ListEmployeesByDep(HttpRequestBase request)
+        {
+            var methodName = nameof(ListEmployeesByDep);
+            int depId = -1;
+            ICollection<Employee> employees;
+
+            try
+            {
+                depId = Convert.ToInt32(request["depId"]);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
             try
             {
                 employees = LogicProvider.EmployeeLogic.ListEmployeesByDepId(depId);
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
-
-            string result = null;
 
             if (employees != null)
             {
-                var sb = new StringBuilder(employees.Count);
-                foreach (var employee in employees)
-                {
-                    sb.Append($"<option value='{employee.Id}'>{employee.LastName} {employee.FirstName}</option>");
-                }
-
-                result = sb.ToString();
+                employees = employees.Select(e => { e.Hash = null; return e; }).ToList();
             }
 
-            return new AjaxResponse(null, result);
+            return new AjaxResponse(null, employees);
         }
-
-        private static AjaxResponse SendError(Exception ex, string sender = null)
+        
+        private static AjaxResponse ListDeps(HttpRequestBase request)
         {
-            if (sender == null)
+            var methodName = nameof(ListDeps);
+
+            ICollection<Dep> deps = null;
+            try
             {
-                Logger.Log.Error(ex.Message);
+                deps = LogicProvider.DepLogic.ListAllDeps();
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Log.Error(sender, ex);
+                return Common.SendError(ex, methodName);
             }
 
-            return new AjaxResponse(ex.Message);
-        }
-
-        private static AjaxResponse SendError(string message, string logMessage, string sender = null)
-        {
-            if (sender == null)
-            {
-                Logger.Log.Error(logMessage);
-            }
-            else
-            {
-                Logger.Log.Error(sender, new Exception(logMessage));
-            }
-
-            return new AjaxResponse(message);
+            return new AjaxResponse(null, deps);
         }
     }
 }

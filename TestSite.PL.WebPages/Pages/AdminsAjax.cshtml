@@ -1,32 +1,53 @@
 ﻿@using TestSite.PL.WebPages.Models
 @{
-    const string adminRole = "admin";
-
     if (!User.Identity.IsAuthenticated)
     {
         Response.StatusCode = 401;
         return;
     }
 
-    if (!User.IsInRole(adminRole))
+    const string adminRole = "admin";
+    const string superAdminRole = "superadmin";
+    const string inspectorRole = "inspector";
+
+    var queries = new Dictionary<string, IDictionary<string, Func<HttpRequestBase, AjaxResponse>>>()
     {
-        Response.StatusCode = 403;
-        return;
+        { adminRole,  AdminsAjaxPage.AdminsQueries },
+        { superAdminRole, AdminsAjaxPage.SuperadminsQueries },
+        { inspectorRole, AdminsAjaxPage.InspectorsQueries },
+    };
+
+    string usersRole = null;
+
+    try
+    {
+        var userId = Convert.ToInt32(User.Identity.Name);
+        usersRole = LogicProvider.EmployeeLogic.ListRolesForUserByUserId(userId).SingleOrDefault();
+    }
+    catch (Exception ex)
+    {
+        Response.Write(Json.Encode(new AjaxResponse(ex.Message)));
     }
 
-    var ajaxQueries = AdminsAjaxPage.Queries;
     var queryName = Request["queryName"];
 
     if (IsAjax && queryName != null)
     {
         AjaxResponse result = new AjaxResponse(null, null);
 
-
-        if (ajaxQueries.ContainsKey(queryName))
+        if (queries[usersRole].ContainsKey(queryName))
         {
-            result = ajaxQueries[queryName].Invoke(Request);
+            result = queries[usersRole][queryName].Invoke(Request);
+        }
+        else
+        {
+            Response.Write(Json.Encode(new AjaxResponse("Не достаточно прав")));
+            return;
         }
 
-        Response.Write(Json.Encode(result));
+        if (result != null)
+        {
+            Response.Write(Json.Encode(result));
+        }
     }
 }

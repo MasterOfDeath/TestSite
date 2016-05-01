@@ -7,30 +7,23 @@
     using System.Web;
     using System.Web.Helpers;
     using Entites;
-    using Logger;
 
     public static class UsersAjaxPage
     {
-        private static readonly IDictionary<string, Func<HttpRequestBase, AjaxResponse>> _Queries
-            = new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>();
-
         private static Random rand = new Random();
 
-        static UsersAjaxPage()
-        {
-            _Queries.Add("getRandomMixedTest", GetRandomMixedTest);
-            _Queries.Add("getMixedTest", GetMixedTest);
-            _Queries.Add("checkMyAnswers", CheckMyAnswers);
-            _Queries.Add("listTestsForEmployee", ListTestsForEmployee);
-            _Queries.Add("changePassword", ChangePassword);
-            _Queries.Add("getReportByDep", GetReport);
-            _Queries.Add("getReportByEmployee", GetReport);
-        }
+        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries { get; } =
+            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
+            {
+                ["getRandomMixedTest"] = GetRandomMixedTest,
+                ["getMixedTest"] = GetMixedTest,
+                ["checkMyAnswers"] = CheckMyAnswers,
+                ["listTestsForEmployee"] = ListTestsForEmployee,
+                ["changePassword"] = ChangePassword,
+                ["getReportByDep"] = GetReport,
+                ["getReportByEmployee"] = GetReport,
+            };
 
-        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> Queries
-        {
-            get { return _Queries; }
-        }
 
         private static AjaxResponse GetRandomMixedTest(HttpRequestBase request)
         {
@@ -46,7 +39,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -55,7 +48,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, result);
@@ -73,7 +66,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -82,7 +75,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, result);
@@ -105,7 +98,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             ICollection<Answer> correctAnswers = null;
@@ -142,7 +135,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             if (rating)
@@ -156,7 +149,7 @@
                 }
                 catch (Exception ex)
                 {
-                    return SendError(ex, methodName);
+                    return Common.SendError(ex, methodName);
                 }
             }
 
@@ -176,7 +169,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -185,7 +178,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             try
@@ -194,7 +187,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, tests);
@@ -215,7 +208,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             var result = false;
@@ -226,7 +219,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, result);
@@ -249,7 +242,7 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             List<Dictionary<string, object>> result = null;
@@ -279,12 +272,55 @@
             }
             catch (Exception ex)
             {
-                return SendError(ex, methodName);
+                return Common.SendError(ex, methodName);
             }
 
             return new AjaxResponse(null, result);
         }
 
+        private static ICollection<T> Shuffle<T>(IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rand.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+
+            return list;
+        }
+
+        // Вызывать только в try catch
+        internal static object GetTestWithQuestions(int testId, bool mixed)
+        {
+            Test test = LogicProvider.TestLogic.GetTestById(testId);
+
+            ICollection<Question> questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(test.Id);
+
+            IList result = new ArrayList();
+
+            if (questions != null)
+            {
+                foreach (var question in questions)
+                {
+                    var answers = LogicProvider.AnswerLogic.ListAnswersByQuestionId(question.Id);
+                    if (mixed)
+                    {
+                        // Скрываем правильные ответы и перемешиваем
+                        answers = Shuffle(answers.Select(a => { a.Correct = false; return a; }).ToList());
+                    }
+
+                    result.Add(new { question, answers = answers });
+                }
+            }
+
+            return new { test = test, questions = result };
+        }
+
+        // Вызывать только в try catch
         internal static List<Dictionary<string, object>> GetReportData(ICollection<Report> reports)
         {
             if (reports == null)
@@ -335,76 +371,6 @@
             }
 
             return cache[testId];
-        }
-
-        private static AjaxResponse SendError(Exception ex, string sender = null)
-        {
-            if (sender == null)
-            {
-                Logger.Log.Error(ex.Message);
-            }
-            else
-            {
-                Logger.Log.Error(sender, ex);
-            }
-
-            return new AjaxResponse(ex.Message);
-        }
-
-        private static AjaxResponse SendError(string message, string logMessage, string sender = null)
-        {
-            if (sender == null)
-            {
-                Logger.Log.Error(logMessage);
-            }
-            else
-            {
-                Logger.Log.Error(sender, new Exception(logMessage));
-            }
-
-            return new AjaxResponse(message);
-        }
-
-        private static ICollection<T> Shuffle<T>(IList<T> list)
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rand.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
-
-            return list;
-        }
-
-        // Вызывать только в try catch
-        internal static object GetTestWithQuestions(int testId, bool mixed)
-        {
-            Test test = LogicProvider.TestLogic.GetTestById(testId);
-
-            ICollection<Question> questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(test.Id);
-
-            IList result = new ArrayList();
-
-            if (questions != null)
-            {
-                foreach (var question in questions)
-                {
-                    var answers = LogicProvider.AnswerLogic.ListAnswersByQuestionId(question.Id);
-                    if (mixed)
-                    {
-                        // Скрываем правильные ответы и перемешиваем
-                        answers = Shuffle(answers.Select(a => { a.Correct = false; return a; }).ToList());
-                    }
-
-                    result.Add(new { question, answers = answers });
-                }
-            }
-
-            return new { test = test, questions = result };
         }
     }
 }

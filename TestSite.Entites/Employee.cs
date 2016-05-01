@@ -8,7 +8,8 @@
             string firstName, 
             string lastName,
             byte[] hash,
-            bool enabled)
+            bool enabled,
+            int role_id)
         {
             this.Id = id;
             this.Dep_Id = dep_id;
@@ -16,10 +17,11 @@
             this.LastName = lastName;
             this.Hash = hash;
             this.Enabled = enabled;
+            this.Role_Id = role_id;
         }
 
-        public Employee(int dep_id, string firstName, string lastName, byte[] hash, bool enabled)
-            : this(0, dep_id, firstName, lastName, hash, enabled)
+        public Employee(int dep_id, string firstName, string lastName, byte[] hash, bool enabled, int role_id)
+            : this(0, dep_id, firstName, lastName, hash, enabled, role_id)
         {
         }
 
@@ -34,5 +36,7 @@
         public byte[] Hash { get; set; }
 
         public bool Enabled { get; set; }
+
+        public int Role_Id { get; set; }
     }
 }

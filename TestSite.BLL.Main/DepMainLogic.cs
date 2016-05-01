@@ -7,6 +7,9 @@
 
     public class DepMainLogic : IDepLogic
     {
+        private const int SuperAdminsDepId = 1;
+        private const int InspectorsDepId = 2;
+
         public Dep GetDepById(int depId)
         {
             Dep result = null;
@@ -26,6 +29,11 @@
         public bool InsertDep(Dep dep)
         {
             var result = false;
+
+            if (dep.Id == SuperAdminsDepId || dep.Id == InspectorsDepId)
+            {
+                throw new InvalidOperationException("Группа является системной, изменение запрещено");
+            }
 
             try
             {
@@ -59,6 +67,11 @@
 
         public bool RemoveDep(int depId)
         {
+            if (depId == SuperAdminsDepId || depId == InspectorsDepId)
+            {
+                throw new InvalidOperationException("Группа является системной, удаление запрещено");
+            }
+
             try
             {
                 Stores.DepStore.RemoveDep(depId);

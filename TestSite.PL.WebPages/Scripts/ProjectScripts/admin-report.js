@@ -97,7 +97,7 @@
 
         if (data !== null) {
             $(data).each(function (index, el) {
-                $row = $("<tr></tr>").clone();
+                //$row = $("<tr></tr>").clone();
                 $row = $("<tr data-report-id=\"" + el.Id + "\"></tr>").clone();
                 $row.append("<td>" + el.Date + "</td>");
                 $row.append("<td>" + el.Employee + "</td>");

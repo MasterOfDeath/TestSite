@@ -1,9 +1,16 @@
-1) Добавил FOREIGIN KEY в таблицу employee_role:
-CREATE TABLE "employee_role2" (
+1) Добавил столбец role_id в таблицу employee:
+
+CREATE TABLE "employee" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    "user_id" INTEGER NOT NULL,
-    "role_id" INTEGER NOT NULL,
-    FOREIGN KEY ("user_id") references employee(id) ON DELETE CASCADE
+    "dep_id" INTEGER NOT NULL,
+    "first_name" TEXT NOT NULL,
+    "last_name" TEXT NOT NULL,
+    "hash" BLOB NOT NULL,
+    "enabled" INTEGER,
+    "role_id" INTEGER NOT NULL
 )
 
-Копирование из табл. в табл.: INSERT INTO employee_role SELECT * FROM employee_role2;
+Копирование из табл. в табл.: INSERT INTO employee SELECT *, 1 FROM employee2
+Далее вручную расставить role_id из табл. employee_role
+
+2) Удалил табл. employee_role и admin

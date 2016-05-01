@@ -20,5 +20,7 @@
         bool ChangePassword(int employeeId, string oldPassword, string newPassword, bool godMode);
 
         Employee GetEmployeeById(int employeeId);
+
+        ICollection<string> ListRolesForUserByUserId(int employeeId);
     }
 }
