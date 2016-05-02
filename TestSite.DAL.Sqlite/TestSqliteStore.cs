@@ -40,7 +40,7 @@
 
         public bool InsertTest(Test test)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 SQLiteCommand command;
                 connection.Open();
@@ -127,43 +127,9 @@
             }
         }
 
-        //public ICollection<Tuple<int, int>> ListCorrectAnswers(int testId)
-        //{
-        //    using (var connection = new SQLiteConnection(this.connectionString))
-        //    {
-        //        var select = "SELECT question.id AS q_id, answer.id AS a_id " +
-        //                     "FROM question JOIN answer " +
-        //                     "ON question.id = answer.question_id " +
-        //                     "WHERE test_id = :testId AND correct = 1";
-
-        //        using (var command = new SQLiteCommand(select, connection))
-        //        {
-        //            command.Parameters.AddWithValue(":testId", testId);
-        //            List<Tuple<int, int>> result = null;
-
-        //            connection.Open();
-
-        //            using (var reader = command.ExecuteReader())
-        //            {
-        //                if (reader.HasRows)
-        //                {
-        //                    result = new List<Tuple<int, int>>(reader.StepCount);
-        //                }
-
-        //                while (reader.Read())
-        //                {
-        //                    result.Add(new Tuple<int, int>(reader.GetInt32(0), reader.GetInt32(1)));
-        //                }
-
-        //                return result;
-        //            }
-        //        }
-        //    }
-        //}
-
         public bool RemoveTest(int testId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 

@@ -57,27 +57,6 @@
             return result;
         }
 
-        //public ICollection<Tuple<int, int>> ListCorrectAnswers(int testId)
-        //{
-        //    ICollection<Tuple<int, int>> result = null;
-
-        //    if (testId < -1)
-        //    {
-        //        throw new ArgumentException($"{nameof(testId)} не может быть отрицательным");
-        //    }
-
-        //    try
-        //    {
-        //        result = Stores.TestStore.ListCorrectAnswers(testId);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-
-        //    return result;
-        //}
-
         public ICollection<Test> ListTestsByDepId(int depId)
         {
             ICollection<Test> result = null;

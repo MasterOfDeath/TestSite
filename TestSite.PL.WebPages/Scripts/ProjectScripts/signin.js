@@ -18,6 +18,7 @@
         $.ajax({
             url: "RegularAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "listEmployeesByDep",
                 depid: depId
@@ -46,6 +47,7 @@
         $.ajax({
             url: "SignIn",
             method: "post",
+            cache: false,
             data: {
                 queryName: "clickLoginBtn",
                 employeeid: employeeId,

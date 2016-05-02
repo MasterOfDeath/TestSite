@@ -50,7 +50,6 @@
     <Compile Include="TestMainLogic.cs" />
     <Compile Include="DepMainLogic.cs" />
     <Compile Include="EmployeeMainLogic.cs" />
-    <Compile Include="RoleMainLogic.cs" />
     <Compile Include="Stores.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -75,9 +74,9 @@
       <Project>{bc236b12-1cb4-4d29-b56c-f13d095d3f05}</Project>
       <Name>TestSite.Entites</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestSite.Exceptions\TestSite.Exceptions.csproj">
+    <ProjectReference Include="..\TestSite.Variables\TestSite.Variables.csproj">
       <Project>{d2994eda-8d99-4fae-9c9b-6f7caf1c34f7}</Project>
-      <Name>TestSite.Exceptions</Name>
+      <Name>TestSite.Variables</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

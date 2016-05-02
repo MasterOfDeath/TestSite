@@ -21,6 +21,7 @@
 
         Employee GetEmployeeById(int employeeId);
 
-        ICollection<string> ListRolesForUserByUserId(int employeeId);
+        //ICollection<string> ListRolesForUserByUserId(int employeeId);
+        Role GetRoleForUserByEmployeeId(int employeeId);
     }
 }

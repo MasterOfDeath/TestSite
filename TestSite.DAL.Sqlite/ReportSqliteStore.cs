@@ -18,7 +18,7 @@
         {
             int result = -1;
 
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
                 var insert = "INSERT INTO report (employee_id, test_id, date, err_count, err_percent) " +
@@ -55,7 +55,7 @@
                         {
                             if (reader.Read())
                             {
-                                result = reader.GetInt32(0); ;
+                                result = reader.GetInt32(0);
                             }
                             else
                             {
@@ -170,7 +170,7 @@
 
         public bool RemoveReport(int reportId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 
@@ -200,12 +200,12 @@
 
         private DateTime UnixTimeToDateTime(long unixTimeStamp)
         {
-            return zeroUnixDate.AddSeconds(unixTimeStamp).ToUniversalTime();
+            return this.zeroUnixDate.AddSeconds(unixTimeStamp).ToUniversalTime();
         }
 
         private long DateTimeToUnixTime(DateTime date)
         {
-            TimeSpan span = (date - zeroUnixDate);
+            TimeSpan span = date - this.zeroUnixDate;
 
             return (long)span.TotalSeconds;
         }

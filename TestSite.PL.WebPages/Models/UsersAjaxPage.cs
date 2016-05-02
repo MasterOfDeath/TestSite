@@ -24,6 +24,62 @@
                 ["getReportByEmployee"] = GetReport,
             };
 
+        // Вызывать только в try catch
+        internal static object GetTestWithQuestions(int testId, bool mixed)
+        {
+            Test test = LogicProvider.TestLogic.GetTestById(testId);
+
+            ICollection<Question> questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(test.Id);
+
+            IList result = new ArrayList();
+
+            if (questions != null)
+            {
+                foreach (var question in questions)
+                {
+                    var answers = LogicProvider.AnswerLogic.ListAnswersByQuestionId(question.Id);
+                    if (mixed)
+                    {
+                        // Скрываем правильные ответы и перемешиваем
+                        answers = Shuffle(answers.Select(a => { a.Correct = false; return a; }).ToList());
+                    }
+
+                    result.Add(new { question, answers = answers });
+                }
+            }
+
+            return new { test = test, questions = result };
+        }
+
+        // Вызывать только в try catch
+        internal static List<Dictionary<string, object>> GetReportData(ICollection<Report> reports)
+        {
+            if (reports == null)
+            {
+                return null;
+            }
+
+            List<Dictionary<string, object>> result = new List<Dictionary<string, object>>(reports.Count);
+
+            var employeeFIOCache = new Dictionary<int, string>();
+            var testNamesCache = new Dictionary<int, string>();
+
+            result = reports.Select(
+                    r => new Dictionary<string, object>()
+                    {
+                        { "Id", r.Id },
+                        { "Employee", GetEmployeeFIO(r.EmployeeId, employeeFIOCache) },
+                        { "Test", GetTestName(r.TestId, testNamesCache) },
+                        { "Date", r.Date.ToString("dd.MM.yyyy HH:mm") },
+                        { "ErrCount", r.ErrCount },
+                        { "ErrPercent", r.ErrPercent }
+                    }).ToList();
+
+            employeeFIOCache.Clear();
+            testNamesCache.Clear();
+
+            return result;
+        }
 
         private static AjaxResponse GetRandomMixedTest(HttpRequestBase request)
         {
@@ -44,7 +100,7 @@
 
             try
             {
-                result = GetTestWithQuestions(randomTestId, mixed:true);
+                result = GetTestWithQuestions(randomTestId, mixed: true);
             }
             catch (Exception ex)
             {
@@ -166,19 +222,23 @@
             try
             {
                 employeeId = Convert.ToInt32(request["employeeid"]);
+                depId = Convert.ToInt32(request["depid"]);
             }
             catch (Exception ex)
             {
                 return Common.SendError(ex, methodName);
             }
 
-            try
+            if (depId < 0)
             {
-                depId = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId).Dep_Id;
-            }
-            catch (Exception ex)
-            {
-                return Common.SendError(ex, methodName);
+                try
+                {
+                    depId = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId).Dep_Id;
+                }
+                catch (Exception ex)
+                {
+                    return Common.SendError(ex, methodName);
+                }
             }
 
             try
@@ -191,6 +251,65 @@
             }
 
             return new AjaxResponse(null, tests);
+        }
+
+        private static AjaxResponse GetReport(HttpRequestBase request)
+        {
+            var methodName = nameof(GetReport);
+            string queryName;
+            int requestOwnerId = -1;
+            DateTime dateStart;
+            DateTime dateEnd;
+            int depId = -1;
+
+            try
+            {
+                queryName = request["queryName"];
+                requestOwnerId = Convert.ToInt32(request["requestownerid"]);
+                dateStart = Convert.ToDateTime(request["datestart"]);
+                dateEnd = Convert.ToDateTime(request["dateend"]);
+                depId = Convert.ToInt32(request["depid"]);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            List<Dictionary<string, object>> result = null;
+
+            try
+            {
+                if (depId < 0)
+                {
+                    depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
+                }
+
+                dateEnd = dateEnd.AddHours(23 - dateEnd.Hour);
+                ICollection<Report> reports = null;
+
+                if (queryName == "getReportByEmployee")
+                {
+                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(requestOwnerId, dateStart, dateEnd);
+                }
+
+                if (queryName == "getReportByDep")
+                {
+                    reports = LogicProvider.ReportLogic.ListReportsByDep(depId, dateStart, dateEnd);
+                }
+
+                if (reports == null)
+                {
+                    return new AjaxResponse("Данные отсутствуют", null);
+                }
+
+                result = GetReportData(reports);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
         }
 
         private static AjaxResponse ChangePassword(HttpRequestBase request)
@@ -225,59 +344,6 @@
             return new AjaxResponse(null, result);
         }
 
-        private static AjaxResponse GetReport(HttpRequestBase request)
-        {
-            var methodName = nameof(GetReport);
-            string queryName;
-            int employeeId = -1;
-            DateTime dateStart;
-            DateTime dateEnd;
-
-            try
-            {
-                queryName = request["queryName"];
-                employeeId = Convert.ToInt32(request["employeeid"]);
-                dateStart = Convert.ToDateTime(request["datestart"]);
-                dateEnd = Convert.ToDateTime(request["dateend"]);
-            }
-            catch (Exception ex)
-            {
-                return Common.SendError(ex, methodName);
-            }
-
-            List<Dictionary<string, object>> result = null;
-
-            try
-            {
-                var employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
-                dateEnd = dateEnd.AddHours(23 - dateEnd.Hour);
-                ICollection<Report> reports = null;
-
-                if (queryName == "getReportByEmployee")
-                {
-                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(employee.Id, dateStart, dateEnd);
-                }
-
-                if (queryName == "getReportByDep")
-                {
-                    reports = LogicProvider.ReportLogic.ListReportsByDep(employee.Dep_Id, dateStart, dateEnd);
-                }
-
-                if (reports == null)
-                {
-                    return new AjaxResponse("Данные отсутствуют", null);
-                }
-
-                result = GetReportData(reports);
-            }
-            catch (Exception ex)
-            {
-                return Common.SendError(ex, methodName);
-            }
-
-            return new AjaxResponse(null, result);
-        }
-
         private static ICollection<T> Shuffle<T>(IList<T> list)
         {
             int n = list.Count;
@@ -291,64 +357,6 @@
             }
 
             return list;
-        }
-
-        // Вызывать только в try catch
-        internal static object GetTestWithQuestions(int testId, bool mixed)
-        {
-            Test test = LogicProvider.TestLogic.GetTestById(testId);
-
-            ICollection<Question> questions = LogicProvider.QuestionLogic.ListQuestionsByTestId(test.Id);
-
-            IList result = new ArrayList();
-
-            if (questions != null)
-            {
-                foreach (var question in questions)
-                {
-                    var answers = LogicProvider.AnswerLogic.ListAnswersByQuestionId(question.Id);
-                    if (mixed)
-                    {
-                        // Скрываем правильные ответы и перемешиваем
-                        answers = Shuffle(answers.Select(a => { a.Correct = false; return a; }).ToList());
-                    }
-
-                    result.Add(new { question, answers = answers });
-                }
-            }
-
-            return new { test = test, questions = result };
-        }
-
-        // Вызывать только в try catch
-        internal static List<Dictionary<string, object>> GetReportData(ICollection<Report> reports)
-        {
-            if (reports == null)
-            {
-                return null;
-            }
-
-            List<Dictionary<string, object>> result = new List<Dictionary<string, object>>(reports.Count);
-
-            var employeeFIOs = new Dictionary<int, string>();
-            var testNames = new Dictionary<int, string>();
-
-            result = reports.Select(
-                    r => new Dictionary<string, object>()
-                    {
-                        { "Id", r.Id },
-                        { "Employee", GetEmployeeFIO(r.EmployeeId, employeeFIOs) },
-                        { "Test", GetTestName(r.TestId, testNames) },
-                        { "Date", r.Date.ToString("dd.MM.yyyy HH:mm") },
-                        { "ErrCount", r.ErrCount },
-                        { "ErrPercent", r.ErrPercent }
-                    }
-                ).ToList();
-
-            employeeFIOs.Clear();
-            testNames.Clear();
-
-            return result;
         }
 
         private static string GetEmployeeFIO(int employeeId, IDictionary<int, string> cache)

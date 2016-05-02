@@ -1,4 +1,5 @@
 ﻿@using TestSite.PL.WebPages.Models
+@using TestSite.Variables
 @{
     if (!User.Identity.IsAuthenticated)
     {
@@ -6,23 +7,19 @@
         return;
     }
 
-    const string adminRole = "admin";
-    const string superAdminRole = "superadmin";
-    const string inspectorRole = "inspector";
-
-    var queries = new Dictionary<string, IDictionary<string, Func<HttpRequestBase, AjaxResponse>>>()
+    var queries = new Dictionary<int, IDictionary<string, Func<HttpRequestBase, AjaxResponse>>>()
     {
-        { adminRole,  AdminsAjaxPage.AdminsQueries },
-        { superAdminRole, AdminsAjaxPage.SuperadminsQueries },
-        { inspectorRole, AdminsAjaxPage.InspectorsQueries },
+        { Variables.AdminRole.Id,  AdminsAjaxPage.AdminsQueries },
+        { Variables.SuperadminRole.Id, AdminsAjaxPage.SuperadminsQueries },
+        { Variables.InspectorRole.Id, AdminsAjaxPage.InspectorsQueries },
     };
 
-    string usersRole = null;
+    int usersRoleId = -1;
 
     try
     {
         var userId = Convert.ToInt32(User.Identity.Name);
-        usersRole = LogicProvider.EmployeeLogic.ListRolesForUserByUserId(userId).SingleOrDefault();
+        usersRoleId = LogicProvider.EmployeeLogic.GetEmployeeById(userId).Role_Id;
     }
     catch (Exception ex)
     {
@@ -35,9 +32,9 @@
     {
         AjaxResponse result = new AjaxResponse(null, null);
 
-        if (queries[usersRole].ContainsKey(queryName))
+        if (queries[usersRoleId].ContainsKey(queryName))
         {
-            result = queries[usersRole][queryName].Invoke(Request);
+            result = queries[usersRoleId][queryName].Invoke(Request);
         }
         else
         {

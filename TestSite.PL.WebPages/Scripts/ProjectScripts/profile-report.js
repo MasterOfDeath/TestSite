@@ -9,22 +9,24 @@
     $(".report-save-btn", $reportTab).click(clickSaveBtn);
 
     function clickRefreshBtn() {
-        var employeeId = $content.data("user-id"),
+        var requestOwnerId = $content.data("user-id"),
             dateStart = $(".date-start", $reportTab).val() + "",
-            dateEnd = $(".date-end", $reportTab).val() + "";
+            dateEnd = $(".date-end", $reportTab).val() + "",
+            depId = -1;
 
         if ( !dateExp.test(dateStart) || !dateExp.test(dateEnd)) {
             showError("Дата начала или окончания периода заданы не верно");
             return;
         }
 
-        getReportByEmployee(dateStart, dateEnd, employeeId);
+        getReportByEmployee(dateStart, dateEnd, requestOwnerId, depId);
     }
 
     function clickSaveBtn(event) {
-        var employeeId = $content.data("user-id"),
+        var requestOwnerId = $content.data("user-id"),
             dateStart = $(".date-start", $reportTab).val() + "",
             dateEnd = $(".date-end", $reportTab).val() + "",
+            depId = -1,
             spinner;
 
         if (!dateExp.test(dateStart) || !dateExp.test(dateEnd)) {
@@ -46,9 +48,10 @@
         $.fileDownload("GetFile", {
             data: {
                 queryName: "saveDataToFileByEmployee",
-                employeeid: employeeId,
+                requestownerid: requestOwnerId,
                 datestart: dateStart,
-                dateend: dateEnd
+                dateend: dateEnd,
+                depid: depId
             }
         }).fail(function () {
             showError("Ошибка скачивания файла");
@@ -59,7 +62,7 @@
         });
     }
 
-    function getReportByEmployee(dateStart, dateEnd, employeeId) {
+    function getReportByEmployee(dateStart, dateEnd, requestOwnerId, depId) {
         var spinner = new Spinner({
             lines: 11,
             length: 16,
@@ -70,20 +73,22 @@
         $.ajax({
             url: "UsersAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "getReportByEmployee",
-                employeeid: employeeId,
+                requestownerid: requestOwnerId,
                 datestart: dateStart,
-                dateend: dateEnd
+                dateend: dateEnd,
+                depid: depId
             }
         }).success(function (data) {
             var result = JSON.parse(data);
 
-            if (result.Error === null) {
-                populateReportTable(result.Data);
-            } else {
+            if (result.Error !== null) {
                 showError(result.Error);
             }
+
+            populateReportTable(result.Data);
         }).always(function () {
             spinner.stop();
         });

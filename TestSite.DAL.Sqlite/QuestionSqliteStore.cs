@@ -64,7 +64,6 @@
                             result = null;
                         }
 
-
                         return result;
                     }
                 }
@@ -75,7 +74,7 @@
         {
             int result = -1;
 
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
                 var insert = "INSERT INTO question (name, test_id, type) VALUES (:name, :testId, :type); " + 
@@ -105,7 +104,7 @@
                         {
                             if (reader.Read())
                             {
-                                result = reader.GetInt32(0); ;
+                                result = reader.GetInt32(0);
                             }
                             else
                             {
@@ -178,7 +177,7 @@
 
         public bool RemoveQuestion(int questionId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 
@@ -198,7 +197,7 @@
         {
             int result;
 
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
                 var update = "UPDATE question_image SET data=:image WHERE question_id=:questionId";

@@ -7,14 +7,12 @@
     using System.Web;
     using System.Web.Helpers;
     using Entites;
+    using Variables;
 
     public static class AdminsAjaxPage
     {
-        private const string adminRole = "admin";
-        private const int UserRoleId = 2;
-
-        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> AdminsQueries { get; } =
-            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
+        public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> AdminsQueries { get; } = 
+            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>
             {
                 ["clickSaveTestBtn"] = ClickSaveTestBtn,
                 ["listQuestionsByTestId"] = ListQuestionsByTestId,
@@ -28,7 +26,7 @@
             };
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> SuperadminsQueries { get; } =
-            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
+            new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>
             {
                 ["insertDep"] = InsertDep,
                 ["removeDep"] = RemoveDep,
@@ -333,7 +331,7 @@
             try
             {
                 var depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
-                result = SaveEmployee(request, depId, UserRoleId);
+                result = SaveEmployee(request, depId, Variables.UserRole.Id);
             }
             catch (Exception ex)
             {

@@ -23,3 +23,7 @@
 .content-login .nodisplay {
     display: none;
 }
+
+.content-login .login-btn {
+    width: 100px;
+}

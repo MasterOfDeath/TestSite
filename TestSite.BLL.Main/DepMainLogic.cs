@@ -4,12 +4,10 @@
     using System.Collections.Generic;
     using Contract;
     using Entites;
+    using Variables;
 
     public class DepMainLogic : IDepLogic
     {
-        private const int SuperAdminsDepId = 1;
-        private const int InspectorsDepId = 2;
-
         public Dep GetDepById(int depId)
         {
             Dep result = null;
@@ -30,7 +28,7 @@
         {
             var result = false;
 
-            if (dep.Id == SuperAdminsDepId || dep.Id == InspectorsDepId)
+            if (dep.Id == Variables.SuperadminsDep.Id || dep.Id == Variables.InspectorsDep.Id)
             {
                 throw new InvalidOperationException("Группа является системной, изменение запрещено");
             }
@@ -67,7 +65,7 @@
 
         public bool RemoveDep(int depId)
         {
-            if (depId == SuperAdminsDepId || depId == InspectorsDepId)
+            if (depId == Variables.SuperadminsDep.Id || depId == Variables.InspectorsDep.Id)
             {
                 throw new InvalidOperationException("Группа является системной, удаление запрещено");
             }

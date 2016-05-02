@@ -1,4 +1,23 @@
-﻿<nav class="navbar navbar-default navbar-static-top">
+﻿@using TestSite.PL.WebPages.Models
+@using TestSite.Entites
+@using TestSite.Variables
+@{ 
+    Role usersRole = null;
+
+    var log = TestSite.Logger.Logger.Log;
+
+    try
+    {
+        var userId = Convert.ToInt32(User.Identity.Name);
+        usersRole = LogicProvider.EmployeeLogic.GetRoleForUserByEmployeeId(userId);
+    }
+    catch (Exception ex)
+    {
+        // TODO Fatal Page
+        log.Error(ex.Message);
+    }
+}
+<nav class="navbar navbar-default navbar-static-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -24,14 +43,22 @@
                             <b> @Server.UrlDecode(Request.Cookies["usernamecookie"].Value)</b><b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            @if (User.IsInRole("admin") || User.IsInRole("superadmin") || User.IsInRole("inspector"))
+                            @if (usersRole == Variables.AdminRole ||
+                                 usersRole == Variables.SuperadminRole ||
+                                 usersRole == Variables.InspectorRole)
                             {
                                 <li><a href="~/Pages/Admin"><i class="glyphicon glyphicon-wrench"></i> Админка</a></li>
                             }
-                            <li><a href="~/Pages/Profile"><i class="glyphicon glyphicon-cog"></i> Настройки</a></li>
+                            @if (usersRole != Variables.SuperadminRole)
+                            {
+                                <li><a href="~/Pages/Profile"><i class="glyphicon glyphicon-cog"></i> Настройки</a></li>
+                            }
                             <li class="divider"></li>
                             <li><a href="~/Pages/SignOut"><i class="glyphicon glyphicon-off"></i> Выйти</a></li>
                         </ul>
+
+
+
                     </li>
                 }
                 else

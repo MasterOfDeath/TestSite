@@ -14,7 +14,7 @@
 
         public Employee GetEmployeeById(int employeeId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 
@@ -42,7 +42,7 @@
 
         public int InsertEmployee(Employee employee)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 SQLiteCommand command;
                 int result = -1;
@@ -93,7 +93,7 @@
                         {
                             if (reader.Read())
                             {
-                                result = reader.GetInt32(0); ;
+                                result = reader.GetInt32(0);
                             }
                             else
                             {
@@ -138,7 +138,7 @@
 
         public ICollection<Employee> ListEmployeesByDepId(int depId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 
@@ -169,7 +169,7 @@
 
         public ICollection<Employee> ListEmployeesByRoleName(string roleName)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 
@@ -205,7 +205,7 @@
 
         public bool RemoveEmployee(int employeeId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 
@@ -218,40 +218,6 @@
 
                     return result > 0;
                 }   
-            }
-        }
-
-        public ICollection<string> ListRolesForUserByUserId(int employeeId)
-        {
-            using (var connection = new SQLiteConnection(this.connectionString))
-            {
-                connection.Open();
-
-                var select = "SELECT employee.id, role.name " +
-                             "FROM employee " +
-                             "JOIN role ON role.id = employee.role_id " +
-                             "WHERE employee.id = :employeeId";
-
-                using (var command = new SQLiteCommand(select, connection))
-                {
-                    List<string> result = null;
-                    command.Parameters.AddWithValue(":employeeId", employeeId);
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            result = new List<string>();
-                        }
-
-                        while (reader.Read())
-                        {
-                            result.Add((string)reader["name"]);
-                        }
-
-                        return result;
-                    }
-                }
             }
         }
 

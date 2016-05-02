@@ -10,21 +10,18 @@
     using Contract;
     using Entites;
     using Logger;
+    using Variables;
 
     public class EmployeeMainLogic : IEmployeeLogic
     {
-        private readonly string SuperAdminPass = ConfigurationManager.AppSettings["superAdminPass"];
-
         private const int PasswordMinLength = 6;
-        private const int AdminRoleId = 1;
-        private const int InspectorRoleId = 4;
-        private const int InspectorsDepId = 2;
-        private const int SuperAdminId = 1;
-        private readonly Regex passwordEx = new Regex($"^(?=.{{{PasswordMinLength},}}$)[^\\s]+$"); //^(?=.{6,}$)[^\s]+$
+
+        private static readonly string SuperAdminPass = ConfigurationManager.AppSettings["superAdminPass"];
+        private static readonly Regex PasswordEx = new Regex($"^(?=.{{{PasswordMinLength},}}$)[^\\s]+$"); // ^(?=.{6,}$)[^\s]+$
 
         public int AddEmployee(Employee employee, string password)
         {
-            if (password == null || !passwordEx.IsMatch(password))
+            if (password == null || !PasswordEx.IsMatch(password))
             {
                 throw new ArgumentException($"Пароль не соответсвует требованиям безопасности");
             }
@@ -67,11 +64,11 @@
             }
 
             // Пароль Супер админа из Web.config
-            if (employeeId == SuperAdminId)
+            if (employeeId == Variables.SuperadminId)
             {
-                if (SuperAdminPass != null && passwordEx.IsMatch(SuperAdminPass) && password == SuperAdminPass)
+                if (SuperAdminPass != null && PasswordEx.IsMatch(SuperAdminPass))
                 {
-                    return employee;
+                    return (password == SuperAdminPass) ? employee : null;
                 }
             }
 
@@ -84,18 +81,19 @@
 
             this.IsValidEmployee(employee);
 
-            if (employee.Id == SuperAdminId)
+            if (employee.Id == Variables.SuperadminId)
             {
                 throw new ArgumentException("Данный пользователь является системным, изменение запрещено");
             }
 
             // Инспекторы лежат только в отделе Инспекторы
-            if (employee.Role_Id == InspectorRoleId)
+            if (employee.Role_Id == Variables.InspectorRole.Id)
             {
-                employee.Dep_Id = InspectorsDepId;
+                employee.Dep_Id = Variables.InspectorsDep.Id;
             }
 
             // Проверка на последнего администратора
+            var AdminRoleId = Variables.AdminRole.Id;
             try
             {
                 var oldEmployee = Stores.EmployeeStore.GetEmployeeById(employee.Id);
@@ -148,12 +146,13 @@
                 throw new ArgumentException($"{nameof(employeeId)} не может быть 0 или меньше");
             }
 
-            if (employeeId == SuperAdminId)
+            if (employeeId == Variables.SuperadminId)
             {
                 throw new ArgumentException("Данный пользователь является системным, удаление запрещено");
             }
 
             // Проверка на последнего администратора
+            var AdminRoleId = Variables.AdminRole.Id;
             try
             {
                 var employee = Stores.EmployeeStore.GetEmployeeById(employeeId);
@@ -195,7 +194,7 @@
                 throw new ArgumentException("Новый или старый пароль не может быть пуст");
             }
 
-            if (!passwordEx.IsMatch(newPassword))
+            if (!PasswordEx.IsMatch(newPassword))
             {
                 throw new ArgumentException($"Пароль не соответсвует требованиям безопасности");
             }
@@ -282,14 +281,31 @@
             return result;
         }
 
-        public ICollection<string> ListRolesForUserByUserId(int employeeId)
+        public Role GetRoleForUserByEmployeeId(int employeeId)
         {
             if (employeeId < 0)
             {
                 throw new ArgumentException($"{nameof(employeeId)} не может быть отрицательным");
             }
 
-            return Stores.EmployeeStore.ListRolesForUserByUserId(employeeId);
+            Employee employee = null;
+
+            try
+            {
+                employee = Stores.EmployeeStore.GetEmployeeById(employeeId);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            if (employee == null)
+            {
+                return null;
+            }
+
+            return Variables.Roles.SingleOrDefault(r => r.Id == employee.Role_Id);
         }
 
         private bool IsValidEmployee(Employee employee)
@@ -298,11 +314,6 @@
             {
                 throw new ArgumentException($"{nameof(employee)} не может быть null");
             }
-
-            //if (admin.UserName.Length < UsernameMinLength)
-            //{
-            //    throw new ArgumentException($"Имя пользователя короче чем {UsernameMinLength}");
-            //}
 
             return true;
         }

@@ -1,12 +1,17 @@
 ﻿@using TestSite.PL.WebPages.Models
+@using TestSite.Entites
+@using TestSite.Variables
 @{
     Layout = "~/_Layout.cshtml";
     PageData["Title"] = "Администрирование";
 
-    const string adminRole = "admin";
-    const string superAdminRole = "superadmin";
-    const string inspectorRole = "inspector";
-    ICollection<string> usersRoles = null;
+    var adminRole = Variables.AdminRole;
+    var superadminRole = Variables.SuperadminRole;
+    var inspectorRole = Variables.InspectorRole;
+    var superadminsDep = Variables.SuperadminsDep;
+    var inspectorsDep = Variables.InspectorsDep;
+    Role usersRole = null;
+    ICollection<Dep> deps = null;
 
     string errorMessage = null;
 
@@ -21,7 +26,7 @@
     try
     {
         var userId = Convert.ToInt32(User.Identity.Name);
-        usersRoles = LogicProvider.EmployeeLogic.ListRolesForUserByUserId(userId);
+        usersRole = LogicProvider.EmployeeLogic.GetRoleForUserByEmployeeId(userId);
     }
     catch (Exception ex)
     {
@@ -29,17 +34,29 @@
         errorMessage = ex.Message;
     }
 
-    if (usersRoles == null)
+    if (usersRole == null)
     {
         // TODO Fatal Page
     }
 
-    if (!usersRoles.Contains(adminRole) &&
-        !usersRoles.Contains("superadmin") &&
-        !usersRoles.Contains("inspector"))
+    if (usersRole != Variables.AdminRole &&
+        usersRole != Variables.SuperadminRole &&
+        usersRole != Variables.InspectorRole)
     {
         Response.StatusCode = 403;
         return;
+    }
+
+    if (usersRole == Variables.InspectorRole)
+    {
+        try
+        {
+            deps = LogicProvider.DepLogic.ListAllDeps();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
     }
 }
 
@@ -49,24 +66,35 @@
 }
 
 <div class="content content-admin container-fluid" data-user-id="@User.Identity.Name">
-    <div class="row">
-        <div class="alert alert-success col-md-8 hide" role="alert">
-            <button type="button" class="close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            <p></p>
+
+    @if (deps != null)
+    {
+        <div class="deps-select-container">
+            <div class="row tab-row">
+                <div class="col-sm-9 col-md-6">
+                    <select class="form-control deps-select">
+                        @foreach (var dep in deps)
+                        {
+                            if (dep.Id != superadminsDep.Id && dep.Id != inspectorsDep.Id)
+                            {
+                                <option value="@dep.Id">@dep.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
         </div>
-    </div>
+    }
 
     <ul class="nav nav-tabs">
-        @if (usersRoles.Contains(adminRole) || usersRoles.Contains(inspectorRole))
+        @if (usersRole == adminRole || usersRole == inspectorRole)
         {
             <li class="listTests active"><a data-toggle="tab" href="#testsTab">Тесты</a></li>
             <li class="editTest hide"><a data-toggle="tab" href="#editTestTab"><b>Редактирование</b></a></li>
             <li><a data-toggle="tab" href="#personalTab">Персонал</a></li>
             <li><a data-toggle="tab" href="#reportTab">Статистика моего отдела</a></li>
         }
-        @if (usersRoles.Contains(superAdminRole))
+        @if (usersRole == superadminRole)
         {
             <li class="listDeps active"><a data-toggle="tab" href="#depsTab">Отделы</a></li>
             <li class="editDep hide"><a data-toggle="tab" href="#editDepTab"><b>Редактирование</b></a></li>
@@ -75,23 +103,23 @@
 
     <div class="tab-content">
 
-        @if (usersRoles.Contains(adminRole) || usersRoles.Contains(inspectorRole))
+        @if (usersRole == adminRole || usersRole == inspectorRole)
         {
             <div id="testsTab" class="tab-pane fade in active tests-tab">
                 <!-- Tests tab -->
-                @RenderPage("~/Pages/_TestsTabPartial.cshtml")
+                @RenderPage("~/Pages/_TestsTabPartial.cshtml", new { usersRole })
                 <!--  -->
             </div>
 
             <div id="editTestTab" class="tab-pane fade in editTest-tab" data-test-id="-1" data-test-name="">
                 <!-- Tests tab -->
-                @RenderPage("~/Pages/_EditTestTabPartial.cshtml")
+                @RenderPage("~/Pages/_EditTestTabPartial.cshtml", new { usersRole })
                 <!--  -->
             </div>
 
             <div id="personalTab" class="tab-pane fade in personal-tab">
                 <!-- Personal tab -->
-                @RenderPage("~/Pages/_PersonalTabPartial.cshtml")
+                @RenderPage("~/Pages/_PersonalTabPartial.cshtml", new { usersRole })
                 <!--  -->
             </div>
 
@@ -103,7 +131,7 @@
             </div>
         }
 
-        @if (usersRoles.Contains(superAdminRole))
+        @if (usersRole == superadminRole)
         {
             <div id="depsTab" class="tab-pane fade in active deps-tab">
                 <!-- Deps tab -->
@@ -118,22 +146,24 @@
             </div>
         }
 
-        <!-- Modal for edit and create test -->
-        @RenderPage("~/Pages/_NamePromptPartial.cshtml")
-        <!--  -->
         <!-- Modal for preview test -->
         @RenderPage("~/Pages/_AdminTestPreviewPartial.cshtml")
         <!--  -->
-        <!-- Modal for edit and create question -->
-        @RenderPage("~/Pages/_QuestionPromptPartial.cshtml")
-        <!--  -->
-        <!-- Modal for remove -->
-        @RenderPage("~/Pages/_RemovePromptPartial.cshtml")
-        <!--  -->
-        <!-- Modal for create/edit employee -->
-        @RenderPage("~/Pages/_EmployeePromptPartial.cshtml")
-        <!--  -->
-
+        @if (usersRole != inspectorRole)
+        {
+            <!-- Modal for edit and create test -->
+            @RenderPage("~/Pages/_NamePromptPartial.cshtml")
+            <!--  -->
+            <!-- Modal for edit and create question -->
+            @RenderPage("~/Pages/_QuestionPromptPartial.cshtml")
+            <!--  -->
+            <!-- Modal for remove -->
+            @RenderPage("~/Pages/_RemovePromptPartial.cshtml")
+            <!--  -->
+            <!-- Modal for create/edit employee -->
+            @RenderPage("~/Pages/_EmployeePromptPartial.cshtml")
+            <!--  -->
+        }
     </div> <!-- tab-content / end -->
     <!-- ErrorModal -->
     @RenderPage("~/Pages/_ErrorModalPartial.cshtml")
@@ -159,14 +189,14 @@
     <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
     <script src="~/Scripts/locales/bootstrap-datepicker.ru.min.js"></script>
     <script src="~/Scripts/ProjectScripts/admin.js"></script>
-    @if (usersRoles.Contains(adminRole) || usersRoles.Contains(inspectorRole))
+    @if (usersRole == adminRole || usersRole == inspectorRole)
     {
         <script src="~/Scripts/ProjectScripts/admin-test-preview.js"></script>
         <script src="~/Scripts/ProjectScripts/admin-report.js"></script>
         <script src="~/Scripts/ProjectScripts/admin-personal.js"></script>
     }
-    
-    @if (usersRoles.Contains(superAdminRole))
+
+    @if (usersRole == superadminRole)
     {
         <script src="~/Scripts/ProjectScripts/admin-deps.js"></script>
     }

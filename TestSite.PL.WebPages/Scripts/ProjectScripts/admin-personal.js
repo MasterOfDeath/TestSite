@@ -1,5 +1,6 @@
 ﻿(function () {
     var $content = $(".content-admin"),
+        $depsSelectCont = $(".deps-select-container", $content),
         $tabContent = $(".tab-content", $content),
         $employeePromptTemplate = $(".employee-prompt-template", $tabContent),
         $employeePrompt,
@@ -19,6 +20,7 @@
     $(".lastname-input", $employeePromptTemplate).keyup(changeNameInput).on("input", changeNameInput);
     $(".pass-input", $employeePromptTemplate).keyup(changePassInput).on("input", changePassInput);
     $(".pass-check", $employeePromptTemplate).change(changePassCheck);
+    $(".deps-select", $depsSelectCont).change(personalListUpdate);
 
     function clickPersonalTable(event) {
         var $currentRow = $(event.target).closest("tr"),
@@ -112,6 +114,7 @@
             $.ajax({
                 url: "AdminsAjax",
                 method: "post",
+                cache: false,
                 data: {
                     queryName: "removeEmployee",
                     employeeid: employeeId
@@ -148,6 +151,7 @@
             $.ajax({
                 url: "AdminsAjax",
                 method: "post",
+                cache: false,
                 data: {
                     queryName: "removeEmployee",
                     employeeid: employeeId
@@ -179,6 +183,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "post",
+            cache: false,
             data: {
                 queryName: "saveEmployeeByDepFromOwner",
                 requestowner: requestOwner,
@@ -202,14 +207,21 @@
     }
 
     function personalListUpdate() {
-        var requestOwner = $content.data("user-id") + "";
+        var requestOwner = $content.data("user-id") + "",
+            depId = $(".deps-select", $depsSelectCont).val();
+
+        if (depId === undefined) {
+            depId = -1;
+        }
 
         $.ajax({
             url: "RegularAjax",
             method: "get",
+            cache: false,
             data: {
-                queryName: "listEmployeesByDepFromOwner",
-                requestowner: requestOwner
+                queryName: "listEmployeesByDep",
+                requestowner: requestOwner,
+                depid: depId
             }
         }).success(function (data) {
             var result = JSON.parse(data);

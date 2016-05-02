@@ -1,5 +1,6 @@
 ﻿(function () {
     var $content = $(".content-admin"),
+        $depsSelectCont = $(".deps-select-container", $content),
         $tabContent = $(".tab-content", $content),
         $reportTab = $(".report-tab", $tabContent),
         dateExp = /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/;
@@ -7,25 +8,36 @@
     $(".datepicker", $reportTab).datepicker({ todayBtn: "linked", language: "ru", autoclose: true });
     $(".report-refresh-btn", $reportTab).click(clickRefreshBtn);
     $(".report-save-btn", $reportTab).click(clickSaveBtn);
+    $(".deps-select", $depsSelectCont).change(changeDepsSelect);
 
     function clickRefreshBtn() {
-        var employeeId = $content.data("user-id"),
+        var requestOwnerId = $content.data("user-id"),
             dateStart = $(".date-start", $reportTab).val() + "",
-            dateEnd = $(".date-end", $reportTab).val() + "";
+            dateEnd = $(".date-end", $reportTab).val() + "",
+            depId = $(".deps-select", $depsSelectCont).val();
+
+        if (depId === undefined) {
+            depId = -1;
+        }
 
         if ( !dateExp.test(dateStart) || !dateExp.test(dateEnd)) {
             showError("Дата начала или окончания периода заданы не верно");
             return;
         }
 
-        getReportByDep(dateStart, dateEnd, employeeId);
+        getReportByDep(dateStart, dateEnd, requestOwnerId, depId);
     }
 
     function clickSaveBtn(event) {
-        var employeeId = $content.data("user-id"),
+        var requestOwnerId = $content.data("user-id"),
             dateStart = $(".date-start", $reportTab).val() + "",
             dateEnd = $(".date-end", $reportTab).val() + "",
+            depId = $(".deps-select", $depsSelectCont).val(),
             spinner;
+
+        if (depId === undefined) {
+            depId = -1;
+        }
 
         if (!dateExp.test(dateStart) || !dateExp.test(dateEnd)) {
             showError("Дата начала или окончания периода заданы не верно");
@@ -46,9 +58,10 @@
         $.fileDownload("GetFile", {
             data: {
                 queryName: "saveDataToFileByDep",
-                employeeid: employeeId,
+                requestownerid: requestOwnerId,
                 datestart: dateStart,
-                dateend: dateEnd
+                dateend: dateEnd,
+                depid: depId
             }
         }).fail(function () {
             showError("Ошибка скачивания файла");
@@ -59,7 +72,11 @@
         });
     }
 
-    function getReportByDep(dateStart, dateEnd, employeeId) {
+    function changeDepsSelect() {
+        $(".report-table tbody", $reportTab).empty();
+    }
+
+    function getReportByDep(dateStart, dateEnd, requestOwnerId, depId) {
         var spinner = new Spinner({
             lines: 11,
             length: 16,
@@ -70,20 +87,22 @@
         $.ajax({
             url: "UsersAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "getReportByDep",
-                employeeid: employeeId,
+                requestownerid: requestOwnerId,
                 datestart: dateStart,
-                dateend: dateEnd
+                dateend: dateEnd,
+                depid: depId
             }
         }).success(function (data) {
             var result = JSON.parse(data);
 
-            if (result.Error === null) {
-                populateReportTable(result.Data);
-            } else {
+            if (result.Error !== null) {
                 showError(result.Error);
             }
+
+            populateReportTable(result.Data);
         }).always(function () {
             spinner.stop();
         });

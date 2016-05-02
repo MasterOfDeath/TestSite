@@ -19,6 +19,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "getTestForPreview",
                 testid: testId

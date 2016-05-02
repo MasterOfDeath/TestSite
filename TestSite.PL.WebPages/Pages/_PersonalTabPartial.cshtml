@@ -1,6 +1,19 @@
-﻿<div class="btn-group">
-    <button class="btn btn-primary add-employee-btn">Добавить сотрудника</button>
-</div>
+﻿@using TestSite.Entites
+@using TestSite.Variables
+@{
+    var usersRole = (Role)PageData["usersRole"];
+}
+
+@if (usersRole != Variables.InspectorRole)
+{
+    <div class="row tab-row">
+        <div class="col-md-12">
+            <div class="btn-group">
+                <button class="btn btn-primary add-employee-btn">Добавить сотрудника</button>
+            </div>
+        </div>
+    </div>
+}
 
 <div class="table-responsive general-table">
     <table class="table table-hover personal-table">

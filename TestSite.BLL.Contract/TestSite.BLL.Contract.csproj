@@ -46,7 +46,6 @@
     <Compile Include="ITestLogic.cs" />
     <Compile Include="IDepLogic.cs" />
     <Compile Include="IEmployeeLogic.cs" />
-    <Compile Include="IRoleLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -62,6 +62,7 @@
             $.ajax({
                 url: "AdminsAjax",
                 method: "post",
+                cache: false,
                 data: {
                     queryName: "removeDep",
                     depid: depId
@@ -99,6 +100,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "post",
+            cache: false,
             data: {
                 queryName: "insertDep",
                 depid: depId,
@@ -222,6 +224,7 @@
             $.ajax({
                 url: "AdminsAjax",
                 method: "post",
+                cache: false,
                 data: {
                     queryName: "removeEmployee",
                     employeeid: employeeId
@@ -280,6 +283,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "post",
+            cache: false,
             data: {
                 queryName: "saveEmployeeByDep",
                 depid: depId,
@@ -307,6 +311,7 @@
         $.ajax({
             url: "RegularAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "listEmployeesByDep",
                 depid: depId
@@ -343,6 +348,7 @@
         $.ajax({
             url: "RegularAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "listDeps"
             }

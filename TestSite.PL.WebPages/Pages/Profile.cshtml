@@ -1,4 +1,6 @@
 ﻿@using TestSite.PL.WebPages.Models
+@using TestSite.Entites
+@using TestSite.Variables
 @{
     Layout = "~/_Layout.cshtml";
     PageData["Title"] = "Настройки";
@@ -11,11 +13,20 @@
         return;
     }
 
+    Role usersRole = null;
+
     var log = TestSite.Logger.Logger.Log;
 
-    if (!IsPost)
+    try
     {
-        
+        var userId = Convert.ToInt32(User.Identity.Name);
+        usersRole = LogicProvider.EmployeeLogic.GetRoleForUserByEmployeeId(userId);
+    }
+    catch (Exception ex)
+    {
+        // TODO Fatal Page
+        errorMessage = ex.Message;
+        log.Error(ex.Message);
     }
 }
 
@@ -27,7 +38,10 @@
 <div class="content content-profile container-fluid" data-user-id="@User.Identity.Name">
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#passwordTab">Изменение пароля</a></li>
-        <li><a data-toggle="tab" href="#reportTab">Моя статистика</a></li>
+        @if (usersRole != Variables.InspectorRole)
+        {
+            <li><a data-toggle="tab" href="#reportTab">Моя статистика</a></li>
+        }
     </ul>
 
     <div class="tab-content">
@@ -55,11 +69,14 @@
             </div>
         </div>
 
-        <div id="reportTab" class="tab-pane fade in report-tab">
-            <!-- Report tab -->
-            @RenderPage("~/Pages/_ReportTabPartial.cshtml")
-            <!--  -->
-        </div>
+        @if (usersRole != Variables.InspectorRole)
+        {
+            <div id="reportTab" class="tab-pane fade in report-tab">
+                <!-- Report tab -->
+                @RenderPage("~/Pages/_ReportTabPartial.cshtml")
+                <!--  -->
+            </div>
+        }
 
     </div>
 

@@ -30,6 +30,7 @@
         $.ajax({
             url: "UsersAjax",
             method: "post",
+            cache: false,
             data: {
                 queryName: "changePassword",
                 employeeid: employeeId,
@@ -74,5 +75,4 @@
         $(".modal-body", $modal).text(str);
         $modal.modal();
     }
-
 })();

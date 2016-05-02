@@ -45,7 +45,6 @@
     <Compile Include="IAnswerStore.cs" />
     <Compile Include="ITestStore.cs" />
     <Compile Include="IDepStore.cs" />
-    <Compile Include="IRoleStore.cs" />
     <Compile Include="IEmployeeStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

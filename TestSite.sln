@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PL", "PL", "{E633AFD4-77D4-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.PL.WebPages", "TestSite.PL.WebPages\TestSite.PL.WebPages.csproj", "{F7CCD966-5C01-48E5-BAB5-E918530442B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.Exceptions", "TestSite.Exceptions\TestSite.Exceptions.csproj", "{D2994EDA-8D99-4FAE-9C9B-6F7CAF1C34F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.Variables", "TestSite.Variables\TestSite.Variables.csproj", "{D2994EDA-8D99-4FAE-9C9B-6F7CAF1C34F7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.Logger", "Logger\TestSite.Logger.csproj", "{A2D49CDA-AA67-45AA-B700-D7725A609061}"
 EndProject

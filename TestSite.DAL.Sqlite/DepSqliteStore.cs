@@ -39,7 +39,7 @@
 
         public bool InsertDep(Dep dep)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 SQLiteCommand command;
 
@@ -89,7 +89,7 @@
 
         public bool RemoveDep(int depId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 SQLiteCommand command;
 

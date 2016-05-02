@@ -12,18 +12,19 @@
             new Dictionary<string, Func<HttpRequestBase, AjaxResponse>>()
             {
                 ["listEmployeesByDep"] = ListEmployeesByDep,
-                ["listEmployeesByDepFromOwner"] = ListEmployeesByDepFromOwner,
                 ["listDeps"] = ListDeps,
             };
 
-        private static AjaxResponse ListEmployeesByDepFromOwner(HttpRequestBase request)
+        private static AjaxResponse ListEmployeesByDep(HttpRequestBase request)
         {
-            var methodName = nameof(ListEmployeesByDepFromOwner);
+            var methodName = nameof(ListEmployeesByDep);
+            int depId = -1;
             int requestOwnerId = -1;
             ICollection<Employee> employees;
 
             try
             {
+                depId = Convert.ToInt32(request["depId"]);
                 requestOwnerId = Convert.ToInt32(request["requestowner"]);
             }
             catch (Exception ex)
@@ -31,37 +32,16 @@
                 return Common.SendError(ex, methodName);
             }
 
-            try
+            if (depId < 0)
             {
-                var depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
-                employees = LogicProvider.EmployeeLogic.ListEmployeesByDepId(depId);
-            }
-            catch (Exception ex)
-            {
-                return Common.SendError(ex, methodName);
-            }
-
-            if (employees != null)
-            {
-                employees = employees.Select(e => { e.Hash = null; return e; }).ToList();
-            }
-
-            return new AjaxResponse(null, employees);
-        }
-
-        private static AjaxResponse ListEmployeesByDep(HttpRequestBase request)
-        {
-            var methodName = nameof(ListEmployeesByDep);
-            int depId = -1;
-            ICollection<Employee> employees;
-
-            try
-            {
-                depId = Convert.ToInt32(request["depId"]);
-            }
-            catch (Exception ex)
-            {
-                return Common.SendError(ex, methodName);
+                try
+                {
+                    depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
+                }
+                catch (Exception ex)
+                {
+                    return Common.SendError(ex, methodName);
+                }
             }
 
             try
@@ -80,7 +60,7 @@
 
             return new AjaxResponse(null, employees);
         }
-        
+
         private static AjaxResponse ListDeps(HttpRequestBase request)
         {
             var methodName = nameof(ListDeps);

@@ -27,11 +27,11 @@
             try
             {
                 int userId = Convert.ToInt32(username);
-                result = LogicProvider.EmployeeLogic.ListRolesForUserByUserId(userId).ToArray();
+                result = new string[] { LogicProvider.EmployeeLogic.GetRoleForUserByEmployeeId(userId).Name };
             }
             catch (Exception ex)
             {   // TODO Maybe FATAL?
-                Logger.Log.Error(nameof(LogicProvider.EmployeeLogic.ListRolesForUserByUserId), ex);
+                Logger.Log.Error(nameof(LogicProvider.EmployeeLogic.GetRoleForUserByEmployeeId), ex);
             }
 
             return result;
@@ -46,9 +46,11 @@
                 result = this.GetRolesForUser(username).Contains(roleName);
             }
             catch (Exception ex)
-            {   // TODO Maybe FATAL?
+            {
+                // TODO Maybe FATAL?
                 Logger.Log.Error(nameof(this.IsUserInRole), ex);
             }
+
             return result;
         }
 

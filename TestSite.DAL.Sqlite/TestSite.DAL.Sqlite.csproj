@@ -67,7 +67,6 @@
     <Compile Include="ReportSqliteStore.cs" />
     <Compile Include="QuestionSqliteStore.cs" />
     <Compile Include="AnswerSqliteStore.cs" />
-    <Compile Include="RoleSqliteStore.cs" />
     <Compile Include="TestSqliteStore.cs" />
     <Compile Include="EmployeeSqliteStore.cs" />
     <Compile Include="DepSqliteStore.cs" />

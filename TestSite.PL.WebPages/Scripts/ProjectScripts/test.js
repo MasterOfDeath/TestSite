@@ -53,6 +53,7 @@
         $.ajax({
             url: "UsersAjax",
             method: "post",
+            cache: false,
             data: {
                 queryName: "checkMyAnswers",
                 employeeid: $content.data("user-id"),
@@ -83,7 +84,8 @@
 
         $.ajax({
             url: "UsersAjax",
-            method: "post",
+            method: "get",
+            cache: false,
             data: {
                 queryName: "getMixedTest",
                 testid: testId

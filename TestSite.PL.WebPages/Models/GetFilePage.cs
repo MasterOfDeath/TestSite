@@ -70,16 +70,18 @@
         private static Tuple<byte[], string> SaveDataToFile(HttpRequestBase request)
         {
             string queryName;
-            int employeeId = -1;
+            int requestOwnerId = -1;
             DateTime dateStart;
             DateTime dateEnd;
+            int depId = -1;
 
             try
             {
                 queryName = request["queryName"];
-                employeeId = Convert.ToInt32(request["employeeid"]);
+                requestOwnerId = Convert.ToInt32(request["requestownerid"]);
                 dateStart = Convert.ToDateTime(request["datestart"]);
                 dateEnd = Convert.ToDateTime(request["dateend"]);
+                depId = Convert.ToInt32(request["depid"]);
             }
             catch (Exception)
             {
@@ -98,18 +100,22 @@
 
             try
             {
-                var employee = LogicProvider.EmployeeLogic.GetEmployeeById(employeeId);
+                if (depId < 0)
+                {
+                    depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
+                }
+
                 dateEnd = dateEnd.AddHours(23 - dateEnd.Hour);
                 ICollection<Report> reports = null;
 
                 if (queryName == "saveDataToFileByEmployee")
                 {
-                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(employee.Id, dateStart, dateEnd);
+                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(requestOwnerId, dateStart, dateEnd);
                 }
 
                 if (queryName == "saveDataToFileByDep")
                 {
-                    reports = LogicProvider.ReportLogic.ListReportsByDep(employee.Dep_Id, dateStart, dateEnd);
+                    reports = LogicProvider.ReportLogic.ListReportsByDep(depId, dateStart, dateEnd);
                 }
 
                 if (reports == null)

@@ -1,4 +1,5 @@
 ﻿@using TestSite.PL.WebPages.Models
+@using TestSite.Variables
 @{
     Layout = null;
 
@@ -25,8 +26,8 @@
     if (deps != null)
     {
         // Отдел Супер Администратора и Инспекторы перемещаем в конец списка 
-        var item1 = deps.Where(d => d.Id == 1).SingleOrDefault();
-        var item2 = deps.Where(d => d.Id == 2).SingleOrDefault();
+        var item1 = deps.Where(d => d.Id == Variables.SuperadminsDep.Id).SingleOrDefault();
+        var item2 = deps.Where(d => d.Id == Variables.InspectorsDep.Id).SingleOrDefault();
 
         deps.Remove(item1);
         deps.Remove(item2);
@@ -97,7 +98,7 @@
                                 {
                                     foreach (var dep in deps)
                                     {
-                                        if (dep.Id == 2)
+                                        if (dep.Id == Variables.InspectorsDep.Id)
                                         {
                                             <option disabled>──────────</option>
                                         }

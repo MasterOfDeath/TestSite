@@ -13,7 +13,7 @@
 
         public bool InsertAnswer(Answer answer)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
                 int result = -1;
@@ -132,7 +132,7 @@
 
         public bool RemoveAnswer(int answerId)
         {
-            using (var connection = new SQLiteConnection(connectionString))
+            using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
 

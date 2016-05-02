@@ -1,6 +1,7 @@
 ﻿(function () {
     var $content = $(".content-admin"),
         $navTabs = $(".nav-tabs", $content),
+        $depsSelectCont = $(".deps-select-container", $content),
         $tabContent = $(".tab-content", $content),
         $addTestBtn = $(".addTestBtn", $tabContent),
         $editTestBtn = $(".editTestBtn", $tabContent),
@@ -30,6 +31,7 @@
     $(".remove-question-btn", $questionPrompt).click(clickRemoveQuestionBtn);
     $(".add-answer-btn", $questionPrompt).click(clickAddAnswerBtn);
     $(".type-select", $questionPrompt).change(changeTypeSelect);
+    $(".deps-select", $depsSelectCont).change(changeDepsSelect);
         
     function clickAddTestBtn(event) {
         $namePrompt.modal();
@@ -61,6 +63,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "post",
+            cache: false,
             data: {
                 queryName: "clickSaveTestBtn",
                 testid: event.data.testId,
@@ -232,6 +235,7 @@
             $.ajax({
                 url: "AdminsAjax",
                 method: "post",
+                cache: false,
                 data: {
                     queryName: "removeTest",
                     testid: testId
@@ -274,6 +278,7 @@
             $.ajax({
                 url: "AdminsAjax",
                 method: "post",
+                cache: false,
                 data: {
                     queryName: "removeQuestion",
                     questionid: questionId
@@ -294,19 +299,36 @@
         });
     }
 
+    function changeDepsSelect() {
+        testsListUpdate();
+
+        if ($(".editTest", $navTabs).hasClass("active")) {
+            $(".listTests > a", $navTabs).tab("show");
+        }
+
+        $(".editTest", $navTabs).addClass("hide");
+    }
+
     function changeTypeSelect(event) {
         setQuestionType($(event.target).val());
     }
 
     function testsListUpdate() {
-        var employeeId = $content.data("user-id") + "";
+        var employeeId = $content.data("user-id") + "",
+            depId = $(".deps-select", $depsSelectCont).val();
+
+        if (depId === undefined) {
+            depId = -1;
+        }
 
         $.ajax({
             url: "UsersAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "listTestsForEmployee",
-                employeeid: employeeId
+                employeeid: employeeId,
+                depid: depId
             }
         }).success(function (data) {
             var result = JSON.parse(data),
@@ -328,6 +350,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "get",
+            cache: false,
             data: {
                 queryName: "listQuestionsByTestId",
                 testid: testId
@@ -371,6 +394,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "post",
+            cache: false,
             data: formData,
             processData: false,
             contentType: false
@@ -394,6 +418,7 @@
         $.ajax({
             url: "AdminsAjax",
             method: "post",
+            cache: false,
             data: {
                 queryName: "getQuestionAndAnswers",
                 questionid: questionId

@@ -1,8 +1,24 @@
-﻿<div class="btn-group">
-    <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
-    <button class="btn btn-default testPreviewBtn">Просмотр теста</button>
-    <button class="btn btn-default editTestBtn">Изменить название теста</button>
-    <button class="btn btn-default removeTestBtn">Удалить тест</button>
+﻿@using TestSite.Entites
+@using TestSite.Variables
+@{ 
+    var usersRole = (Role)PageData["usersRole"];
+}
+
+<div class="row tab-row">
+    <div class="col-md-12">
+        <div class="btn-group">
+            @if (usersRole != Variables.InspectorRole)
+            {
+                <button class="btn btn-primary addQuestionBtn">Добавить вопрос</button>
+            }
+            <button class="btn btn-default testPreviewBtn">Просмотр теста</button>
+            @if (usersRole != Variables.InspectorRole)
+            {
+                <button class="btn btn-default editTestBtn">Изменить название теста</button>
+                <button class="btn btn-default removeTestBtn">Удалить тест</button>
+            }
+        </div>
+    </div>
 </div>
 
 <div class="table-responsive general-table">
