@@ -7,6 +7,7 @@
     using System.Linq;
     using System.Web;
     using System.Web.Helpers;
+    using BLL.Main;
     using Entites;
     using Logger;
     using SpreadsheetLight;
@@ -74,6 +75,8 @@
             DateTime dateStart;
             DateTime dateEnd;
             int depId = -1;
+            string depName = null;
+            bool emplOrder = false;
 
             try
             {
@@ -82,6 +85,7 @@
                 dateStart = Convert.ToDateTime(request["datestart"]);
                 dateEnd = Convert.ToDateTime(request["dateend"]);
                 depId = Convert.ToInt32(request["depid"]);
+                emplOrder = Convert.ToBoolean(request["emplorder"]);
             }
             catch (Exception)
             {
@@ -105,20 +109,22 @@
                     depId = LogicProvider.EmployeeLogic.GetEmployeeById(requestOwnerId).Dep_Id;
                 }
 
+                depName = LogicProvider.DepLogic.GetDepById(depId).Name;
+
                 dateEnd = dateEnd.AddHours(23 - dateEnd.Hour);
                 ICollection<Report> reports = null;
 
                 if (queryName == "saveDataToFileByEmployee")
                 {
-                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(requestOwnerId, dateStart, dateEnd);
+                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(requestOwnerId, dateStart, dateEnd, emplOrder);
                 }
 
                 if (queryName == "saveDataToFileByDep")
                 {
-                    reports = LogicProvider.ReportLogic.ListReportsByDep(depId, dateStart, dateEnd);
+                    reports = LogicProvider.ReportLogic.ListReportsByDep(depId, dateStart, dateEnd, emplOrder);
                 }
 
-                if (reports == null)
+                if (reports == null || depName == null)
                 {
                     return null;
                 }
@@ -127,9 +133,11 @@
 
                 SLDocument sl = new SLDocument(template, "Protokol");
 
-                var style = sl.GetCellStyle(2, 1);
+                var style = sl.GetCellStyle(3, 1);
 
-                var line = 3;
+                sl.SetCellValue(2, 2, depName);
+
+                var line = 4;
 
                 foreach (var result in results)
                 {
@@ -142,7 +150,7 @@
                     sl.SetCellStyle(line, 3, style);
                     sl.SetCellValue(line, 4, (int)result["ErrCount"]);
                     sl.SetCellStyle(line, 4, style);
-                    sl.SetCellValue(line, 5, (int)result["ErrPercent"]);
+                    sl.SetCellValue(line, 5, TranslateMark((string)result["Mark"]));
                     sl.SetCellStyle(line, 5, style);
 
                     line++;
@@ -157,13 +165,31 @@
                 return null;
             }
 
+            var shortDepName = (depName.Length > 25) ? depName.Substring(0, 22) + "..." : depName;
+
             var filename = HttpUtility.UrlEncode(
-                        "Протокол-" + dateStart.ToShortDateString() + "-" + dateEnd.ToShortDateString() + ".xlsx",
+                        "Протокол-" + shortDepName + "-" + dateStart.ToShortDateString() + "-" + dateEnd.ToShortDateString() + ".xlsx",
                         System.Text.Encoding.UTF8);
             HttpContext.Current.Response.AppendCookie(new HttpCookie("fileDownload", "true") { Path = "/" });
             HttpContext.Current.Response.AppendHeader("Content-Disposition", "attachment; filename=" + filename);
 
             return new Tuple<byte[], string>(destination.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+        private static string TranslateMark(string mark)
+        {
+            if (mark == ReportMainLogic.Perfect)
+            {
+                return "Отлично";
+            }
+            else if (mark == ReportMainLogic.Good)
+            {
+                return "Удавлет.";
+            }
+            else
+            {
+                return "Не удавл.";
+            }
         }
     }
 }

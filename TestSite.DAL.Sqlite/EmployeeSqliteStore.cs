@@ -111,7 +111,7 @@
         {
             using (var connection = new SQLiteConnection(this.connectionString))
             {
-                var select = "SELECT * FROM employee";
+                var select = "SELECT * FROM employee ORDER BY last_name, first_name";
                 connection.Open();
 
                 using (var command = new SQLiteCommand(select, connection))
@@ -142,7 +142,7 @@
             {
                 connection.Open();
 
-                var select = "SELECT * FROM employee WHERE dep_id=:depId";
+                var select = "SELECT * FROM employee WHERE dep_id=:depId ORDER BY last_name, first_name";
 
                 using (var command = new SQLiteCommand(select, connection))
                 {
@@ -167,41 +167,41 @@
             }
         }
 
-        public ICollection<Employee> ListEmployeesByRoleName(string roleName)
-        {
-            using (var connection = new SQLiteConnection(this.connectionString))
-            {
-                connection.Open();
+        //public ICollection<Employee> ListEmployeesByRoleName(string roleName)
+        //{
+        //    using (var connection = new SQLiteConnection(this.connectionString))
+        //    {
+        //        connection.Open();
 
-                var select = "SELECT employee.* FROM employee_role " +
-                             "JOIN employee " +
-                             "ON employee.id = employee_role.user_id " +
-                             "JOIN role " +
-                             "ON role.id = employee_role.role_id " +
-                             "WHERE role.name = :roleName";
+        //        var select = "SELECT employee.* FROM employee_role " +
+        //                     "JOIN employee " +
+        //                     "ON employee.id = employee_role.user_id " +
+        //                     "JOIN role " +
+        //                     "ON role.id = employee_role.role_id " +
+        //                     "WHERE role.name = :roleName";
 
-                using (var command = new SQLiteCommand(select, connection))
-                {
-                    command.Parameters.AddWithValue(":roleName", roleName);
-                    List<Employee> result = null;
+        //        using (var command = new SQLiteCommand(select, connection))
+        //        {
+        //            command.Parameters.AddWithValue(":roleName", roleName);
+        //            List<Employee> result = null;
 
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            result = new List<Employee>(reader.StepCount);
-                        }
+        //            using (var reader = command.ExecuteReader())
+        //            {
+        //                if (reader.HasRows)
+        //                {
+        //                    result = new List<Employee>(reader.StepCount);
+        //                }
 
-                        while (reader.Read())
-                        {
-                            result.Add(this.RowToEmployee(reader));
-                        }
+        //                while (reader.Read())
+        //                {
+        //                    result.Add(this.RowToEmployee(reader));
+        //                }
 
-                        return result;
-                    }
-                }
-            }
-        }
+        //                return result;
+        //            }
+        //        }
+        //    }
+        //}
 
         public bool RemoveEmployee(int employeeId)
         {

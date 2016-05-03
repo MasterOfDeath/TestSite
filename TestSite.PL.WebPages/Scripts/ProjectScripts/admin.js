@@ -68,7 +68,7 @@
                 queryName: "clickSaveTestBtn",
                 testid: event.data.testId,
                 testname: testName,
-                employeeid: employeeId 
+                employeeid: employeeId
             }
         }).success(function (data) {
             var result = JSON.parse(data);
@@ -94,8 +94,7 @@
 
         if (testName.length > 25) {
             titleName = testName.substr(0, 25) + "...";
-        }
-        else {
+        } else {
             titleName = testName;
         }
 
@@ -515,6 +514,6 @@
     }
 
     function isValidName(str) {
-        return (str.length > 0 && (str.search(testNameExp) !== -1))
+        return (str.length > 0 && (str.search(testNameExp) !== -1));
     }
 }());

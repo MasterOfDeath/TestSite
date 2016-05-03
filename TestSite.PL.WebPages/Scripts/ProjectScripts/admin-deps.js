@@ -9,6 +9,7 @@
         $depsTab = $(".deps-tab", $tabContent),
         $editDepTab = $(".editDep-tab", $tabContent),
         instpectorsDepId = 2,
+        superadminsDepId = 1,
         nameExp = /^\S.+\S$/,
         passwExp = /^(?=.{6,}$)[^\s]+$/;
 
@@ -53,7 +54,9 @@
 
         $removePrompt.modal("show");
         $(".modal-title", $removePrompt).text("Удаление отдела");
-        $(".modal-body p", $removePrompt).text(depName);
+        $(".modal-body p", $removePrompt)
+            .empty()
+            .append("<b>Внимание!</b> будут удалены все пользователи и тесты данного отдела<p><b>" + depName + "</b></p>");
         $(".remove-prompt-btn", $removePrompt).click(function (event) {
             var $thisBtn = $(event.target);
 
@@ -370,9 +373,11 @@
 
         if (data !== null) {
             $(data).each(function (index, el) {
-                $row = $("<tr data-dep-id=\"" + el.Id + "\"></tr>").clone();
-                $row.append("<td>" + el.Name + "</td>");
-                $(".deps-table tbody", $depsTab).append($row);
+                if (el.Id !== superadminsDepId) {
+                    $row = $("<tr data-dep-id=\"" + el.Id + "\"></tr>").clone();
+                    $row.append("<td>" + el.Name + "</td>");
+                    $(".deps-table tbody", $depsTab).append($row);
+                }
             });
         }
     }

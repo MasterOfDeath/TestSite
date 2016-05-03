@@ -12,6 +12,7 @@
         var requestOwnerId = $content.data("user-id"),
             dateStart = $(".date-start", $reportTab).val() + "",
             dateEnd = $(".date-end", $reportTab).val() + "",
+            emplOrder = $(".employee-sort", $reportTab).prop("checked"),
             depId = -1;
 
         if ( !dateExp.test(dateStart) || !dateExp.test(dateEnd)) {
@@ -19,7 +20,7 @@
             return;
         }
 
-        getReportByEmployee(dateStart, dateEnd, requestOwnerId, depId);
+        getReportByEmployee(dateStart, dateEnd, requestOwnerId, depId, emplOrder);
     }
 
     function clickSaveBtn(event) {
@@ -27,6 +28,7 @@
             dateStart = $(".date-start", $reportTab).val() + "",
             dateEnd = $(".date-end", $reportTab).val() + "",
             depId = -1,
+            emplOrder = $(".employee-sort", $reportTab).prop("checked"),
             spinner;
 
         if (!dateExp.test(dateStart) || !dateExp.test(dateEnd)) {
@@ -51,10 +53,11 @@
                 requestownerid: requestOwnerId,
                 datestart: dateStart,
                 dateend: dateEnd,
-                depid: depId
+                depid: depId,
+                emplorder: emplOrder
             }
         }).fail(function () {
-            showError("Ошибка скачивания файла");
+            showError("Данные отсутствуют");
         }).always(function () {
             spinner.stop();
             $(".report-save-btn .save-icon", $reportTab).removeClass("hide-element");
@@ -62,7 +65,7 @@
         });
     }
 
-    function getReportByEmployee(dateStart, dateEnd, requestOwnerId, depId) {
+    function getReportByEmployee(dateStart, dateEnd, requestOwnerId, depId, emplOrder) {
         var spinner = new Spinner({
             lines: 11,
             length: 16,
@@ -79,7 +82,8 @@
                 requestownerid: requestOwnerId,
                 datestart: dateStart,
                 dateend: dateEnd,
-                depid: depId
+                depid: depId,
+                emplorder: emplOrder
             }
         }).success(function (data) {
             var result = JSON.parse(data);
@@ -95,24 +99,30 @@
     }
 
     function populateReportTable(data) {
-        var tRows = [],
-            $row;
+        var $row;
 
         $(".report-table tbody", $reportTab).empty();
 
         if (data !== null) {
             $(data).each(function (index, el) {
-                $row = $("<tr></tr>").clone();
-                $row = $("<tr data-report-id=\"" + el.Id + "\"></tr>").clone();
+                $row = $("<tr data-report-id='" + el.Id + "' class='" + el.Mark + "'></tr>").clone();
                 $row.append("<td>" + el.Date + "</td>");
                 $row.append("<td>" + el.Employee + "</td>");
                 $row.append("<td>" + el.Test + "</td>");
                 $row.append("<td>" + el.ErrCount + "</td>");
-                $row.append("<td>" + el.ErrPercent + "</td>");
-                tRows.push($row);
+                $row.append("<td>" + translateMark(el.Mark) + "</td>");
+                $(".report-table tbody", $reportTab).append($row);
             });
+        }
+    }
 
-            $(".report-table tbody", $reportTab).append(tRows);
+    function translateMark(mark) {
+        if (mark === "perfect") {
+            return "Отлично";
+        } else if (mark === "good") {
+            return "Удавлет.";
+        } else {
+            return "Не удавл.";
         }
     }
 

@@ -23,6 +23,7 @@
                 ["getTestForPreview"] = GetTestForPreview,
                 ["saveEmployeeByDepFromOwner"] = SaveEmployeeByDepFromOwner,
                 ["removeEmployee"] = RemoveEmployee,
+                ["removeReport"] = RemoveReport,
             };
 
         public static IDictionary<string, Func<HttpRequestBase, AjaxResponse>> SuperadminsQueries { get; } =
@@ -433,8 +434,8 @@
 
         private static AjaxResponse RemoveDep(HttpRequestBase request)
         {
+            var methodName = nameof(RemoveDep);
             int depId = -1;
-            var methodName = nameof(RemoveTest);
 
             try
             {
@@ -458,7 +459,35 @@
 
             return new AjaxResponse(null, result);
         }
-        
+
+        private static AjaxResponse RemoveReport(HttpRequestBase request)
+        {
+            var methodName = nameof(RemoveReport);
+            int reportId = -1;
+
+            try
+            {
+                reportId = Convert.ToInt32(request["reportid"]);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            bool result = false;
+
+            try
+            {
+                result = LogicProvider.ReportLogic.RemoveReport(reportId);
+            }
+            catch (Exception ex)
+            {
+                return Common.SendError(ex, methodName);
+            }
+
+            return new AjaxResponse(null, result);
+        }
+
         // Вызывать только в try catch
         private static int SaveEmployee(HttpRequestBase request, int depId, int roleId)
         {

@@ -1,13 +1,26 @@
-﻿<div class="input-daterange input-group datepicker">
-    <input type="text" class="form-control date-start" value="@DateTime.Now.AddMonths(-1).ToShortDateString()"/>
+﻿@using TestSite.Variables
+<div class="input-daterange input-group datepicker">
+    <input type="text" class="form-control date-start" value="@DateTime.Now.AddMonths(-1).ToShortDateString()" />
     <span class="input-group-addon">по</span>
-    <input type="text" class="form-control date-end"  value="@DateTime.Now.ToShortDateString()"/>
+    <input type="text" class="form-control date-end" value="@DateTime.Now.ToShortDateString()" />
     <span class="input-group-btn">
         <button class="btn btn-default report-save-btn" type="button">
             <i class="glyphicon glyphicon-floppy-save save-icon"></i>
         </button>
         <button class="btn btn-primary report-refresh-btn" type="button">Обновить</button>
     </span>
+</div>
+
+<div class="row tab-row">
+    <div class="col-md-12">
+        <label class="form-inline">Сортировка:  </label>
+        <label class="radio-inline">
+            <input type="radio" name="sortRadio" class="employee-sort" checked="checked"> По сотруднику
+        </label>
+        <label class="radio-inline">
+            <input type="radio" name="sortRadio" class="date-sort"> По дате
+        </label>
+    </div>
 </div>
 
 <div class="table-responsive general-table">
@@ -18,7 +31,7 @@
                 <td>Сотрудник</td>
                 <td>Тест</td>
                 <td>Кол ошиб</td>
-                <td>% ошибок</td>
+                <td>Оценка</td>
             </tr>
         </thead>
         <tbody>
@@ -26,3 +39,10 @@
         </tbody>
     </table>
 </div>
+
+@if (User.IsInRole(Variables.AdminRole.Name))
+{
+    <div class="trash-template hide">
+        <span class="glyphicon glyphicon-trash trash-btn"></span>
+    </div>
+}

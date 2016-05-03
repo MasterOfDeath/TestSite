@@ -8,6 +8,13 @@
 
     public class ReportMainLogic : IReportLogic
     {
+        public static readonly string Perfect = "perfect";
+        public static readonly string Good = "good";
+        public static readonly string Bad = "bad";
+
+        private const int perfectPercent = 10;
+        private const int goodPercent = 50;
+
         public int InsertReport(Report report)
         {
             int result = -1;
@@ -26,7 +33,7 @@
             return result;
         }
 
-        public ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end)
+        public ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end, bool emplOrder)
         {
             ICollection<Report> result = null;
 
@@ -42,7 +49,7 @@
 
             try
             {
-                result = Stores.ReportStore.ListReportsByDep(depId, start, end);
+                result = Stores.ReportStore.ListReportsByDep(depId, start, end, emplOrder);
             }
             catch (Exception ex)
             {
@@ -52,7 +59,7 @@
             return result;
         }
 
-        public ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end)
+        public ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end, bool emplOrder)
         {
             ICollection<Report> result = null;
 
@@ -68,7 +75,7 @@
 
             try
             {
-                result = Stores.ReportStore.ListReportsByEmployee(employeeId, start, end);
+                result = Stores.ReportStore.ListReportsByEmployee(employeeId, start, end, emplOrder);
             }
             catch (Exception ex)
             {
@@ -96,6 +103,22 @@
 
             return true;
         }
+
+        public string GetMark(int percent)
+        {
+            if (percent <= perfectPercent)
+            {
+                return Perfect;
+            }
+            else if (percent <= goodPercent)
+            {
+                return Good;
+            }
+            else
+            {
+                return Bad;
+            }
+        } 
 
         private bool IsValidReport(Report report)
         {

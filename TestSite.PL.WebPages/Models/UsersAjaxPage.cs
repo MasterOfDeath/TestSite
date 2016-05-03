@@ -72,7 +72,8 @@
                         { "Test", GetTestName(r.TestId, testNamesCache) },
                         { "Date", r.Date.ToString("dd.MM.yyyy HH:mm") },
                         { "ErrCount", r.ErrCount },
-                        { "ErrPercent", r.ErrPercent }
+                        { "ErrPercent", r.ErrPercent },
+                        { "Mark", LogicProvider.ReportLogic.GetMark(r.ErrPercent) },
                     }).ToList();
 
             employeeFIOCache.Clear();
@@ -261,6 +262,7 @@
             DateTime dateStart;
             DateTime dateEnd;
             int depId = -1;
+            bool emplOrder = false;
 
             try
             {
@@ -269,6 +271,7 @@
                 dateStart = Convert.ToDateTime(request["datestart"]);
                 dateEnd = Convert.ToDateTime(request["dateend"]);
                 depId = Convert.ToInt32(request["depid"]);
+                emplOrder = Convert.ToBoolean(request["emplorder"]);
             }
             catch (Exception ex)
             {
@@ -289,12 +292,12 @@
 
                 if (queryName == "getReportByEmployee")
                 {
-                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(requestOwnerId, dateStart, dateEnd);
+                    reports = LogicProvider.ReportLogic.ListReportsByEmployee(requestOwnerId, dateStart, dateEnd, emplOrder);
                 }
 
                 if (queryName == "getReportByDep")
                 {
-                    reports = LogicProvider.ReportLogic.ListReportsByDep(depId, dateStart, dateEnd);
+                    reports = LogicProvider.ReportLogic.ListReportsByDep(depId, dateStart, dateEnd, emplOrder);
                 }
 
                 if (reports == null)

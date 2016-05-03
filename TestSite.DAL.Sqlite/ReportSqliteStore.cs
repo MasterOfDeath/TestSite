@@ -97,12 +97,17 @@
             }
         }
 
-        public ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end)
+        public ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end, bool emplOrder)
         {
             var select = "SELECT report.* , employee.dep_id " +
                          "FROM report " +
                          "JOIN employee ON report.employee_id = employee.id " +
                          "WHERE (\"date\" BETWEEN :dateStart AND :dateEnd) AND (employee.dep_id = :depId)";
+
+            if (emplOrder)
+            {
+                select = select + " ORDER BY employee_id, test_id, id";
+            }
 
             using (var connection = new SQLiteConnection(this.connectionString))
             {
@@ -133,11 +138,16 @@
             }
         }
 
-        public ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end)
+        public ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end, bool emplOrder)
         {
             var select = "SELECT * " +
                          "FROM report " +
                          "WHERE (\"date\" BETWEEN :dateStart AND :dateEnd) AND (employee_id = :employeeId)";
+
+            if (emplOrder)
+            {
+                select = select + " ORDER BY employee_id, test_id, id";
+            }
 
             using (var connection = new SQLiteConnection(this.connectionString))
             {

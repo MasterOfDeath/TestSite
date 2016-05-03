@@ -11,7 +11,7 @@
 
         ICollection<Employee> ListAllEmployees();
 
-        ICollection<Employee> ListEmployeesByRoleName(string roleName);
+        //ICollection<Employee> ListEmployeesByRoleName(string roleName);
 
         ICollection<Employee> ListEmployeesByDepId(int depId);
 

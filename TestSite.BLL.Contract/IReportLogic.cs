@@ -10,8 +10,10 @@
 
         bool RemoveReport(int reportId);
 
-        ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end);
+        ICollection<Report> ListReportsByDep(int depId, DateTime start, DateTime end, bool emplOrder);
 
-        ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end);
+        ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end, bool emplOrder);
+
+        string GetMark(int percent);
     }
 }

@@ -66,7 +66,7 @@
         {
             using (var connection = new SQLiteConnection(this.connectionString))
             {
-                var command = new SQLiteCommand("SELECT id, name FROM dep", connection);
+                var command = new SQLiteCommand("SELECT id, name FROM dep ORDER BY name", connection);
 
                 List<Dep> result = null;
 
@@ -91,15 +91,17 @@
         {
             using (var connection = new SQLiteConnection(this.connectionString))
             {
-                SQLiteCommand command;
-
-                command = new SQLiteCommand("DELETE FROM dep WHERE id=:id", connection);
-                command.Parameters.AddWithValue(":id", depId);
-
                 connection.Open();
-                var result = command.ExecuteNonQuery();
 
-                return result > 0;
+                var delete = "PRAGMA foreign_keys = ON; DELETE FROM dep WHERE id=:id;";
+
+                using (var command = new SQLiteCommand(delete, connection))
+                {
+                    command.Parameters.AddWithValue(":id", depId);
+                    var result = command.ExecuteNonQuery();
+
+                    return result > 0;
+                }
             }
         }
 
