@@ -261,13 +261,6 @@
     <Content Include="Pages\_NamePromptPartial.cshtml" />
     <Content Include="Scripts\spin.js" />
     <Content Include="Scripts\spin.min.js" />
-    <Content Include="Web.hosting.config" />
-    <Content Include="Web.hosting.Debug.config">
-      <DependentUpon>Web.hosting.config</DependentUpon>
-    </Content>
-    <Content Include="Web.hosting.Release.config">
-      <DependentUpon>Web.hosting.config</DependentUpon>
-    </Content>
     <Content Include="Pages\_QuestionPromptPartial.cshtml" />
     <Content Include="Pages\Test.cshtml" />
     <Content Include="Pages\UsersAjax.cshtml" />
