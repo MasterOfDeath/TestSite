@@ -152,6 +152,7 @@
                     sl.SetCellStyle(line, 4, style);
                     sl.SetCellValue(line, 5, TranslateMark((string)result["Mark"]));
                     sl.SetCellStyle(line, 5, style);
+                    sl.SetCellStyle(line, 6, style);
 
                     line++;
                 }
@@ -184,11 +185,11 @@
             }
             else if (mark == ReportMainLogic.Good)
             {
-                return "Удавлет.";
+                return "Удовлет.";
             }
             else
             {
-                return "Не удавл.";
+                return "Не удовл.";
             }
         }
     }

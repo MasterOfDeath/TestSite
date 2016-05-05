@@ -167,42 +167,6 @@
             }
         }
 
-        //public ICollection<Employee> ListEmployeesByRoleName(string roleName)
-        //{
-        //    using (var connection = new SQLiteConnection(this.connectionString))
-        //    {
-        //        connection.Open();
-
-        //        var select = "SELECT employee.* FROM employee_role " +
-        //                     "JOIN employee " +
-        //                     "ON employee.id = employee_role.user_id " +
-        //                     "JOIN role " +
-        //                     "ON role.id = employee_role.role_id " +
-        //                     "WHERE role.name = :roleName";
-
-        //        using (var command = new SQLiteCommand(select, connection))
-        //        {
-        //            command.Parameters.AddWithValue(":roleName", roleName);
-        //            List<Employee> result = null;
-
-        //            using (var reader = command.ExecuteReader())
-        //            {
-        //                if (reader.HasRows)
-        //                {
-        //                    result = new List<Employee>(reader.StepCount);
-        //                }
-
-        //                while (reader.Read())
-        //                {
-        //                    result.Add(this.RowToEmployee(reader));
-        //                }
-
-        //                return result;
-        //            }
-        //        }
-        //    }
-        //}
-
         public bool RemoveEmployee(int employeeId)
         {
             using (var connection = new SQLiteConnection(this.connectionString))

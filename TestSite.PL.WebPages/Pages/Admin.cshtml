@@ -72,15 +72,18 @@
         <div class="deps-select-container">
             <div class="row tab-row">
                 <div class="col-sm-9 col-md-6">
-                    <select class="form-control deps-select">
-                        @foreach (var dep in deps)
-                        {
-                            if (dep.Id != superadminsDep.Id && dep.Id != inspectorsDep.Id)
+                    <div class="form-group">
+                        <label>Укажите отдел: </label>
+                        <select class="form-control deps-select">
+                            @foreach (var dep in deps)
                             {
-                                <option value="@dep.Id">@dep.Name</option>
+                                if (dep.Id != superadminsDep.Id && dep.Id != inspectorsDep.Id)
+                                {
+                                    <option value="@dep.Id">@dep.Name</option>
+                                }
                             }
-                        }
-                    </select>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

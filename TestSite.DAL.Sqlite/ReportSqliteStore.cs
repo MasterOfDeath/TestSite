@@ -102,6 +102,7 @@
             var select = "SELECT report.* , employee.dep_id " +
                          "FROM report " +
                          "JOIN employee ON report.employee_id = employee.id " +
+                         "JOIN test ON report.test_id = test.id " +
                          "WHERE (\"date\" BETWEEN :dateStart AND :dateEnd) AND (employee.dep_id = :depId)";
 
             if (emplOrder)

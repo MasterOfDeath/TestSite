@@ -120,9 +120,9 @@
         if (mark === "perfect") {
             return "Отлично";
         } else if (mark === "good") {
-            return "Удавлет.";
+            return "Удовлет.";
         } else {
-            return "Не удавл.";
+            return "Не удовл.";
         }
     }
 
