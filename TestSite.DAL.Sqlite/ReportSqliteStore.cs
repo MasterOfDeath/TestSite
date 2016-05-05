@@ -141,8 +141,10 @@
 
         public ICollection<Report> ListReportsByEmployee(int employeeId, DateTime start, DateTime end, bool emplOrder)
         {
-            var select = "SELECT * " +
+            var select = "SELECT report.* " +
                          "FROM report " +
+                         "JOIN employee ON report.employee_id = employee.id  " +
+                         "JOIN test ON report.test_id = test.id " +
                          "WHERE (\"date\" BETWEEN :dateStart AND :dateEnd) AND (employee_id = :employeeId)";
 
             if (emplOrder)
