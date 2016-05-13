@@ -34,9 +34,10 @@
     $(".deps-select", $depsSelectCont).change(changeDepsSelect);
         
     function clickAddTestBtn(event) {
-        $namePrompt.modal();
+        $namePrompt.modal("show");
+        autosize($(".modal-body .name-input", $namePrompt));
         $(".modal-title", $namePrompt).text("Название теста");
-        $(".modal-body :text", $namePrompt).val("");
+        $(".modal-body .name-input", $namePrompt).val("");
         $(".save-name-btn", $namePrompt).unbind("click").bind("click", {testId: -1}, clickSaveTest);
     }
 
@@ -128,6 +129,7 @@
             questionType = $questionPrompt.data("question-type") + "",
             text = $(".question-textarea", $questionPrompt).val(),
             testId = $(".editTest-tab", $tabContent).data("test-id"),
+            forRating = $(".for-rating-check", $questionPrompt).prop("checked"),
             answers = [],
             copyCurrentAnswers = currentAnswers.slice(0),
             hasCorrectAnswer = false,
@@ -139,10 +141,10 @@
         }
 
         $(".answers-container > ." + getAnswerTypeInText(), $questionPrompt).each(function (index, el) {
-            if (isValidName($(":text", $(el)).val())) {
+            if (isValidName($(".answer-text", $(el)).val())) {
                 answers.push({
                     answerId: $(el).data("answer-id"),
-                    text: $(":text", $(el)).val(),
+                    text: $(".answer-text", $(el)).val(),
                     correct: $(".check-input", $(el)).prop("checked")
                 });
             }
@@ -207,7 +209,7 @@
             image = null;
         }
 
-        saveQuestionAndAnswers(questionId, testId, text, copyCurrentAnswers, questionType, image);
+        saveQuestionAndAnswers(questionId, testId, text, copyCurrentAnswers, questionType, image, forRating);
     }
 
     function clickEditTestBtn(event) {
@@ -215,7 +217,9 @@
             testId = $(".editTest-tab", $tabContent).data("test-id");
 
         $namePrompt.modal("show");
-        $(".modal-body :text", $namePrompt).val(textTest);
+        autosize($(".modal-body .name-input", $namePrompt));
+        $(".modal-body .name-input", $namePrompt).val(textTest);
+        updateSizeTextArea($(".modal-body .name-input", $namePrompt), 500);
         $(".save-name-btn", $namePrompt).unbind("click").bind("click", { testId: testId }, clickSaveTest);
     }
 
@@ -370,7 +374,7 @@
         });
     }
 
-    function saveQuestionAndAnswers(questionId, testId, text, answers, questionType, image) {
+    function saveQuestionAndAnswers(questionId, testId, text, answers, questionType, image, forRating) {
         var $saveQuestionBtn = $(".save-question-btn", $questionPrompt),
             formData = new FormData();
 
@@ -387,6 +391,7 @@
         formData.append("text", text);
         formData.append("questiontype", questionType);
         formData.append("answers", JSON.stringify(answers));
+        formData.append("forrating", forRating);
 
         $saveQuestionBtn.button("loading");
 
@@ -428,16 +433,19 @@
             if (result.Error === null) {
                 clearQuestionPrompt();
                 $questionPrompt.data("question-id", questionId);
-                setQuestionType(result.Data.questionType);
-                $(".type-select", $questionPrompt).val(result.Data.questionType).prop("disabled", "disabled");
+                setQuestionType(result.Data.question.Type);
+                $(".type-select", $questionPrompt).val(result.Data.question.Type).prop("disabled", true);
                 $questionPrompt.modal("show");
                 $(".modal-title", $questionPrompt).text("Вопрос");
-                $(".question-textarea", $questionPrompt).val(result.Data.text);
+                $(".for-rating-check", $questionPrompt).prop("checked", result.Data.question.ForRating);
+                $(".question-textarea", $questionPrompt).val(result.Data.question.Name);
                 currentAnswers = [];
                 $(result.Data.answers).each(function (index, el) {
                     addAnswer(el.Id, el.Name, el.Correct);
-                    currentAnswers.push({answerId: el.Id, text: el.Name, correct: el.Correct});
+                    currentAnswers.push({ answerId: el.Id, text: el.Name, correct: el.Correct });
                 });
+
+                updateSizeTextArea($(".answer-text", ".question-prompt .answers-container"), 1000);
             }
             else {
                 showError(result.Error);
@@ -454,8 +462,12 @@
         $(".remove-answer-btn", $newRowForAnswer).click(clickRemoveAnswerBtn);
 
         $newRowForAnswer.data("answer-id", answerId);
-        $(":text", $newRowForAnswer).val(text);
-        if (correct === true) {
+        $(".answer-text", $newRowForAnswer).val(text);
+
+        autosize($(".answer-text", $newRowForAnswer));
+        $(".answer-text", $newRowForAnswer).focus(function () { autosize.update(this); });
+
+        if (correct) {
             $(".check-input", $newRowForAnswer).prop("checked", true);
         }
     }
@@ -499,6 +511,7 @@
 
     function clearQuestionPrompt() {
         $questionPrompt.data("question-id", -1).data("question-type", -1);
+        $(".for-rating-check", $questionPrompt).prop("checked", true);
         $(".answers-container", $questionPrompt).empty();
         $(".question-textarea", $questionPrompt).val("");
         $(".file-upload-panel", $questionPrompt).addClass("hide");
@@ -511,6 +524,10 @@
 
         $(".modal-body", $modal).text(str);
         $modal.modal();
+    }
+
+    function updateSizeTextArea($textArea, time) {
+        setTimeout(function () { autosize.update($textArea); }, time);
     }
 
     function isValidName(str) {

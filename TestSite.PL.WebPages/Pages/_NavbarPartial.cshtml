@@ -1,7 +1,7 @@
 ﻿@using TestSite.PL.WebPages.Models
 @using TestSite.Entites
 @using TestSite.Variables
-@{ 
+@{
     Role usersRole = null;
 
     var log = TestSite.Logger.Logger.Log;
@@ -27,7 +27,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Тесты</a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="navbar-brand" href="/">Противоаварийная тренировка</a>
+            }
+            else
+            {
+                <p class="navbar-brand">Противоаварийная тренировка</p>
+            }
         </div>
 
 
@@ -44,8 +51,8 @@
                         </a>
                         <ul class="dropdown-menu">
                             @if (usersRole == Variables.AdminRole ||
-                                 usersRole == Variables.SuperadminRole ||
-                                 usersRole == Variables.InspectorRole)
+         usersRole == Variables.SuperadminRole ||
+         usersRole == Variables.InspectorRole)
                             {
                                 <li><a href="~/Pages/Admin"><i class="glyphicon glyphicon-wrench"></i> Админка</a></li>
                             }

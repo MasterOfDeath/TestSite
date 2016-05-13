@@ -181,15 +181,15 @@
         {
             if (mark == ReportMainLogic.Perfect)
             {
-                return "Отлично";
+                return "Зачёт";
             }
-            else if (mark == ReportMainLogic.Good)
-            {
-                return "Удовлет.";
-            }
+            //else if (mark == ReportMainLogic.Good)
+            //{
+            //    return "Удовлет.";
+            //}
             else
             {
-                return "Не удовл.";
+                return "Не зачёт";
             }
         }
     }

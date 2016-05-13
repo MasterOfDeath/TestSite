@@ -25,10 +25,12 @@
     vertical-align: middle;
 }
 
-.question-prompt .answers-container .radio input[type=text],
-.question-prompt .answers-container .checkbox input[type=text] {
+.question-prompt .answers-container .radio .answer-text,
+.question-prompt .answers-container .checkbox .answer-text {
     width: 88%;
-    display:inline-block;
+    display: inline-block;
+    vertical-align: middle;
+    resize: none;
 }
 
 .tab-content .test-preview .modal-dialog {

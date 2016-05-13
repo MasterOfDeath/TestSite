@@ -10,6 +10,7 @@
         $editDepTab = $(".editDep-tab", $tabContent),
         instpectorsDepId = 2,
         superadminsDepId = 1,
+        usersRoleId = 2,
         nameExp = /^\S.+\S$/,
         passwExp = /^(?=.{6,}$)[^\s]+$/;
 
@@ -28,13 +29,15 @@
     $(".lastname-input", $employeePromptTemplate).keyup(changeNameInput).on("input", changeNameInput);
     $(".pass-input", $employeePromptTemplate).keyup(changePassInput).on("input", changePassInput);
     $(".pass-check", $employeePromptTemplate).change(changePassCheck);
+    $(".role-select", $employeePromptTemplate).change(changeRoleSelect);
 
     function clickAddDepBtn() {
         var employeeId = $content.data("user-id");
 
         $namePrompt.modal("show");
         $(".modal-title", $namePrompt).text("Создание отдела");
-        $(".modal-body :text", $namePrompt).val("");
+        autosize($(".modal-body .name-input", $namePrompt));
+        $(".modal-body .name-input", $namePrompt).val("");
         $(".save-name-btn", $namePrompt).unbind("click").bind("click", { depId: -1 }, clickSaveDep);
     }
 
@@ -44,7 +47,9 @@
 
         $namePrompt.modal("show");
         $(".modal-title", $namePrompt).text("Редактирование отдела");
-        $(".modal-body :text", $namePrompt).val(depName);
+        autosize($(".modal-body .name-input", $namePrompt));
+        $(".modal-body .name-input", $namePrompt).val(depName);
+        updateSizeTextArea($(".modal-body .name-input", $namePrompt), 500);
         $(".save-name-btn", $namePrompt).unbind("click").bind("click", { depId: depId }, clickSaveDep);
     }
 
@@ -141,6 +146,14 @@
         $(".pass-input", $employeePrompt).prop("readonly", !$(event.target).prop("checked"));
     }
 
+    function changeRoleSelect(event) {
+        var isUsersRole = +$(event.target).val() === usersRoleId;
+
+        $(".pass-check", $employeePrompt).prop("checked", !isUsersRole);
+        $(".pass-check", $employeePrompt).trigger("change");
+        $(".pass-check", $employeePrompt).prop("disabled", isUsersRole);
+    }
+
     function clickDepsTable(event) {
         var depId = $(event.target).closest("tr").data("dep-id"),
             depName = $(event.target).text() + "",
@@ -176,6 +189,7 @@
         }
 
         $employeePrompt.modal("show");
+        $(".role-select", $employeePrompt).trigger("change");
     }
 
     function clickEmployeeTable() {
@@ -203,6 +217,7 @@
         }
 
         $employeePrompt.modal("show");
+        $(".role-select", $employeePrompt).trigger("change");
     }
 
     function clickRemoveEmployeeBtn() {
@@ -254,20 +269,18 @@
             password = $(".pass-input", $employeePrompt).val(),
             roleId = $(".role-select", $employeePrompt).val();
 
-        console.log(lastName);
-
         if (!nameExp.test(lastName) || !nameExp.test(firstName)) {
             showError("Не допустимое значения полей ввода");
             return;
         }
 
-        if (employeeId === "-1" && !$(".pass-check", $employeePrompt).prop("checked")) {
+        if (employeeId === "-1" && +roleId !== usersRoleId && !$(".pass-check", $employeePrompt).prop("checked")) {
             showError("Пароль обязателен при добаление пользователя");
             return;
         }
 
         if (employeeId === "-1" || $(".pass-check", $employeePrompt).prop("checked")) {
-            if (!passwExp.test(password)) {
+            if (!passwExp.test(password) && +roleId !== usersRoleId) {
                 showError("Пароль должен содержать не менее 6 символов без пробелов");
                 return;
             }
@@ -419,6 +432,10 @@
             $(".form-control-feedback", $container).removeClass("glyphicon-ok");
             $(".form-control-feedback", $container).addClass("glyphicon-warning-sign");
         }
+    }
+
+    function updateSizeTextArea($textArea, time) {
+        setTimeout(function () { autosize.update($textArea); }, time);
     }
 
     function showError(str) {

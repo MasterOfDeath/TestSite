@@ -77,9 +77,9 @@
             using (var connection = new SQLiteConnection(this.connectionString))
             {
                 connection.Open();
-                var insert = "INSERT INTO question (name, test_id, type) VALUES (:name, :testId, :type); " + 
+                var insert = "INSERT INTO question (name, test_id, type, for_rating) VALUES (:name, :testId, :type, :forRating); " + 
                              "SELECT last_insert_rowid() AS id;";
-                var update = "UPDATE question SET name=:name, test_id=:testId, type=:type WHERE id=:id";
+                var update = "UPDATE question SET name=:name, test_id=:testId, type=:type, for_rating=:forRating WHERE id=:id";
 
                 if (question.Id > 0)
                 {
@@ -89,6 +89,7 @@
                         command.Parameters.AddWithValue(":name", question.Name);
                         command.Parameters.AddWithValue(":testId", question.TestId);
                         command.Parameters.AddWithValue(":type", question.Type);
+                        command.Parameters.AddWithValue(":forRating", question.ForRating);
                         result = (command.ExecuteNonQuery() > 0) ? question.Id : -1;
                     }
                 }
@@ -99,6 +100,7 @@
                         command.Parameters.AddWithValue(":name", question.Name);
                         command.Parameters.AddWithValue(":testId", question.TestId);
                         command.Parameters.AddWithValue(":type", question.Type);
+                        command.Parameters.AddWithValue(":forRating", question.ForRating);
 
                         using (var reader = command.ExecuteReader())
                         {
@@ -237,12 +239,13 @@
 
         private Question RowToQuestion(SQLiteDataReader reader)
         {
-            var id = reader.GetInt32(0);
-            var name = reader.GetString(1);
-            var testId = reader.GetInt32(2);
-            var type = reader.GetInt32(3);
+            var id = (int)(long)reader["id"];
+            var name = (string)reader["name"];
+            var testId = (int)(long)reader["test_id"];
+            var type = (int)(long)reader["type"];
+            var forRating = Convert.ToBoolean((long)reader["for_rating"]);
 
-            return new Question(id, name, testId, type);
+            return new Question(id, name, testId, type, forRating);
         }
     }
 }

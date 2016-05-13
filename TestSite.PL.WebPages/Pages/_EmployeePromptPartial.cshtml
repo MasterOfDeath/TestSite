@@ -8,49 +8,49 @@
             <div class="modal-body">
 
                 <form>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="form-group has-feedback">
-                <label for="personalLastname">Фамилия</label>
-                <input type="text" class="form-control lastname-input" id="personalLastname" placeholder="Иванов">
-                <span class="glyphicon form-control-feedback"></span>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="form-group has-feedback">
-                <label for="personalName">Имя</label>
-                <input type="text" class="form-control firstname-input" id="personalName" placeholder="Иван">
-                <span class="glyphicon form-control-feedback"></span>
-            </div>
-        </div>
-    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group has-feedback">
+                                <label for="personalLastname">Фамилия</label>
+                                <input type="text" class="form-control lastname-input" id="personalLastname" placeholder="Иванов">
+                                <span class="glyphicon form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group has-feedback">
+                                <label for="personalName">Имя</label>
+                                <input type="text" class="form-control firstname-input" id="personalName" placeholder="Иван">
+                                <span class="glyphicon form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="row">
-        <div class="col-sm-8">
-            <div class="form-group has-feedback pass-group">
-                <label><input type="checkbox" class="pass-check" checked="checked" />Задать/сменить пароль:</label>
-                <input type="text" class="form-control pass-input" id="personalPass" placeholder="не менее 6 символов без пробелов">
-                <span class="glyphicon form-control-feedback"></span>
-            </div>
-        </div>
-    </div>
+                    @if (User.IsInRole("superadmin"))
+                    {
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group has-feedback pass-group">
+                                    <label><input type="checkbox" class="pass-check" checked="checked" />Задать/сменить пароль:</label>
+                                    <input type="text" class="form-control pass-input" id="personalPass" placeholder="не менее 6 символов без пробелов">
+                                    <span class="glyphicon form-control-feedback"></span>
+                                </div>
+                            </div>
+                        </div>
 
-    @if (User.IsInRole("superadmin"))
-    {
-        <div class="row">
-            <div class="col-sm-8">
-                <label>Роль сотрудника:</label>
-                <select class="form-control role-select">
-                    <option value="2">Пользователь</option>
-                    <option value="1">Администратор отдела</option>
-                </select>
-            </div>
-        </div>
-    }
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <label>Роль сотрудника:</label>
+                                <select class="form-control role-select">
+                                    <option value="2">Пользователь</option>
+                                    <option value="1">Администратор отдела</option>
+                                </select>
+                            </div>
+                        </div>
+                    }
 
-    </form>
+                </form>
 
             </div>
             <div class="modal-footer">

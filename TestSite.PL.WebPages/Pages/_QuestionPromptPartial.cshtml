@@ -14,6 +14,13 @@
                 </select>
             </div>
             <div class="modal-body">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" class="for-rating-check" checked="checked"/>
+                        Зачётный вопрос?
+                    </label>
+                </div>
+
                 <textarea rows="5" placeholder="Вопрос" class="form-control question-textarea"></textarea>
 
                 <div class="well well-sm hide file-upload-panel">
@@ -41,7 +48,7 @@
         <label>
             <input type="radio" class="check-input" id="radio-value" name="value1" value="value1" />
         </label>
-        <input id="result-value" class="form-control" type="text" placeholder="Ответ" />
+        <textarea id="result-value" rows="1" placeholder="Ответ" class="form-control answer-text"></textarea>
         <button type="button" class="btn btn-default remove-answer-btn">X</button>
     </div>
     <!-- /radio row for answer -->
@@ -51,7 +58,7 @@
         <label>
             <input type="checkbox" class="check-input" value="" />
         </label>
-        <input id="result-value" class="form-control" type="text" placeholder="Ответ" />
+        <textarea id="result-value" rows="1" placeholder="Ответ" class="form-control answer-text"></textarea>
         <button type="button" class="btn btn-default remove-answer-btn">X</button>
     </div>
     <!-- /checkbox row for answer -->

@@ -168,7 +168,7 @@
             $newWrongAlert = $(".wrong-notify-template .alert").clone();
 
         wrongText = "<ul>" + $.map(wrongQuestions, function (el) {
-            return "<li>" + el + "</li>";
+            return "<li>" + el.Name + "</li>";
         }).join("") + "</ul>";
 
         $(".wrong-questions", $newWrongAlert).append(wrongText);

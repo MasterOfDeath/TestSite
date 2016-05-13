@@ -9,11 +9,11 @@
     public class ReportMainLogic : IReportLogic
     {
         public static readonly string Perfect = "perfect";
-        public static readonly string Good = "good";
+        //public static readonly string Good = "good";
         public static readonly string Bad = "bad";
 
-        private const int perfectPercent = 10;
-        private const int goodPercent = 50;
+        //private const int perfectPercent = 10;
+        //private const int goodPercent = 50;
 
         public int InsertReport(Report report)
         {
@@ -106,13 +106,9 @@
 
         public string GetMark(int percent)
         {
-            if (percent <= perfectPercent)
+            if (percent == 0)
             {
                 return Perfect;
-            }
-            else if (percent <= goodPercent)
-            {
-                return Good;
             }
             else
             {

@@ -21,12 +21,18 @@
 
         public int AddEmployee(Employee employee, string password)
         {
-            if (password == null || !PasswordEx.IsMatch(password))
+            this.IsValidEmployee(employee);
+
+            // Простым пользователям пароль не нужен
+            if (employee.Role_Id == Variables.UserRole.Id)
+            {
+                password = "111111";
+            }
+
+            if (string.IsNullOrEmpty(password) || !PasswordEx.IsMatch(password))
             {
                 throw new ArgumentException($"Пароль не соответсвует требованиям безопасности");
             }
-
-            this.IsValidEmployee(employee);
 
             employee.Hash = this.GetHash(password);
 
@@ -61,6 +67,12 @@
             if (employee == null)
             {
                 throw new InvalidOperationException($"Пользователь {employeeId} не найден");
+            }
+
+            // Простой пользователь заходит без пароля
+            if (employee.Role_Id == Variables.UserRole.Id)
+            {
+                return employee;
             }
 
             // Пароль Супер админа из Web.config

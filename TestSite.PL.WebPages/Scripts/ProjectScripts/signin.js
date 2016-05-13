@@ -1,19 +1,21 @@
 ﻿(function () {
     var $content = $(".content-login"),
-        $depSelector = $(".dep-selector", $content),
-        $employeeSelector = $(".employee-selector", $content);
+        $depSelect = $(".dep-select", $content),
+        $employeeSelect = $(".employee-select", $content),
+        usersRoleId = 2;
 
-    $depSelector.change(changeDepSelector);
+    $depSelect.change(changeDepSelector);
+    $employeeSelect.change(changeEmployeeSelect)
     $(".login-btn", $content).click(clickLoginBtn);
     $(".password-input", $content).keyup(onEnterPress);
 
-    // Для отрисовки $employeeSelector
+    // Для отрисовки $employeeSelect
     changeDepSelector();
 
     function changeDepSelector() {
-        var depId = $depSelector.val();
+        var depId = $depSelect.val();
 
-        $employeeSelector.prop("disabled", true);
+        $employeeSelect.prop("disabled", true);
 
         $.ajax({
             url: "RegularAjax",
@@ -32,12 +34,18 @@
                 showError(result.Error);
             }
         }).always(function () {
-            $employeeSelector.prop("disabled", false);
+            $employeeSelect.prop("disabled", false);
         });
     }
 
+    function changeEmployeeSelect(event) {
+        var roleId = $(event.target).find('option:selected').data("role-id");
+
+        $(".password-input", $content).prop("readonly", +roleId === usersRoleId);
+    }
+
     function clickLoginBtn() {
-        var employeeId = $employeeSelector.val(),
+        var employeeId = $employeeSelect.val(),
             password = $(".password-input", $content).val(),
             remember = $(".password-remember", $content).prop("checked");
 
@@ -79,12 +87,14 @@
     }
 
     function populateEmployeeSelector(data) {
-        $employeeSelector.empty();
+        $employeeSelect.empty();
 
         if (data !== null) {
             $(data).each(function (index, el) {
-                $employeeSelector.append("<option value=" + el.Id + ">" + el.LastName + " " + el.FirstName + "</option>");
+                $employeeSelect.append("<option data-role-id='" + el.Role_Id +"' value=" + el.Id + ">" + el.LastName + " " + el.FirstName + "</option>");
             });
+
+            $employeeSelect.change();
         }
     }
 

@@ -2,16 +2,17 @@
 {
     public class Question
     {
-        public Question(int id, string name, int testId, int type)
+        public Question(int id, string name, int testId, int type, bool forRating)
         {
             this.Id = id;
             this.Name = name;
             this.TestId = testId;
             this.Type = type;
+            this.ForRating = forRating;
         }
 
-        public Question(string name, int testId, int type)
-            : this(-1, name, testId, type)
+        public Question(string name, int testId, int type, bool forRating)
+            : this(-1, name, testId, type, forRating)
         {
         }
 
@@ -22,5 +23,7 @@
         public int TestId { get; set; }
 
         public int Type { get; set; }
+
+        public bool ForRating { get; set; }
     }
 }

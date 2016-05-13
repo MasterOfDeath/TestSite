@@ -159,7 +159,8 @@
             }
 
             ICollection<Answer> correctAnswers = null;
-            ICollection<string> wrongQuestions = new List<string>();
+            //ICollection<string> wrongQuestions = new List<string>();
+            ICollection<Question> wrongQuestions = new List<Question>();
             Question question = null;
             bool correct = true;
 
@@ -174,7 +175,8 @@
                     {
                         correct = false;
                         question = LogicProvider.QuestionLogic.GetQuestionById(questionId);
-                        wrongQuestions.Add(question.Name);
+                        //wrongQuestions.Add(question.Name);
+                        wrongQuestions.Add(question);
                         continue;
                     }
 
@@ -184,7 +186,8 @@
                         {
                             correct = false;
                             question = LogicProvider.QuestionLogic.GetQuestionById(questionId);
-                            wrongQuestions.Add(question.Name);
+                            //wrongQuestions.Add(question.Name);
+                            wrongQuestions.Add(question);
                             break;
                         }
                     }
@@ -200,7 +203,7 @@
                 try
                 {
                     var wrongsCount = wrongQuestions.Count;
-                    var wrongsPercent = wrongQuestions.Count * 100 / Enumerable.Count(results);
+                    var wrongsPercent = wrongQuestions.Count(q => q.ForRating) * 100 / Enumerable.Count(results);
                     var report = new Report(employeeId, testId, DateTime.Now, wrongsCount, wrongsPercent);
                     LogicProvider.ReportLogic.InsertReport(report);
                 }

@@ -58,29 +58,32 @@
     function clickSaveEmployeeBtn() {
         var employeeId = $employeePrompt.data("employee-id") + "",
             firstName = $(".firstname-input", $employeePrompt).val(),
-            lastName = $(".lastname-input", $employeePrompt).val(),
-            password = $(".pass-input", $employeePrompt).val();
+            lastName = $(".lastname-input", $employeePrompt).val();
+            //password = $(".pass-input", $employeePrompt).val();
 
         if (!nameExp.test(lastName) || !nameExp.test(firstName)) {
             showError("Не допустимое значения полей ввода");
             return;
         }
 
-        if (employeeId === "-1" && !$(".pass-check", $employeePrompt).prop("checked")) {
-            showError("Пароль обязателен при добаление пользователя");
-            return;
-        }
+        //if (employeeId === "-1" &&
+        //    $(".pass-check", $employeePrompt).lenght > 0 &&
+        //    !$(".pass-check", $employeePrompt).prop("checked"))
+        //{
+        //    showError("Пароль обязателен при добаление пользователя");
+        //    return;
+        //}
 
-        if (employeeId === "-1" || $(".pass-check", $employeePrompt).prop("checked")) {
-            if (!passwExp.test(password)) {
-                showError("Пароль должен содержать не менее 6 символов без пробелов");
-                return;
-            }
-        } else {
-            password = "";
-        }
+        //if (employeeId === "-1" || $(".pass-check", $employeePrompt).prop("checked")) {
+        //    if (!passwExp.test(password)) {
+        //        showError("Пароль должен содержать не менее 6 символов без пробелов");
+        //        return;
+        //    }
+        //} else {
+        //    password = "";
+        //}
 
-        saveEmployee(employeeId, firstName, lastName, password);
+        saveEmployee(employeeId, firstName, lastName);
     }
 
     function changeNameInput(event) {
@@ -175,7 +178,7 @@
         $(".pass-input", $employeePrompt).prop("readonly", !$(event.target).prop("checked"));
     }
 
-    function saveEmployee(employeeId, firstName, lastName, password) {
+    function saveEmployee(employeeId, firstName, lastName) {
         var requestOwner = $content.data("user-id") + "";
 
         $(".save-employee-btn", $employeePrompt).button("loading");
@@ -189,8 +192,7 @@
                 requestowner: requestOwner,
                 employeeid: employeeId,
                 firstname: firstName,
-                lastname: lastName,
-                password: password
+                lastname: lastName
             }
         }).success(function (data) {
             var result = JSON.parse(data);

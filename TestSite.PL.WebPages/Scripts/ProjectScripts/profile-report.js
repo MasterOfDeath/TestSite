@@ -118,11 +118,10 @@
 
     function translateMark(mark) {
         if (mark === "perfect") {
-            return "Отлично";
-        } else if (mark === "good") {
-            return "Удовлет.";
-        } else {
-            return "Не удовл.";
+            return "Зачёт";
+        }
+        else {
+            return "Не зачёт";
         }
     }
 

@@ -121,6 +121,7 @@
             string text = null;
             dynamic answers = null;
             byte[] image = null;
+            bool forRating = false;
 
             try
             {
@@ -138,6 +139,8 @@
                         image = binaryReader.ReadBytes(file.ContentLength);
                     }
                 }
+
+                forRating = Convert.ToBoolean(request["forrating"]);
             }
             catch (Exception ex)
             {
@@ -146,7 +149,7 @@
 
             try
             {
-                questionId = LogicProvider.QuestionLogic.InsertQuestion(new Question(questionId, text, testId, questionType));
+                questionId = LogicProvider.QuestionLogic.InsertQuestion(new Question(questionId, text, testId, questionType, forRating));
             }
             catch (Exception ex)
             {
@@ -229,8 +232,9 @@
                 return Common.SendError(ex, methodName);
             }
 
-            dynamic questionAndAnswers = new { text = question.Name, questionType = question.Type, answers = answers };
-       
+            //dynamic questionAndAnswers = new { text = question.Name, questionType = question.Type, answers = answers };
+            dynamic questionAndAnswers = new { question, answers };
+
             return new AjaxResponse(null, questionAndAnswers);
         }
 
@@ -517,7 +521,7 @@
                 employee.Role_Id = roleId;
                 result = LogicProvider.EmployeeLogic.InsertEmployee(employee);
 
-                if (password != "" && result > 0)
+                if (!string.IsNullOrEmpty(password) && result > 0)
                 {
                     LogicProvider.EmployeeLogic.ChangePassword(employeeId, "IamGod", password, godMode: true);
                 }
